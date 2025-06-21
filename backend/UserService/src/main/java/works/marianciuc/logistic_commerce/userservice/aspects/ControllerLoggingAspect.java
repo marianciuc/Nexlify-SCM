@@ -18,13 +18,13 @@ public class ControllerLoggingAspect {
     String methodName = joinPoint.getSignature().getName();
     String className = joinPoint.getTarget().getClass().getSimpleName();
 
-    log.info("Starting execution of {}.{}", className, methodName);
+    log.debug("Starting execution of {}.{}", className, methodName);
 
     try {
       Object result = joinPoint.proceed();
 
       long executionTime = System.currentTimeMillis() - startTime;
-      log.info("{}.{} executed in {} ms", className, methodName, executionTime);
+      log.debug("{}.{} executed in {} ms", className, methodName, executionTime);
 
       return result;
     } catch (Throwable t) {

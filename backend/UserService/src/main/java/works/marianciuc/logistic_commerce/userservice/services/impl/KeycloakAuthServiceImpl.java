@@ -1,5 +1,6 @@
 package works.marianciuc.logistic_commerce.userservice.services.impl;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.OAuth2Constants;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,6 @@ import works.marianciuc.logistic_commerce.userservice.services.AuthService;
 @Service
 @Slf4j
 public class KeycloakAuthServiceImpl implements AuthService {
-
   private final RestTemplate restTemplate;
   private final HttpHeaders headers;
 
@@ -28,29 +28,31 @@ public class KeycloakAuthServiceImpl implements AuthService {
   @Value("${keycloak.admin.auth-server-url}")
   private String authServerUrl;
 
-  private final String tokenUrl =
-      String.format("%s/realms/%s/protocol/openid-connect/token", authServerUrl, realm);
-
   @Value("${keycloak.admin.client-id}")
   private String clientId;
 
   @Value("${keycloak.admin.client-secret}")
   private String clientSecret;
 
+  private String tokenUrl;
+
   public KeycloakAuthServiceImpl(RestTemplate restTemplate) {
-    log.debug("KeycloakAuthServiceImpl created. Actual tokenUrl: {}", tokenUrl);
     this.restTemplate = restTemplate;
     this.headers = new HttpHeaders();
     this.headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
   }
 
+  @PostConstruct
+  private void initializeTokenUrl() {
+    this.tokenUrl =
+        String.format("%s/realms/%s/protocol/openid-connect/token", authServerUrl, realm);
+    log.debug("KeycloakAuthServiceImpl created. Actual tokenUrl: {}", tokenUrl);
+  }
+
   @Override
-  public TokenPair login(String username, String password) {
+  public ResponseEntity<TokenPair> login(String username, String password) {
     log.debug("KeycloakAuthServiceImpl login called");
-    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-    body.add(OAuth2Constants.GRANT_TYPE, OAuth2Constants.PASSWORD);
-    body.add(OAuth2Constants.CLIENT_ID, clientId);
-    body.add(OAuth2Constants.CLIENT_SECRET, clientSecret);
+    MultiValueMap<String, String> body = buildTokenRequestBody(OAuth2Constants.PASSWORD);
     body.add(OAuth2Constants.USERNAME, username);
     body.add(OAuth2Constants.PASSWORD, password);
     body.add(OAuth2Constants.SCOPE, "openid");
@@ -60,24 +62,36 @@ public class KeycloakAuthServiceImpl implements AuthService {
   }
 
   @Override
-  public TokenPair refresh(String refreshToken) {
+  public ResponseEntity<TokenPair> refresh(String refreshToken) {
     log.debug("KeycloakAuthServiceImpl refresh called");
-    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-    body.add(OAuth2Constants.GRANT_TYPE, OAuth2Constants.REFRESH_TOKEN);
-    body.add(OAuth2Constants.CLIENT_ID, clientId);
-    body.add(OAuth2Constants.CLIENT_SECRET, clientSecret);
+    MultiValueMap<String, String> body = buildTokenRequestBody(OAuth2Constants.REFRESH_TOKEN);
     body.add(OAuth2Constants.REFRESH_TOKEN, refreshToken);
 
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
     return executeRequest(request);
   }
 
-  private TokenPair fromResponse(KeycloakTokenResponse tokenResponse) {
-    return new TokenPair(
-        tokenResponse.accessToken(), tokenResponse.refreshToken(), tokenResponse.expiresIn());
+  @Override
+  public ResponseEntity<Void> logout() {
+    return null;
   }
 
-  private TokenPair executeRequest(HttpEntity<MultiValueMap<String, String>> request) {
+  private MultiValueMap<String, String> buildTokenRequestBody(String grantType) {
+    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+    body.add(OAuth2Constants.GRANT_TYPE, grantType);
+    body.add(OAuth2Constants.CLIENT_ID, clientId);
+    body.add(OAuth2Constants.CLIENT_SECRET, clientSecret);
+    return body;
+  }
+
+  private ResponseEntity<TokenPair> fromResponse(KeycloakTokenResponse tokenResponse) {
+    return ResponseEntity.ok(
+        new TokenPair(
+            tokenResponse.accessToken(), tokenResponse.refreshToken(), tokenResponse.expiresIn()));
+  }
+
+  private ResponseEntity<TokenPair> executeRequest(
+      HttpEntity<MultiValueMap<String, String>> request) {
     log.debug("KeycloakAuthServiceImpl:: executeRequest called");
     try {
       ResponseEntity<KeycloakTokenResponse> tokenResponse =
@@ -88,7 +102,6 @@ public class KeycloakAuthServiceImpl implements AuthService {
             tokenResponse.getStatusCode());
         throw new RuntimeException("Failed to obtain tokens");
       }
-
       log.debug("KeycloakAuthServiceImpl:: successfully obtained tokens");
       return fromResponse(tokenResponse.getBody());
     } catch (Exception e) {
