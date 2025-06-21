@@ -1,5 +1,7 @@
 package works.marianciuc.logistic_commerce.userservice.validation.impl;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,12 +19,15 @@ public class AccessPermissionCheckerImpl implements AccessPermissionChecker {
   private final UserManagementService userManagementService;
 
   @Override
-  public boolean isUserAllowedToAccess(String email, Resource resource)
+  public boolean isUserAllowedToAccess(
+      @Email(message = "errors.validation.email.invalid") String email, @NotNull Resource resource)
       throws UserNotFoundException {
-    if (email == null || email.isEmpty()) {
-      throw new IllegalArgumentException("email is null or empty");
-    }
     UserDto user = userManagementService.getUserByEmail(email);
-    return resource.isIncluded(user.companyRole());
+    boolean hasAccess = resource.isIncluded(user.companyRole());
+
+    log.debug(
+        "Access check for email: {} to resource: {} - Result: {}", email, resource, hasAccess);
+
+    return hasAccess;
   }
 }
