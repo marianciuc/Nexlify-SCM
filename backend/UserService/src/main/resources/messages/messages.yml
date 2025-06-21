@@ -5,11 +5,37 @@ errors:
     not_found: User not found
     already_exists: User with email {0} already exists
     deleted: User account has been deleted
+    account:
+      invalid_status:
+        Account status {0} is not valid for this operation. Required status: { 1 }
+      already_blocked: Account is already blocked
+      already_active: Account is already active
+      cannot_block_deleted: Cannot block a deleted account
+      cannot_unblock_non_blocked:
+        Only blocked accounts can be unblocked. Current status: { 0 }
+      must_be_pending:
+        Account must be in PENDING status to be activated. Current status: { 0 }
     email:
       not_verified: Email address is not verified
-      already_verified: Email address has been verified
-    password.weak: Email address is not verified
-    invalid.email: Invalid email address format
+      already_verified: Email address is already verified
+      update_failed:
+        Email update failed: { 0 }
+      verification_failed:
+        Email verification failed: { 0 }
+      cannot_be_empty: Email cannot be null or empty
+      must_be_different: New email must be different from the current email
+      same_as_current: Email is already set to {0}
+    password:
+      weak: Password is too weak
+    contact:
+      cannot_be_empty: Contact number cannot be null or empty
+    consent:
+      already_given: Data processing consent has already been accepted
+      required: Data processing consent is required
+    role:
+      cannot_be_null: Company role cannot be null
+    full_name:
+      unavailable: Full name is not available
 
   # Authentication errors
   auth:
@@ -79,11 +105,58 @@ errors:
 
   # IP and security errors
   security:
-    unauthorized: Access denied
-    ip.blocked: Access from your IP address is blocked
-    rate.limit: Too many requests, please try again later
-    suspicious:
-      activity: Suspicious activity detected
+    unauthorized: Access denied - Authentication required
+    access_denied: Access denied to this resource
+    authentication:
+      failed: Authentication failed
+      missing: Authentication credentials are required
+      invalid: Invalid authentication credentials
+    authorization:
+      failed: Authorization failed
+      insufficient: Insufficient privileges for this operation
+    token:
+      expired: Security token has expired
+      invalid: Security token is invalid or malformed
+      missing: Security token is required
+      refresh:
+        failed: Token refresh failed
+        expired: Refresh token has expired
+    permissions:
+      insufficient: You do not have sufficient permissions to perform this action
+      required:
+        Required permission: { 0 }
+      denied: Permission denied for this resource
+    account:
+      suspended: Your account has been suspended
+      suspended_reason:
+        Your account has been suspended: { 0 }
+      locked: Account is temporarily locked
+      disabled: Account has been disabled
+      pending_verification: Account pending verification
+    session:
+      expired: Your session has expired. Please log in again
+      expired_id: Session {0} has expired
+      invalid: Invalid session
+      timeout: Session timeout
+    ip:
+      blocked: Access from your IP address is not allowed
+      blocked_address: Access from IP address {0} is blocked
+      restricted: IP address access restricted
+    rate_limit:
+      exceeded: Too many requests. Please try again later
+      exceeded_details:
+        Rate limit exceeded: { 0 } requests per {1}
+      quota_exceeded: API quota exceeded
+    suspicious_activity:
+      detected: Suspicious activity detected. Access temporarily restricted
+      type:
+        Suspicious activity detected: { 0 }
+    csrf:
+      token_missing: CSRF token is missing
+      token_invalid: CSRF token is invalid
+    cors:
+      origin_not_allowed: Origin not allowed by CORS policy
+
 
   # Email verification errors
   email:
