@@ -1,3 +1,4 @@
+
 package works.marianciuc.logistic_commerce.userservice.domain.entity;
 
 import jakarta.persistence.Column;
@@ -13,11 +14,16 @@ import lombok.*;
 @AllArgsConstructor
 public class Address {
 
-  @NotBlank(message = "Street cannot be blank")
+  private static final String VALIDATION_STREET_BLANK = "{errors.validation.blank.street}";
+  private static final String VALIDATION_CITY_BLANK = "{errors.validation.blank.city}";
+  private static final String VALIDATION_ZIP_BLANK = "{errors.validation.blank.zip}";
+  private static final String VALIDATION_COUNTRY_BLANK = "{errors.validation.blank.country}";
+
+  @NotBlank(message = VALIDATION_STREET_BLANK)
   @Column(name = "street")
   private String street;
 
-  @NotBlank(message = "City cannot be blank")
+  @NotBlank(message = VALIDATION_CITY_BLANK)
   @Column(name = "city")
   private String city;
 
@@ -27,11 +33,11 @@ public class Address {
   @Column(name = "street_number")
   private String streetNumber;
 
-  @NotBlank(message = "Zip code cannot be blank")
+  @NotBlank(message = VALIDATION_ZIP_BLANK)
   @Column(name = "zip")
   private String zip;
 
-  @NotBlank(message = "Country cannot be blank")
+  @NotBlank(message = VALIDATION_COUNTRY_BLANK)
   @Column(name = "country")
   private String country;
 
@@ -54,5 +60,31 @@ public class Address {
   public String toString() {
     return String.format(
         "Address{street='%s', city='%s',  zip='%s', country='%s'}", street, city, zip, country);
+  }
+
+  public String getFullAddress() {
+    return formatStreetAddress() + ", " + nullSafe(city);
+  }
+
+  public String getFullAddressWithCountry() {
+    return formatStreetAddress() + ", " + nullSafe(city) + ", " + nullSafe(country);
+  }
+
+  private String formatStreetAddress() {
+    StringBuilder streetAddress = new StringBuilder(nullSafe(street));
+
+    if (houseNumber != null && !houseNumber.trim().isEmpty()) {
+      streetAddress.append(", ").append(houseNumber);
+    }
+
+    if (streetNumber != null && !streetNumber.trim().isEmpty()) {
+      streetAddress.append(" ").append(streetNumber);
+    }
+
+    return streetAddress.toString();
+  }
+
+  private String nullSafe(String value) {
+    return value != null ? value : "";
   }
 }

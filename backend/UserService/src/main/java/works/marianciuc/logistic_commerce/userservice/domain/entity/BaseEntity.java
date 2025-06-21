@@ -14,6 +14,10 @@ import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.LastModifiedDate;
 import works.marianciuc.logistic_commerce.userservice.exceptions.records.DeletedRecordException;
 
+/**
+ * Base entity class providing common fields and functionality for all entities. Implements soft
+ * delete pattern with auditing capabilities.
+ */
 @SuperBuilder
 @Data
 @MappedSuperclass
@@ -72,6 +76,7 @@ public abstract class BaseEntity {
 
   public void delete() {
     this.isDeleted = true;
+    this.deletedAt = LocalDateTime.now();
   }
 
   @Override
@@ -81,8 +86,24 @@ public abstract class BaseEntity {
         id, createdAt, updatedAt, isDeleted);
   }
 
+  /**
+   * Verifies whether the current record has been marked as deleted.
+   *
+   * <p>This method checks the `isDeleted` field of the current entity. If the record is marked as
+   * deleted, it throws a `DeletedRecordException` with a descriptive message containing the
+   * record's type and ID (or "unknown" if the ID is null).
+   *
+   * <p>This method enforces the integrity of operations on entities by ensuring that deleted
+   * records cannot be inadvertently accessed or modified.
+   *
+   * @throws DeletedRecordException if the current record is marked as deleted
+   */
   public void verifyRecord() throws DeletedRecordException {
-    if (this.isDeleted)
-      throw new DeletedRecordException(this.getClass().getName() + ":: Record is deleted");
+    if (this.isDeleted) {
+      throw new DeletedRecordException(
+          String.format(
+              "%s: Record with ID %s is deleted",
+              this.getClass().getSimpleName(), this.id != null ? this.id : "unknown"));
+    }
   }
 }
