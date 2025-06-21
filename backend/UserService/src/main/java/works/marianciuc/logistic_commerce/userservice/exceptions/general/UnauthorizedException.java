@@ -32,6 +32,10 @@ public abstract class UnauthorizedException extends BusinessException {
     super(message, DEFAULT_STATUS, ERROR_CODE_PREFIX + domain);
   }
 
+  public UnauthorizedException(String message, String domain, String... args) {
+    super(message, DEFAULT_STATUS, ERROR_CODE_PREFIX + domain, args);
+  }
+
   public UnauthorizedException(String domain) {
     this(DEFAULT_MESSAGE, domain);
   }

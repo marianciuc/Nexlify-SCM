@@ -31,6 +31,10 @@ public abstract class UnsupportedOperationException extends BusinessException {
     super(message, HttpStatus.BAD_REQUEST, PREFIX + domain);
   }
 
+  public UnsupportedOperationException(String message, String domain, String... args) {
+    super(message, HttpStatus.BAD_REQUEST, PREFIX + domain, args);
+  }
+
   public UnsupportedOperationException(String domain) {
     this(DEFAULT_MESSAGE, domain);
   }

@@ -1,9 +1,13 @@
 package works.marianciuc.logistic_commerce.userservice.exceptions.regions;
 
-import works.marianciuc.logistic_commerce.userservice.domain.enums.Regions;
+import works.marianciuc.logistic_commerce.userservice.exceptions.general.UnsupportedOperationException;
 
-public class UnsupportedRegionException extends RuntimeException {
+public class UnsupportedRegionException extends UnsupportedOperationException {
+
+  private static final String MESSAGE = "errors.region.unsupported";
+  private static final String DOMAIN = "REGION";
+
   public UnsupportedRegionException(String region) {
-    super("Unsupported region: " + region + "Use one of: " + Regions.getRegions());
+    super(MESSAGE, DOMAIN, region);
   }
 }

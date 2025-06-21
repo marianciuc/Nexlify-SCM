@@ -32,6 +32,10 @@ public abstract class ForbiddenException extends BusinessException {
     super(message, DEFAULT_STATUS, ERROR_CODE_PREFIX + domain);
   }
 
+  public ForbiddenException(String message, String domain, String... args) {
+    super(message, DEFAULT_STATUS, ERROR_CODE_PREFIX + domain, args);
+  }
+
   public ForbiddenException(String domain) {
     this(DEFAULT_MESSAGE, domain);
   }

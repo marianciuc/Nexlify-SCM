@@ -1,7 +1,12 @@
 package works.marianciuc.logistic_commerce.userservice.exceptions.records;
 
-public class DeletedRecordException extends RuntimeException {
+import works.marianciuc.logistic_commerce.userservice.exceptions.general.UnsupportedOperationException;
+
+public class DeletedRecordException extends UnsupportedOperationException {
+
+  private static final String DOMAIN = "RECORD";
+
   public DeletedRecordException(String message) {
-    super(message);
+    super(message, DOMAIN);
   }
 }
