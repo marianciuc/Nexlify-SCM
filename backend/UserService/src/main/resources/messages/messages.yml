@@ -1,0 +1,104 @@
+errors:
+
+  # User errors
+  user:
+    not_found: User not found
+    already_exists: User with email {0} already exists
+    deleted: User account has been deleted
+    email:
+      not_verified: Email address is not verified
+      already_verified: Email address has been verified
+    password.weak: Email address is not verified
+    invalid.email: Invalid email address format
+
+  # Authentication errors
+  auth:
+    login:
+      failed: Authentication failed
+    invalid.credentials: Invalid email or password
+    token:
+      expired: Token has expired
+      invalid: Invalid token
+      refresh:
+        failed: Failed to refresh token
+    unauthorized: Unauthorized access
+
+  # Company errors
+  company:
+    not_found: Company not found
+    already_exists: Company with tax ID {0} already exists in {1}
+    invalid:
+      tax_id: Invalid tax identification number
+    verification.failed: Company verification failed
+    region.unsupported: Region {0} is not supported
+
+  # Validation errors
+  validation:
+    blank:
+      password: Password cannot be blank
+      street: Street cannot be blank
+      city: City cannot be blank
+      zip: Zip code cannot be blank
+      country: Country cannot be blank
+    failed: Validation failed
+    required: Field {0} is required
+    format: Invalid format for field {0}
+    length:
+      min: Field {0} must be at least {1} characters long
+      max: Field {0} must not exceed {1} characters
+    email.invalid: Please provide a valid email address
+    phone.invalid: Please provide a valid phone number
+    consent.required: Data processing consent is required
+
+  # Business logic errors
+  business:
+    unsupported_operation: Operation not supported
+    access_denied: Access denied to resource
+    not_available: Requested resource is not available
+    illegal_argument: 'Invalid argument provided: {0}'
+
+  # System errors
+  system:
+    internal: An unexpected error occurred
+    database.connection: Database connection error
+    service.unavailable: Service temporarily unavailable
+    external.service: External service error
+
+  # Role and permission errors
+  role:
+    unsupported: Role {0} is not supported
+    permission.insufficient: Insufficient permissions for this operation
+    access.forbidden: Access to this resource is forbidden
+
+  # Registration errors
+  registration:
+    failed: Registration failed
+    email:
+      taken: Email address is already registered
+    invalid.data: Invalid registration data provided
+
+  # IP and security errors
+  security:
+    unauthorized: Access denied
+    ip.blocked: Access from your IP address is blocked
+    rate.limit: Too many requests, please try again later
+    suspicious:
+      activity: Suspicious activity detected
+
+  # Email verification errors
+  email:
+    verification:
+      failed: Email verification failed
+      token:
+        invalid: Invalid verification token
+        expired: Verification token has expired
+
+
+
+
+
+
+
+
+
+
