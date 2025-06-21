@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import works.marianciuc.logistic_commerce.userservice.annotations.UserAccessValidation;
+import works.marianciuc.logistic_commerce.userservice.annotations.RequestedUserAccessValidation;
 import works.marianciuc.logistic_commerce.userservice.domain.dto.CredentialsRequest;
 import works.marianciuc.logistic_commerce.userservice.domain.dto.RefreshToken;
 import works.marianciuc.logistic_commerce.userservice.domain.dto.RegistrationRequestDTO;
@@ -22,7 +22,7 @@ public interface AuthController {
       summary = "Authenticate user",
       description = "Authenticate user with credentials and return JWT token pair")
   @PostMapping("/login")
-  @UserAccessValidation
+  @RequestedUserAccessValidation
   ResponseEntity<TokenPair> login(
       @Parameter(
               description = "User credentials",
