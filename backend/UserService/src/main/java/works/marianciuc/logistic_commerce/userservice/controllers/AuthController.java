@@ -42,9 +42,16 @@ public interface AuthController {
           @RequestBody
           RefreshToken refreshToken);
 
-  @Operation(summary = "Logout user", description = "Logout user")
+  @Operation(
+      summary = "Logout user",
+      description = "Uses the active user refresh token that will revoked")
   @GetMapping("/logout")
-  ResponseEntity<Void> logout();
+  ResponseEntity<Void> logout(
+      @Schema(
+              description = "Refresh token that will be revoked",
+              implementation = RefreshToken.class)
+          @RequestBody
+          RefreshToken refreshToken);
 
   @Operation(summary = "Register user", description = "Register user with registration form")
   @PostMapping("/register")

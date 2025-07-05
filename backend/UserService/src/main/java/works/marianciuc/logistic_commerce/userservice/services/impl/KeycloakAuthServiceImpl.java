@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import works.marianciuc.logistic_commerce.userservice.domain.dto.KeycloakTokenResponse;
 import works.marianciuc.logistic_commerce.userservice.domain.dto.TokenPair;
@@ -19,6 +20,7 @@ import works.marianciuc.logistic_commerce.userservice.services.AuthService;
 @Service
 @Slf4j
 public class KeycloakAuthServiceImpl implements AuthService {
+
   private final RestTemplate restTemplate;
   private final HttpHeaders headers;
 
@@ -35,6 +37,7 @@ public class KeycloakAuthServiceImpl implements AuthService {
   private String clientSecret;
 
   private String tokenUrl;
+  private String revokeUrl;
 
   public KeycloakAuthServiceImpl(RestTemplate restTemplate) {
     this.restTemplate = restTemplate;
@@ -46,12 +49,20 @@ public class KeycloakAuthServiceImpl implements AuthService {
   private void initializeTokenUrl() {
     this.tokenUrl =
         String.format("%s/realms/%s/protocol/openid-connect/token", authServerUrl, realm);
-    log.debug("KeycloakAuthServiceImpl created. Actual tokenUrl: {}", tokenUrl);
+    this.revokeUrl = String.format("%s/realms/%s/protocol/openid-connect/revoke", revokeUrl, realm);
+
+    if (log.isDebugEnabled()) {
+      log.debug(
+          "KeycloakAuthServiceImpl created. Actual tokenUrl: {}, revokeUrl: {}",
+          tokenUrl,
+          revokeUrl);
+    }
   }
 
   @Override
   public ResponseEntity<TokenPair> login(String username, String password) {
-    log.debug("KeycloakAuthServiceImpl login called");
+    if (log.isDebugEnabled()) log.debug("KeycloakAuthServiceImpl login called");
+
     MultiValueMap<String, String> body = buildTokenRequestBody(OAuth2Constants.PASSWORD);
     body.add(OAuth2Constants.USERNAME, username);
     body.add(OAuth2Constants.PASSWORD, password);
@@ -63,7 +74,7 @@ public class KeycloakAuthServiceImpl implements AuthService {
 
   @Override
   public ResponseEntity<TokenPair> refresh(String refreshToken) {
-    log.debug("KeycloakAuthServiceImpl refresh called");
+    if (log.isDebugEnabled()) log.debug("KeycloakAuthServiceImpl refresh called");
     MultiValueMap<String, String> body = buildTokenRequestBody(OAuth2Constants.REFRESH_TOKEN);
     body.add(OAuth2Constants.REFRESH_TOKEN, refreshToken);
 
@@ -72,13 +83,33 @@ public class KeycloakAuthServiceImpl implements AuthService {
   }
 
   @Override
-  public ResponseEntity<Void> logout() {
-    return null;
+  public ResponseEntity<Void> logout(String refreshToken) {
+    if (log.isDebugEnabled()) log.debug("KeycloakAuthServiceImpl logout called");
+
+    MultiValueMap<String, String> body = buildTokenRequestBody(null);
+    body.add(OAuth2Constants.TOKEN, refreshToken);
+
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+
+    try {
+      ResponseEntity<Void> response = restTemplate.postForEntity(revokeUrl, request, Void.class);
+
+      if (response.getStatusCode().is2xxSuccessful()) {
+        return response;
+      } else {
+        log.error(
+            "KeycloakAuthServiceImpl logout failed. Status code: {}", response.getStatusCode());
+        throw new RuntimeException("Failed to logout: " + response.getStatusCode());
+      }
+    } catch (RestClientException e) {
+      log.error("KeycloakAuthServiceImpl logout failed", e);
+      throw new RuntimeException("Failed to logout: " + e.getMessage());
+    }
   }
 
   private MultiValueMap<String, String> buildTokenRequestBody(String grantType) {
     MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-    body.add(OAuth2Constants.GRANT_TYPE, grantType);
+    if (grantType != null) body.add(OAuth2Constants.GRANT_TYPE, grantType);
     body.add(OAuth2Constants.CLIENT_ID, clientId);
     body.add(OAuth2Constants.CLIENT_SECRET, clientSecret);
     return body;
@@ -103,6 +134,7 @@ public class KeycloakAuthServiceImpl implements AuthService {
         throw new RuntimeException("Failed to obtain tokens");
       }
       log.debug("KeycloakAuthServiceImpl:: successfully obtained tokens");
+      assert tokenResponse.getBody() != null;
       return fromResponse(tokenResponse.getBody());
     } catch (Exception e) {
       log.error("KeycloakAuthServiceImpl:: failed to obtain tokens", e);

@@ -26,7 +26,6 @@ public class EUCompanyExecutorService implements CompanyExecutorService {
   public Company execute(String taxId) {
     VIESData data = viesApiClient.getVIESData(taxId);
     if (data != null && !data.isValid()) {
-
       Address address =
           Address.builder()
               .country(data.getCountryCode())
@@ -45,8 +44,11 @@ public class EUCompanyExecutorService implements CompanyExecutorService {
               .name(data.getTraderName() != null ? data.getTraderName() : "Unknown")
               .build();
 
+      if (log.isDebugEnabled()) {
+        log.debug("Company data retrieved: {}", company.toString());
+      }
+      return company;
     } else throw new RuntimeException("Failed to get company data for taxId: " + taxId);
-    return null;
   }
 
   @Override

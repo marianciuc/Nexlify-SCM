@@ -42,11 +42,6 @@ public final class User extends BaseEntity {
   @Column(unique = true, name = "email", nullable = false, length = 255)
   private String email;
 
-  /**
-   * -- GETTER -- Checks if the user's email is verified.
-   *
-   * @return true if email is verified, false otherwise
-   */
   @Builder.Default
   @Column(name = "is_email_verified", nullable = false)
   private boolean isEmailVerified = false;

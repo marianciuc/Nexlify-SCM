@@ -38,5 +38,5 @@ public interface AuthService {
    * @return a {@code ResponseEntity<Void>} indicating the success or failure of the logout
    *     operation. If successful, the entity body is empty.
    */
-  ResponseEntity<Void> logout();
+  ResponseEntity<Void> logout(String refreshToken);
 }

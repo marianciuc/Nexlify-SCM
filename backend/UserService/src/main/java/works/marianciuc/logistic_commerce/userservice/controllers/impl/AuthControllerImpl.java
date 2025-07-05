@@ -30,8 +30,8 @@ public class AuthControllerImpl implements AuthController {
     return authService.refresh(refreshToken.refreshToken());
   }
 
-  public ResponseEntity<Void> logout() {
-    return authService.logout();
+  public ResponseEntity<Void> logout(RefreshToken refreshToken) {
+    return authService.logout(refreshToken.refreshToken());
   }
 
   public ResponseEntity<TokenPair> register(RegistrationRequestDTO registrationRequest) {

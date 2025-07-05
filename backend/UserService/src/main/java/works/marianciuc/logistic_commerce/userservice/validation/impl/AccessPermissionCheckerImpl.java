@@ -20,7 +20,8 @@ public class AccessPermissionCheckerImpl implements AccessPermissionChecker {
 
   @Override
   public boolean isUserAllowedToAccess(
-      @Email(message = "errors.validation.email.invalid") String email, @NotNull Resource resource)
+      @Email(message = "{errors.validation.email.invalid}") String email,
+      @NotNull Resource resource)
       throws UserNotFoundException {
     UserDto user = userManagementService.getUserByEmail(email);
     boolean hasAccess = resource.isIncluded(user.companyRole());
