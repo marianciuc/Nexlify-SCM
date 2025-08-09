@@ -2,6 +2,7 @@ package works.marianciuc.logistic_commerce.userservice.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "Token pair containing access and refresh tokens")
 public record TokenPair(
@@ -9,12 +10,15 @@ public record TokenPair(
             description = "Access token for API authentication",
             example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
         @JsonProperty("access_token")
+        @NotNull
         String accessToken,
     @Schema(
             description = "Refresh token for obtaining new access tokens",
             example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
         @JsonProperty("refresh_token")
+        @NotNull
         String refreshToken,
     @Schema(description = "Access token expiration time in seconds", example = "3600")
         @JsonProperty("expires_in")
+        @NotNull
         Long accessExpiresIn) {}

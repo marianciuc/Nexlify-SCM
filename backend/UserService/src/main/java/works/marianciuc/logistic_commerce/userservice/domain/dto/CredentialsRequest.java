@@ -15,6 +15,6 @@ public record CredentialsRequest(
         @Email(message = "errors.validation.email.invalid")
         String email,
     @Schema(description = "User password", example = "<PASSWORD>")
-        @NotEmpty(message = "errors.validation.blank.password")
+        @NotEmpty(message = "{errors.validation.blank.password}")
         String password)
     implements Serializable {}

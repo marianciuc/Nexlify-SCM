@@ -1,17 +1,18 @@
 package works.marianciuc.logistic_commerce.userservice.services.impl;
 
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.Page;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.UpdateUserDto;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.UserDto;
-import works.marianciuc.logistic_commerce.userservice.domain.entity.User;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.UpdateUserRequest;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.general.Page;
+import works.marianciuc.logistic_commerce.userservice.domain.enums.Role;
+import works.marianciuc.logistic_commerce.userservice.domain.model.User;
 import works.marianciuc.logistic_commerce.userservice.domain.qfilters.UserSearchFilter;
 import works.marianciuc.logistic_commerce.userservice.exceptions.user.UserNotFoundException;
+import works.marianciuc.logistic_commerce.userservice.keycloak.service.UserManager;
 import works.marianciuc.logistic_commerce.userservice.repositories.UserRepository;
+import works.marianciuc.logistic_commerce.userservice.repositories.entity.UserEn;
 import works.marianciuc.logistic_commerce.userservice.services.UserManagementService;
 
 @Service
@@ -20,25 +21,33 @@ import works.marianciuc.logistic_commerce.userservice.services.UserManagementSer
 public class UserManagementServiceImpl implements UserManagementService {
 
   private final UserRepository userRepository;
+  private final UserManager userManager;
 
   @Override
-  public UserDto getUserByEmail(String email) throws UserNotFoundException {
-    User user = User.builder().email(email).build();
+  public User getUserByEmail(String email) throws UserNotFoundException {
+    UserEn user = UserEn.builder().email(email).build();
     return null;
   }
 
   @Override
-  public UserDto getUserById(UUID id) throws UserNotFoundException {
+  public User getUserById(UUID id) throws UserNotFoundException {
     return null;
   }
 
   @Override
-  public Page<List<UserDto>> searchUsers(UserSearchFilter filter) {
+  public Page<User> searchUsers(UserSearchFilter filter) {
     return null;
   }
 
   @Override
-  public UserDto updateUser(UUID id, UpdateUserDto dto) throws UserNotFoundException {
+  public User updateUser(UUID id, UpdateUserRequest dto) throws UserNotFoundException {
     return null;
+  }
+
+  @Override
+  public void updateOrChangeRole(UUID id, Role role) throws UserNotFoundException {
+    UserEn user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+    // When this method is implemented, it should use userManager to update the user's role in
+    // Keycloak
   }
 }

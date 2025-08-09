@@ -1,19 +1,21 @@
 package works.marianciuc.logistic_commerce.userservice.services;
 
-import java.util.List;
 import java.util.UUID;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.Page;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.UpdateUserDto;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.UserDto;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.UpdateUserRequest;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.general.Page;
+import works.marianciuc.logistic_commerce.userservice.domain.enums.Role;
+import works.marianciuc.logistic_commerce.userservice.domain.model.User;
 import works.marianciuc.logistic_commerce.userservice.domain.qfilters.UserSearchFilter;
 import works.marianciuc.logistic_commerce.userservice.exceptions.user.UserNotFoundException;
 
 public interface UserManagementService {
-  UserDto getUserByEmail(String email) throws UserNotFoundException;
+  User getUserByEmail(String email) throws UserNotFoundException;
 
-  UserDto getUserById(UUID id) throws UserNotFoundException;
+  User getUserById(UUID id) throws UserNotFoundException;
 
-  Page<List<UserDto>> searchUsers(UserSearchFilter filter);
+  Page<User> searchUsers(UserSearchFilter filter);
 
-  UserDto updateUser(UUID id, UpdateUserDto dto) throws UserNotFoundException;
+  User updateUser(UUID id, UpdateUserRequest dto) throws UserNotFoundException;
+
+  void updateOrChangeRole(UUID id, Role role);
 }

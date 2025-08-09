@@ -3,7 +3,11 @@ package works.marianciuc.logistic_commerce.userservice.domain.qfilters;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "Search parameters for companies")
 public class CompanySearchFilter extends QueryFilter {
   @Schema(

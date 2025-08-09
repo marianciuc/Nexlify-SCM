@@ -35,6 +35,7 @@ public interface AuthService {
    * tokens. This effectively prevents further authorized access using the current credentials or
    * session information.
    *
+   * @param refreshToken the token used to be revoked
    * @return a {@code ResponseEntity<Void>} indicating the success or failure of the logout
    *     operation. If successful, the entity body is empty.
    */

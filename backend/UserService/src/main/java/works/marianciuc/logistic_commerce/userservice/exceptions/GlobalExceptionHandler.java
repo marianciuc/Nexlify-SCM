@@ -21,7 +21,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.ErrorResponse;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.general.ErrorResponse;
 import works.marianciuc.logistic_commerce.userservice.exceptions.general.BusinessException;
 import works.marianciuc.logistic_commerce.userservice.exceptions.general.ForbiddenException;
 import works.marianciuc.logistic_commerce.userservice.exceptions.general.UnauthorizedException;

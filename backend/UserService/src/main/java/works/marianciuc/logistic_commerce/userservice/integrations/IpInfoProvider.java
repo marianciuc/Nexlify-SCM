@@ -1,6 +1,6 @@
 package works.marianciuc.logistic_commerce.userservice.integrations;
 
-import works.marianciuc.logistic_commerce.userservice.domain.dto.IpInfoDto;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.IpInformation;
 
 /**
  * Interface for retrieving geographical information based on IP addresses. Implementations of this
@@ -13,9 +13,9 @@ public interface IpInfoProvider {
    * Retrieves geographical information for the given IP address.
    *
    * @param ip The IP address to lookup, in string format (e.g., "192.168.1.1")
-   * @return An {@link IpInfoDto} containing the geographical information
+   * @return An {@link IpInformation} containing the geographical information
    * @throws IllegalArgumentException if the IP address is invalid
    * @throws RuntimeException if the service fails to retrieve the IP data
    */
-  IpInfoDto retrieveIpData(String ip);
+  IpInformation retrieveIpData(String ip);
 }

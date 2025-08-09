@@ -4,16 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.security.auth.message.AuthException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import works.marianciuc.logistic_commerce.userservice.annotations.RequestedUserAccessValidation;
 import works.marianciuc.logistic_commerce.userservice.domain.dto.CredentialsRequest;
 import works.marianciuc.logistic_commerce.userservice.domain.dto.RefreshToken;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.RegistrationRequestDTO;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.RegistrationRequest;
 import works.marianciuc.logistic_commerce.userservice.domain.dto.TokenPair;
-import works.marianciuc.logistic_commerce.userservice.domain.enums.Resource;
 
-@RestController
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Authentication", description = "Authentication management endpoints")
 public interface AuthController {
@@ -22,16 +20,12 @@ public interface AuthController {
       summary = "Authenticate user",
       description = "Authenticate user with credentials and return JWT token pair")
   @PostMapping("/login")
-  @RequestedUserAccessValidation
   ResponseEntity<TokenPair> login(
       @Parameter(
               description = "User credentials",
               schema = @Schema(implementation = CredentialsRequest.class))
           @RequestBody
-          CredentialsRequest credentialsRequest,
-      @Parameter(description = "Resource type", schema = @Schema(implementation = Resource.class))
-          @RequestParam
-          Resource resource);
+          CredentialsRequest credentialsRequest);
 
   @Operation(summary = "Refresh JWT token pair", description = "Refresh JWT token pair")
   @PostMapping("/refresh")
@@ -58,7 +52,8 @@ public interface AuthController {
   ResponseEntity<TokenPair> register(
       @Parameter(
               description = "Registration form",
-              schema = @Schema(implementation = RegistrationRequestDTO.class))
+              schema = @Schema(implementation = RegistrationRequest.class))
           @RequestBody
-          RegistrationRequestDTO registrationRequest);
+          RegistrationRequest registrationRequest)
+      throws AuthException;
 }

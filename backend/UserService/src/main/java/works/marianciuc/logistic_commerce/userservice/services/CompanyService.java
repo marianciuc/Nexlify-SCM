@@ -2,13 +2,13 @@ package works.marianciuc.logistic_commerce.userservice.services;
 
 import java.util.List;
 import java.util.UUID;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.CompanyDto;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.CreateCompanyRequest;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.requests.CreateCompanyRequest;
+import works.marianciuc.logistic_commerce.userservice.domain.model.Company;
 import works.marianciuc.logistic_commerce.userservice.domain.qfilters.CompanySearchFilter;
 import works.marianciuc.logistic_commerce.userservice.exceptions.company.CompanyAlreadyExistsException;
 
 public interface CompanyService {
-  CompanyDto createCompany(CreateCompanyRequest request) throws CompanyAlreadyExistsException;
+  Company createCompany(CreateCompanyRequest request) throws CompanyAlreadyExistsException;
 
   void verifyCompany(UUID id);
 
@@ -18,9 +18,9 @@ public interface CompanyService {
 
   void unblockCompany(UUID id);
 
-  CompanyDto getCompanyById(UUID id);
+  Company getCompanyById(UUID id);
 
-  CompanyDto getCompanyByTaxId(String taxId);
+  Company getCompanyByTaxId(String taxId);
 
-  List<CompanyDto> findAllCompanies(CompanySearchFilter filter);
+  List<Company> findAllCompanies(CompanySearchFilter filter);
 }
