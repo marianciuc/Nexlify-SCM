@@ -1,0 +1,239 @@
+{
+  "menu": {
+    "settingsMenu": {
+      "profile": "Настройки профиля",
+      "account": "Настройки аккаунта",
+      "security": "Настройки безопасности",
+      "system": "Системные настройки",
+      "integration": "Настройки интеграции",
+      "backup": "Резервное копирование и восстановление"
+    },
+    "dashboard": "Панель управления",
+    "settings": "Настройки",
+    "profile": "Профиль",
+    "back": "Назад",
+    "reports": "Отчеты",
+    "analytics": "Аналитика",
+    "orders": {
+      "root": "Заказы",
+      "all": "Все заказы",
+      "create": "Создать заказ",
+      "tracking": "Отслеживание заказов",
+      "approval": "Подтверждение заказов"
+    },
+    "warehouse": {
+      "root": "Склад",
+      "create": "Создать склад",
+      "directory": "Каталог складов",
+      "inventory": "Запасы",
+      "receiving": "Прием",
+      "shipping": "Отгрузка"
+    },
+    "logistics": {
+      "root": "Логистика",
+      "carriers": "Перевозчики",
+      "delivery": "Варианты доставки",
+      "tracking": "Отслеживание отгрузок",
+      "calculator": "Калькулятор стоимости",
+      "performance": "Производительность"
+    },
+    "suppliers": {
+      "root": "Поставщики",
+      "directory": "Каталог поставщиков",
+      "catalog": "Каталог продуктов",
+      "ratings": "Рейтинги поставщиков",
+      "contracts": "Управление контрактами"
+    },
+    "finance": {
+      "root": "Финансы",
+      "invoicing": "Выставление счетов",
+      "payments": "Платежи",
+      "reports": "Финансовые отчеты",
+      "credit": "Управление кредитами",
+      "history": "История платежей"
+    },
+    "communication": {
+      "root": "Коммуникация",
+      "messages": "Сообщения",
+      "notifications": "Уведомления"
+    },
+    "users": {
+      "root": "Пользователи",
+      "employees": "Управление сотрудниками",
+      "roles": "Назначение ролей",
+      "verification": "Верификация компаний"
+    },
+    "admin": {
+      "root": "Администрирование",
+      "system": "Конфигурация системы",
+      "users": "Управление пользователями",
+      "analytics": "Системная аналитика",
+      "security": "Настройки безопасности"
+    },
+    "about": "О нас"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успешно",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "add": "Добавить",
+    "search": "Поиск",
+    "filter": "Фильтр"
+  },
+  "forms": {
+    "validation": {
+      "required": "Это поле обязательно",
+      "email": "Введите корректный email",
+      "minLength": "Минимум {{count}} символов"
+    }
+  },
+  "auth": {
+    "login": "Войти",
+    "register": "Регистрация",
+    "logout": "Выйти",
+    "email": "Email",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "contactNumber": "Контактный телефон",
+    "country": "Страна",
+    "companyTaxId": "Tax ID компании",
+    "companyName": "Название компании",
+    "businessType": "Тип бизнеса",
+    "timezone": "Часовой пояс",
+    "rememberMe": "Запомнить меня",
+    "forgotPassword": "Забыли пароль?",
+    "signInTitle": "Войдите в свой аккаунт",
+    "signUpTitle": "Создайте свой аккаунт",
+    "createAccount": "Введите свои данные для создания аккаунта",
+    "enterCredentials": "Введите свои данные для доступа к аккаунту",
+    "alreadyHaveAccount": "Уже есть аккаунт? Войти",
+    "dontHaveAccount": "Нет аккаунта? Зарегистрироваться",
+    "loginAs": "Войти как",
+    "selectRole": "Выберите вашу роль",
+    "dataProcessingConsent": "Я согласен на обработку моих персональных данных",
+    "emailPlaceholder": "Введите ваш email",
+    "passwordPlaceholder": "Введите ваш пароль",
+    "confirmPasswordPlaceholder": "Подтвердите ваш пароль",
+    "firstNamePlaceholder": "Введите ваше имя",
+    "lastNamePlaceholder": "Введите вашу фамилию",
+    "contactNumberPlaceholder": "Введите контактный телефон",
+    "countryPlaceholder": "Введите вашу страну",
+    "companyTaxIdPlaceholder": "Введите Tax ID компании",
+    "companyNamePlaceholder": "Введите название компании",
+    "businessTypePlaceholder": "Выберите тип бизнеса",
+    "roles": {
+      "customer": "Клиент",
+      "orderManager": "Менеджер заказов",
+      "warehouseManager": "Управляющий складом",
+      "departmentManager": "Зав. менеджер",
+      "manager": "Главный менеджер",
+      "unverifiedManager": "Неподтвержденный менеджер",
+      "supplier": "Поставщик",
+      "logistician": "Логистический оператор",
+      "carrier": "Перевозчик",
+      "admin": "Администратор"
+    },
+    "errors": {
+      "invalidCredentials": "Неверный email или пароль",
+      "emailRequired": "Email обязателен",
+      "passwordRequired": "Пароль обязателен",
+      "emailInvalid": "Введите корректный email",
+      "passwordTooShort": "Пароль должен содержать минимум 6 символов",
+      "passwordsDontMatch": "Пароли не совпадают",
+      "networkError": "Ошибка сети. Попробуйте снова",
+      "sessionExpired": "Ваша сессия истекла. Войдите снова",
+      "registrationFailed": "Регистрация не удалась. Попробуйте снова"
+    },
+    "success": {
+      "loginSuccessful": "Успешный вход! Добро пожаловать обратно",
+      "registrationSuccessful": "Успешная регистрация! Добро пожаловать в LogisticCommerce",
+      "logoutSuccessful": "Успешный выход. До встречи!",
+      "sessionRefreshed": "Сессия успешно обновлена"
+    },
+    "verification": {
+      "title": "Верификация компании",
+      "subtitle": "Ваша компания проходит верификацию",
+      "status": {
+        "pendingDocuments": "Ожидание документов",
+        "documentsSubmitted": "Документы поданы",
+        "underReview": "На проверке",
+        "additionalInfoRequired": "Требуется дополнительная информация",
+        "approved": "Одобрено",
+        "rejected": "Отклонено"
+      },
+      "uploadDocuments": "Загрузить документы",
+      "requiredDocuments": "Обязательные документы",
+      "documentTypes": {
+        "businessRegistration": "Свидетельство о регистрации бизнеса",
+        "taxRegistration": "Свидетельство о налоговой регистрации",
+        "articlesOfIncorporation": "Устав компании",
+        "authorizedRepresentativeId": "Удостоверение личности уполномоченного представителя",
+        "importExportLicense": "Лицензия на импорт/экспорт",
+        "industryPermits": "Отраслевые разрешения",
+        "bankAccountVerification": "Подтверждение банковского счета",
+        "insuranceCertificates": "Страховые сертификаты"
+      },
+      "dragDropFiles": "Перетащите файлы сюда или нажмите для выбора",
+      "maxFileSize": "Максимальный размер файла: 10МБ",
+      "allowedFormats": "Разрешенные форматы: PDF, JPG, PNG",
+      "estimatedTime": "Ориентировочное время верификации: 2-3 рабочих дня",
+      "contactSupport": "Связаться с поддержкой"
+    }
+  },
+  "employee": {
+    "title": "Управление сотрудниками",
+    "createEmployee": "Создать сотрудника",
+    "teamOverview": "Обзор команды",
+    "roleAssignment": "Назначение ролей",
+    "accessControl": "Контроль доступа",
+    "invite": "Пригласить сотрудника",
+    "invitationSent": "Приглашение успешно отправлено",
+    "employeeCreated": "Аккаунт сотрудника создан",
+    "selectRole": "Выберите роль сотрудника",
+    "assignToWarehouse": "Назначить на склад",
+    "permissions": "Разрешения",
+    "status": {
+      "active": "Активен",
+      "inactive": "Неактивен",
+      "pending": "Ожидание",
+      "invited": "Приглашен"
+    }
+  },
+  "warehouse": {
+    "title": "Управление складами",
+    "createWarehouse": "Создать склад",
+    "warehouseList": "Каталог складов",
+    "warehouseSettings": "Настройки склада",
+    "locationManagement": "Управление локациями",
+    "staffAssignment": "Назначение персонала",
+    "performanceAnalytics": "Аналитика производительности",
+    "basicInfo": "Базовая информация",
+    "locationDetails": "Детали локации",
+    "capacityConfiguration": "Конфигурация мощности",
+    "equipmentSetup": "Настройка оборудования",
+    "integrationSetup": "Настройка интеграции",
+    "operationalTesting": "Операционное тестирование",
+    "goLive": "Запуск",
+    "types": {
+      "distributionCenter": "Распределительный центр",
+      "regionalWarehouse": "Региональный склад",
+      "localDepot": "Местное депо",
+      "specializedStorage": "Специализированное хранение",
+      "crossDockFacility": "Кросс-док терминал"
+    },
+    "warehouseName": "Название склада",
+    "warehouseType": "Тип склада",
+    "address": "Адрес",
+    "gpsCoordinates": "GPS координаты",
+    "storageZones": "Зоны хранения",
+    "capacityLimits": "Лимиты мощности",
+    "assignManager": "Назначить менеджера",
+    "operationalStaff": "Операционный персонал"
+  }
+}

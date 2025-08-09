@@ -1,0 +1,239 @@
+{
+  "menu": {
+    "settingsMenu": {
+      "profile": "个人资料设置",
+      "account": "账户设置",
+      "security": "安全设置",
+      "system": "系统设置",
+      "integration": "集成设置",
+      "backup": "备份与恢复"
+    },
+    "dashboard": "仪表板",
+    "settings": "设置",
+    "profile": "个人资料",
+    "back": "返回",
+    "reports": "报告",
+    "analytics": "分析",
+    "orders": {
+      "root": "订单",
+      "all": "所有订单",
+      "create": "创建订单",
+      "tracking": "订单跟踪",
+      "approval": "订单审批"
+    },
+    "warehouse": {
+      "root": "仓库",
+      "create": "创建仓库",
+      "directory": "仓库目录",
+      "inventory": "库存",
+      "receiving": "收货",
+      "shipping": "发货"
+    },
+    "logistics": {
+      "root": "物流",
+      "carriers": "承运商",
+      "delivery": "配送选项",
+      "tracking": "货物跟踪",
+      "calculator": "成本计算器",
+      "performance": "绩效"
+    },
+    "suppliers": {
+      "root": "供应商",
+      "directory": "供应商目录",
+      "catalog": "产品目录",
+      "ratings": "供应商评级",
+      "contracts": "合同管理"
+    },
+    "finance": {
+      "root": "财务",
+      "invoicing": "开票",
+      "payments": "付款",
+      "reports": "财务报告",
+      "credit": "信贷管理",
+      "history": "付款历史"
+    },
+    "communication": {
+      "root": "沟通",
+      "messages": "消息",
+      "notifications": "通知"
+    },
+    "users": {
+      "root": "用户",
+      "employees": "员工管理",
+      "roles": "角色分配",
+      "verification": "公司验证"
+    },
+    "admin": {
+      "root": "管理",
+      "system": "系统配置",
+      "users": "用户管理",
+      "analytics": "系统分析",
+      "security": "安全设置"
+    },
+    "about": "关于我们"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "add": "添加",
+    "search": "搜索",
+    "filter": "筛选"
+  },
+  "forms": {
+    "validation": {
+      "required": "此字段为必填项",
+      "email": "请输入有效的电子邮件",
+      "minLength": "至少需要 {{count}} 个字符"
+    }
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "firstName": "名字",
+    "lastName": "姓氏",
+    "contactNumber": "联系电话",
+    "country": "国家",
+    "companyTaxId": "公司税号",
+    "companyName": "公司名称",
+    "businessType": "业务类型",
+    "timezone": "时区",
+    "rememberMe": "记住我",
+    "forgotPassword": "忘记密码？",
+    "signInTitle": "登录您的账户",
+    "signUpTitle": "创建您的账户",
+    "createAccount": "输入您的详细信息以创建账户",
+    "enterCredentials": "输入您的凭据以访问账户",
+    "alreadyHaveAccount": "已有账户？登录",
+    "dontHaveAccount": "没有账户？注册",
+    "loginAs": "登录身份",
+    "selectRole": "选择您的角色",
+    "dataProcessingConsent": "我同意处理我的个人数据",
+    "emailPlaceholder": "输入您的邮箱",
+    "passwordPlaceholder": "输入您的密码",
+    "confirmPasswordPlaceholder": "确认您的密码",
+    "firstNamePlaceholder": "输入您的名字",
+    "lastNamePlaceholder": "输入您的姓氏",
+    "contactNumberPlaceholder": "输入您的联系电话",
+    "countryPlaceholder": "输入您的国家",
+    "companyTaxIdPlaceholder": "输入公司税号",
+    "companyNamePlaceholder": "输入公司名称",
+    "businessTypePlaceholder": "选择业务类型",
+    "roles": {
+      "customer": "客户",
+      "orderManager": "订单经理",
+      "warehouseManager": "仓库经理",
+      "departmentManager": "部门经理",
+      "manager": "主管理员",
+      "unverifiedManager": "未验证管理员",
+      "supplier": "供应商",
+      "logistician": "物流操作员",
+      "carrier": "承运商",
+      "admin": "系统管理员"
+    },
+    "errors": {
+      "invalidCredentials": "邮箱或密码无效",
+      "emailRequired": "邮箱为必填项",
+      "passwordRequired": "密码为必填项",
+      "emailInvalid": "请输入有效的邮箱",
+      "passwordTooShort": "密码至少需要6个字符",
+      "passwordsDontMatch": "密码不匹配",
+      "networkError": "网络错误，请重试",
+      "sessionExpired": "您的会话已过期，请重新登录",
+      "registrationFailed": "注册失败，请重试"
+    },
+    "success": {
+      "loginSuccessful": "登录成功！欢迎回来",
+      "registrationSuccessful": "注册成功！欢迎使用LogisticCommerce",
+      "logoutSuccessful": "成功退出，再见！",
+      "sessionRefreshed": "会话刷新成功"
+    },
+    "verification": {
+      "title": "公司验证",
+      "subtitle": "您的公司正在验证中",
+      "status": {
+        "pendingDocuments": "等待文档",
+        "documentsSubmitted": "文档已提交",
+        "underReview": "审核中",
+        "additionalInfoRequired": "需要额外信息",
+        "approved": "已批准",
+        "rejected": "已拒绝"
+      },
+      "uploadDocuments": "上传文档",
+      "requiredDocuments": "必需文档",
+      "documentTypes": {
+        "businessRegistration": "营业执照",
+        "taxRegistration": "税务登记证",
+        "articlesOfIncorporation": "公司章程",
+        "authorizedRepresentativeId": "授权代表身份证",
+        "importExportLicense": "进出口许可证",
+        "industryPermits": "行业许可证",
+        "bankAccountVerification": "银行账户验证",
+        "insuranceCertificates": "保险证书"
+      },
+      "dragDropFiles": "拖放文件至此处，或点击选择",
+      "maxFileSize": "最大文件大小：10MB",
+      "allowedFormats": "允许格式：PDF、JPG、PNG",
+      "estimatedTime": "预计验证时间：2-3个工作日",
+      "contactSupport": "联系支持"
+    }
+  },
+  "employee": {
+    "title": "员工管理",
+    "createEmployee": "创建员工",
+    "teamOverview": "团队概览",
+    "roleAssignment": "角色分配",
+    "accessControl": "访问控制",
+    "invite": "邀请员工",
+    "invitationSent": "邀请发送成功",
+    "employeeCreated": "员工账户已创建",
+    "selectRole": "选择员工角色",
+    "assignToWarehouse": "分配到仓库",
+    "permissions": "权限",
+    "status": {
+      "active": "活跃",
+      "inactive": "非活跃",
+      "pending": "待处理",
+      "invited": "已邀请"
+    }
+  },
+  "warehouse": {
+    "title": "仓库管理",
+    "createWarehouse": "创建仓库",
+    "warehouseList": "仓库目录",
+    "warehouseSettings": "仓库设置",
+    "locationManagement": "位置管理",
+    "staffAssignment": "员工分配",
+    "performanceAnalytics": "性能分析",
+    "basicInfo": "基本信息",
+    "locationDetails": "位置详情",
+    "capacityConfiguration": "容量配置",
+    "equipmentSetup": "设备设置",
+    "integrationSetup": "集成设置",
+    "operationalTesting": "运营测试",
+    "goLive": "上线",
+    "types": {
+      "distributionCenter": "配送中心",
+      "regionalWarehouse": "区域仓库",
+      "localDepot": "本地仓库",
+      "specializedStorage": "专用存储",
+      "crossDockFacility": "交叉对接设施"
+    },
+    "warehouseName": "仓库名称",
+    "warehouseType": "仓库类型",
+    "address": "地址",
+    "gpsCoordinates": "GPS坐标",
+    "storageZones": "存储区域",
+    "capacityLimits": "容量限制",
+    "assignManager": "分配经理",
+    "operationalStaff": "运营人员"
+  }
+}

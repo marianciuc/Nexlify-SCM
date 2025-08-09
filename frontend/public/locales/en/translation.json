@@ -1,0 +1,239 @@
+{
+  "menu": {
+    "settingsMenu": {
+      "profile": "Profile Settings",
+      "account": "Account Settings",
+      "security": "Security Settings",
+      "system": "System Settings",
+      "integration": "Integration Settings",
+      "backup": "Backup & Recovery"
+    },
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "profile": "Profile",
+    "back": "Back",
+    "reports": "Reports",
+    "analytics": "Analytics",
+    "orders": {
+      "root": "Orders",
+      "all": "All Orders",
+      "create": "Create Order",
+      "tracking": "Order Tracking",
+      "approval": "Order Approval"
+    },
+    "warehouse": {
+      "root": "Warehouse",
+      "create": "Create Warehouse",
+      "directory": "Warehouse Directory",
+      "inventory": "Inventory",
+      "receiving": "Receiving",
+      "shipping": "Shipping"
+    },
+    "logistics": {
+      "root": "Logistics",
+      "carriers": "Carriers",
+      "delivery": "Delivery Options",
+      "tracking": "Shipment Tracking",
+      "calculator": "Cost Calculator",
+      "performance": "Performance"
+    },
+    "suppliers": {
+      "root": "Suppliers",
+      "directory": "Supplier Directory",
+      "catalog": "Product Catalog",
+      "ratings": "Supplier Ratings",
+      "contracts": "Contract Management"
+    },
+    "finance": {
+      "root": "Finance",
+      "invoicing": "Invoicing",
+      "payments": "Payments",
+      "reports": "Financial Reports",
+      "credit": "Credit Management",
+      "history": "Payment History"
+    },
+    "communication": {
+      "root": "Communication",
+      "messages": "Messages",
+      "notifications": "Notifications"
+    },
+    "users": {
+      "root": "Users",
+      "employees": "Employee Management",
+      "roles": "Role Assignment",
+      "verification": "Company Verification"
+    },
+    "admin": {
+      "root": "Administration",
+      "system": "System Configuration",
+      "users": "User Management",
+      "analytics": "System Analytics",
+      "security": "Security Settings"
+    },
+    "about": "About"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter"
+  },
+  "forms": {
+    "validation": {
+      "required": "This field is required",
+      "email": "Please enter a valid email",
+      "minLength": "Minimum {{count}} characters required"
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "contactNumber": "Contact Number",
+    "country": "Country",
+    "companyTaxId": "Company Tax ID",
+    "companyName": "Company Name",
+    "businessType": "Business Type",
+    "timezone": "Timezone",
+    "rememberMe": "Remember Me",
+    "forgotPassword": "Forgot Password?",
+    "signInTitle": "Sign in to your account",
+    "signUpTitle": "Create your account",
+    "createAccount": "Enter your details to create your account",
+    "enterCredentials": "Enter your credentials to access your account",
+    "alreadyHaveAccount": "Already have an account? Sign in",
+    "dontHaveAccount": "Don't have an account? Sign up",
+    "loginAs": "Login as",
+    "selectRole": "Select your role",
+    "dataProcessingConsent": "I agree to the processing of my personal data",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastNamePlaceholder": "Enter your last name",
+    "contactNumberPlaceholder": "Enter your contact number",
+    "countryPlaceholder": "Enter your country",
+    "companyTaxIdPlaceholder": "Enter company tax ID",
+    "companyNamePlaceholder": "Enter company name",
+    "businessTypePlaceholder": "Select business type",
+    "roles": {
+      "customer": "Customer",
+      "orderManager": "Order Manager",
+      "warehouseManager": "Warehouse Manager",
+      "departmentManager": "Department Manager",
+      "manager": "Main Manager",
+      "unverifiedManager": "Unverified Manager",
+      "supplier": "Supplier",
+      "logistician": "Logistics Operator",
+      "carrier": "Carrier",
+      "admin": "Administrator"
+    },
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "emailRequired": "Email is required",
+      "passwordRequired": "Password is required",
+      "emailInvalid": "Please enter a valid email",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "passwordsDontMatch": "Passwords don't match",
+      "networkError": "Network error. Please try again.",
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "registrationFailed": "Registration failed. Please try again."
+    },
+    "success": {
+      "loginSuccessful": "Login successful! Welcome back.",
+      "registrationSuccessful": "Registration successful! Welcome to LogisticCommerce.",
+      "logoutSuccessful": "Successfully logged out. See you soon!",
+      "sessionRefreshed": "Session refreshed successfully."
+    },
+    "verification": {
+      "title": "Company Verification",
+      "subtitle": "Your company is being verified",
+      "status": {
+        "pendingDocuments": "Waiting for documents",
+        "documentsSubmitted": "Documents submitted",
+        "underReview": "Under review",
+        "additionalInfoRequired": "Additional information required",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "uploadDocuments": "Upload Documents",
+      "requiredDocuments": "Required Documents",
+      "documentTypes": {
+        "businessRegistration": "Business Registration Certificate",
+        "taxRegistration": "Tax Registration Certificate",
+        "articlesOfIncorporation": "Articles of Incorporation",
+        "authorizedRepresentativeId": "Authorized Representative ID",
+        "importExportLicense": "Import/Export License",
+        "industryPermits": "Industry-specific Permits",
+        "bankAccountVerification": "Bank Account Verification",
+        "insuranceCertificates": "Insurance Certificates"
+      },
+      "dragDropFiles": "Drag and drop files here, or click to select",
+      "maxFileSize": "Maximum file size: 10MB",
+      "allowedFormats": "Allowed formats: PDF, JPG, PNG",
+      "estimatedTime": "Estimated verification time: 2-3 business days",
+      "contactSupport": "Contact Support"
+    }
+  },
+  "employee": {
+    "title": "Employee Management",
+    "createEmployee": "Create Employee",
+    "teamOverview": "Team Overview",
+    "roleAssignment": "Role Assignment",
+    "accessControl": "Access Control",
+    "invite": "Invite Employee",
+    "invitationSent": "Invitation sent successfully",
+    "employeeCreated": "Employee account created",
+    "selectRole": "Select employee role",
+    "assignToWarehouse": "Assign to warehouse",
+    "permissions": "Permissions",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending",
+      "invited": "Invited"
+    }
+  },
+  "warehouse": {
+    "title": "Warehouse Management",
+    "createWarehouse": "Create Warehouse",
+    "warehouseList": "Warehouse Directory",
+    "warehouseSettings": "Warehouse Settings",
+    "locationManagement": "Location Management",
+    "staffAssignment": "Staff Assignment",
+    "performanceAnalytics": "Performance Analytics",
+    "basicInfo": "Basic Information",
+    "locationDetails": "Location Details",
+    "capacityConfiguration": "Capacity Configuration",
+    "equipmentSetup": "Equipment Setup",
+    "integrationSetup": "Integration Setup",
+    "operationalTesting": "Operational Testing",
+    "goLive": "Go Live",
+    "types": {
+      "distributionCenter": "Distribution Center",
+      "regionalWarehouse": "Regional Warehouse",
+      "localDepot": "Local Depot",
+      "specializedStorage": "Specialized Storage",
+      "crossDockFacility": "Cross-Dock Facility"
+    },
+    "warehouseName": "Warehouse Name",
+    "warehouseType": "Warehouse Type",
+    "address": "Address",
+    "gpsCoordinates": "GPS Coordinates",
+    "storageZones": "Storage Zones",
+    "capacityLimits": "Capacity Limits",
+    "assignManager": "Assign Manager",
+    "operationalStaff": "Operational Staff"
+  }
+}
