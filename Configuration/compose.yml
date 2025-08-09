@@ -57,7 +57,7 @@ services:
       KEYCLOAK_DATABASE_SCHEMA: keycloak-shema
       KEYCLOAK_DATABASE_HOST: logistic-commerce-db
       KEYCLOAK_DATABASE_PORT: 5432
-      KEYCLOAK_DATABASE_NAME: logistic-commerce-db
+      KEYCLOAK_DATABASE_NAME: scm
       KEYCLOAK_DATABASE_USER: postgres
       KEYCLOAK_DATABASE_PASSWORD: postgres
       KEYCLOAK_ADMIN: admin

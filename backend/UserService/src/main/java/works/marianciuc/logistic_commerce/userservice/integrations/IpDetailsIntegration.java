@@ -1,4 +1,3 @@
-
 package works.marianciuc.logistic_commerce.userservice.integrations;
 
 import java.util.regex.Pattern;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.IpInfoDto;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.IpInformation;
 import works.marianciuc.logistic_commerce.userservice.exceptions.integrations.IntegrationTimeoutException;
 import works.marianciuc.logistic_commerce.userservice.exceptions.integrations.InvalidIpAddressException;
 import works.marianciuc.logistic_commerce.userservice.exceptions.integrations.IpGeoLocationServiceException;
@@ -37,15 +36,18 @@ public class IpDetailsIntegration implements IpInfoProvider {
           "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
   private static final Pattern IPV6_PATTERN =
       Pattern.compile("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::1$|^::$");
+
   @Value("${ip.api.timeout:5000}")
   private int timeoutSeconds;
+
   @Value("${ip.api.retry.enabled:true}")
   private boolean retryEnabled;
+
   @Value("${ip.api.retry.attempts:3}")
   private int maxRetryAttempts;
 
   @Override
-  public IpInfoDto retrieveIpData(String ip)
+  public IpInformation retrieveIpData(String ip)
       throws InvalidIpAddressException, IpGeoLocationServiceException {
     log.debug("Retrieving IP data for address: {}", ip);
     validateIpAddress(ip);
@@ -92,7 +94,7 @@ public class IpDetailsIntegration implements IpInfoProvider {
   }
 
   /** Retrieves IP data with retry logic. */
-  private IpInfoDto retrieveWithRetry(String ip) throws IpGeoLocationServiceException {
+  private IpInformation retrieveWithRetry(String ip) throws IpGeoLocationServiceException {
     int attempts = 0;
     Exception lastException = null;
 
@@ -127,15 +129,16 @@ public class IpDetailsIntegration implements IpInfoProvider {
   }
 
   /** Performs the actual API call to retrieve IP information. */
-  private IpInfoDto performApiCall(String ip)
+  private IpInformation performApiCall(String ip)
       throws IpGeoLocationServiceException, IntegrationTimeoutException {
     try {
       String url =
           ipApiUrl + ip + "?fields=status,country,countryCode,region,regionName,city,zip,timezone";
       log.debug("Making API call to: {}", url);
 
-      ResponseEntity<IpInfoDto> responseEntity = restTemplate.getForEntity(url, IpInfoDto.class);
-      IpInfoDto response = responseEntity.getBody();
+      ResponseEntity<IpInformation> responseEntity =
+          restTemplate.getForEntity(url, IpInformation.class);
+      IpInformation response = responseEntity.getBody();
 
       if (response == null) {
         log.error("Received null response for IP: {}", ip);
@@ -166,8 +169,8 @@ public class IpDetailsIntegration implements IpInfoProvider {
   }
 
   /** Creates a fallback response for private/local IP addresses. */
-  public IpInfoDto createLocalIpResponse() {
-    return new IpInfoDto(
+  public IpInformation createLocalIpResponse() {
+    return new IpInformation(
         "success", "Local", "LOCAL", "Local Region", "Local Region", "Local City", "00000", "UTC");
   }
 }

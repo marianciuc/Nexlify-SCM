@@ -7,8 +7,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import works.marianciuc.logistic_commerce.userservice.domain.entity.Address;
-import works.marianciuc.logistic_commerce.userservice.domain.entity.Company;
+import works.marianciuc.logistic_commerce.userservice.repositories.entity.AddressEn;
+import works.marianciuc.logistic_commerce.userservice.repositories.entity.CompanyEn;
 import works.marianciuc.logistic_commerce.userservice.services.CompanyExecutorService;
 
 @Service("eu-executor")
@@ -23,11 +23,11 @@ public class EUCompanyExecutorService implements CompanyExecutorService {
   private final VIESAPIClient viesApiClient;
 
   @Override
-  public Company execute(String taxId) {
+  public CompanyEn execute(String taxId) {
     VIESData data = viesApiClient.getVIESData(taxId);
     if (data != null && !data.isValid()) {
-      Address address =
-          Address.builder()
+      AddressEn address =
+          AddressEn.builder()
               .country(data.getCountryCode())
               .city(data.getTraderAddressComponents().getCity())
               .zip(data.getTraderAddressComponents().getPostalCode())
@@ -36,8 +36,8 @@ public class EUCompanyExecutorService implements CompanyExecutorService {
               .streetNumber(data.getTraderAddressComponents().getStreetNumber())
               .build();
 
-      Company company =
-          Company.builder()
+      CompanyEn company =
+          CompanyEn.builder()
               .id(UUID.fromString(data.getId()))
               .taxId(data.getVatNumber())
               .address(address)

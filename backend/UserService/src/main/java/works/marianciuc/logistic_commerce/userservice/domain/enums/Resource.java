@@ -1,46 +1,51 @@
 package works.marianciuc.logistic_commerce.userservice.domain.enums;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.List;
 import lombok.Getter;
 
 /**
- * Enumeration representing various resources within the application and the corresponding company
- * roles that have access to each resource.
+ * Enum representing various resources within the system.
  *
- * <p>This enum defines resource types such as administrative panels and customer panels, and links
- * them to the roles that are authorized to access these resources. It includes functionality to
- * check whether a specific company role is permitted for a resource.
+ * <p>Each resource corresponds to a specific panel or section of the application. It is associated
+ * with a required security possibility that governs access permissions.
  *
- * <p>Each resource is documented with its description and the roles associated with it.
+ * <p>Functionalities: - Defines constants for specific resource types (e.g.,
+ * SYSTEM_ADMINISTRATOR_PANEL, CUSTOMER_PANEL, LOGISTICIAN_PANEL). - Each constant is mapped to a
+ * corresponding {@link SecurityScope} indicating the access level required for that resource.
  *
- * <p>Roles are defined in the {@link CompanyRole} enumeration.
+ * <p>Constants: - SYSTEM_ADMINISTRATOR_PANEL: Represents the administrator panel resource. -
+ * CUSTOMER_PANEL: Represents the customer panel resource. - LOGISTICIAN_PANEL: Represents the
+ * logistician panel resource.
+ *
+ * <p>All constants are annotated with descriptions and examples for API documentation purposes.
  */
 @Getter
 @Schema(description = "Resource type", example = "CUSTOMER_PANEL")
 public enum Resource {
   @Schema(description = "Admin panel resource")
-  SYSTEM_ADMINISTRATOR_PANEL(List.of(CompanyRole.SYSTEM_ADMINISTRATOR, CompanyRole.MODERATOR)),
+  SYSTEM_ADMINISTRATOR_PANEL(SecurityScope.MOD_001_002),
   @Schema(description = "Customer panel resource")
-  CUSTOMER_PANEL(
-      List.of(
-          CompanyRole.SYSTEM_ADMINISTRATOR,
-          CompanyRole.MANAGER,
-          CompanyRole.ORDER_MANAGER,
-          CompanyRole.NOT_ASSIGNED,
-          CompanyRole.WAREHOUSE_MANAGER)),
+  CUSTOMER_PANEL(SecurityScope.MOD_001_004),
   @Schema(description = "Logistician panel resource")
-  LOGISTICIAN_PANEL(List.of(CompanyRole.LOGISTICIAN)),
-  @Schema(description = "Driver panel resource")
-  DRIVER_PANEL(List.of(CompanyRole.DRIVER));
+  LOGISTICIAN_PANEL(SecurityScope.MOD_001_003);
 
-  private final List<CompanyRole> acceptedRoles;
+  private final SecurityScope shouldHavePossibility;
 
-  Resource(List<CompanyRole> acceptedRoles) {
-    this.acceptedRoles = acceptedRoles;
+  Resource(SecurityScope acceptedRoles) {
+    this.shouldHavePossibility = acceptedRoles;
   }
 
-  public boolean isIncluded(CompanyRole companyRole) {
-    return this.acceptedRoles.contains(companyRole);
+  /**
+   * Checks if this resource is accessible to a user with the given role. A resource is accessible
+   * if the user's role includes the security scope required by this resource.
+   *
+   * @param role The role to check
+   * @return true if the role has access to this resource, false otherwise
+   */
+  public boolean isIncluded(Role role) {
+    if (role == null) {
+      return false;
+    }
+    return role.getSecurityPossibilities().contains(this.shouldHavePossibility);
   }
 }

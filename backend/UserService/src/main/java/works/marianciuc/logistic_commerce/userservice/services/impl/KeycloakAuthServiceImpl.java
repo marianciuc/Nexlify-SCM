@@ -13,8 +13,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.KeycloakTokenResponse;
 import works.marianciuc.logistic_commerce.userservice.domain.dto.TokenPair;
+import works.marianciuc.logistic_commerce.userservice.keycloak.api.KeycloakTokenResponse;
 import works.marianciuc.logistic_commerce.userservice.services.AuthService;
 
 @Service
@@ -24,16 +24,16 @@ public class KeycloakAuthServiceImpl implements AuthService {
   private final RestTemplate restTemplate;
   private final HttpHeaders headers;
 
-  @Value("${keycloak.admin.realm}")
+  @Value("${keycloak.default-client.realm}")
   private String realm;
 
-  @Value("${keycloak.admin.auth-server-url}")
+  @Value("${keycloak.server-url}")
   private String authServerUrl;
 
-  @Value("${keycloak.admin.client-id}")
+  @Value("${keycloak.default-client.client-id}")
   private String clientId;
 
-  @Value("${keycloak.admin.client-secret}")
+  @Value("${keycloak.default-client.client-secret}")
   private String clientSecret;
 
   private String tokenUrl;
@@ -49,7 +49,8 @@ public class KeycloakAuthServiceImpl implements AuthService {
   private void initializeTokenUrl() {
     this.tokenUrl =
         String.format("%s/realms/%s/protocol/openid-connect/token", authServerUrl, realm);
-    this.revokeUrl = String.format("%s/realms/%s/protocol/openid-connect/revoke", revokeUrl, realm);
+    this.revokeUrl =
+        String.format("%s/realms/%s/protocol/openid-connect/revoke", authServerUrl, realm);
 
     if (log.isDebugEnabled()) {
       log.debug(
@@ -62,6 +63,7 @@ public class KeycloakAuthServiceImpl implements AuthService {
   @Override
   public ResponseEntity<TokenPair> login(String username, String password) {
     if (log.isDebugEnabled()) log.debug("KeycloakAuthServiceImpl login called");
+    log.info("auth");
 
     MultiValueMap<String, String> body = buildTokenRequestBody(OAuth2Constants.PASSWORD);
     body.add(OAuth2Constants.USERNAME, username);
@@ -133,7 +135,8 @@ public class KeycloakAuthServiceImpl implements AuthService {
             tokenResponse.getStatusCode());
         throw new RuntimeException("Failed to obtain tokens");
       }
-      log.debug("KeycloakAuthServiceImpl:: successfully obtained tokens");
+      log.debug(
+          "KeycloakAuthServiceImpl:: successfully obtained tokens: {} ", tokenResponse.getBody());
       assert tokenResponse.getBody() != null;
       return fromResponse(tokenResponse.getBody());
     } catch (Exception e) {

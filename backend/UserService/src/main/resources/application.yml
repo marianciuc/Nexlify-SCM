@@ -1,32 +1,112 @@
 spring:
-  cloud:
-    consul:
-      host: localhost
-      port: 8500
-      discovery:
-        enabled: true
-      config:
-        enabled: true
-        format: yaml
-  config:
-    import: 'consul:'
-  application:
-    name: user-service
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9090/realms/LogisticCommerce
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/LogisticCommerce}
+  cloud:
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        enabled: true
+        instance-id: ${spring.application.name}:${random.value}
+        service-name: ${spring.application.name}
+        healthCheckPath: /actuator/health
+        healthCheckInterval: 15s
+      config:
+        enabled: true
+        format: yaml
+        data-key: application.yml
+  config:
+    import: 'optional:consul:'
+  application:
+    name: user-service
+
+server:
+  port: 8080
+
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+    disable-swagger-default-url: true
+  group-configs:
+    - group: user-service
+      paths-to-match: /**
+      packages-to-scan: works.marianciuc.logistic_commerce.userservice
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/LogisticCommerce}
+
 keycloak:
-  admin:
+  server-url: ${KEYCLOAK_SERVER_URL:http://localhost:9090}
+  default-client:
     realm: LogisticCommerce
-    auth-server-url: http://localhost:9090
-    client-id: admin-client
-    client-secret: v8lNkDJFwbcrMsTe7TZ5OQVE3gTYqd2f
+    client-id: application-client
+    client-secret: ${KEYCLOAK_DEFAULT_CLIENT_SECRET:v8lNkDJFwbcrMsTe7TZ5OQVE3gTYqd2f}
+  admin:
+    realm: master
+    client-id: admin-cli
+    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:v8lNkDJFwbcrMsTe7TZ5OQVE3gTYqd2f}
+    password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+    username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+  security:
+    token:
+      access:
+        lifetime: 300 # 5 min
+      refresh:
+        lifetime: 86_400 # 24 hours
+        max-reuse: 0
+        can-be-revoked: true
+  connection:
+    timeout-seconds: 30
+    pool-size: 10
+    retry-attempts: 3
+    retry-delay-ms: 1000
+  initialization:
+    enable-realm-initialization: false
+    enable-role-initialization: false
+    admin-account:
+      username: admin
+      password: admin
+      email: admin@logisticcommerce.com
+      first-name: System
+      last-name: Administrator
+      id: 31ec0b7e-b030-4aa4-8ffe-29d49869cc45
+
+
 vies:
   api:
     key: ""
     id: ""
+
 ip:
   api:
-    url: http://ip-api.com/json
+    url: ${IP_API_URL:http://ip-api.com/json}
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+init:
+  keycloak:
+    roles: false
+    realm: false
+    recreate:
+      realm: false

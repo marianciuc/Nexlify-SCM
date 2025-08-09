@@ -1,0 +1,102 @@
+# Spring configuration
+spring:
+  application:
+    name: gateway
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        instance-id: ${spring.application.name}:${random.value}
+        service-name: ${spring.application.name}
+        healthCheckPath: /actuator/health
+        healthCheckInterval: 15s
+        prefer-ip-address: true
+        hostname: localhost
+        ip-address: localhost
+        scheme: http
+        register: true
+        deregister: true
+        fail-fast: false
+        health-check-url: http://localhost:8888/actuator/health
+      config:
+        enabled: true
+        format: yaml
+        data-key: application.yml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/LogisticCommerce
+
+# Logging configuration
+logging:
+  level:
+    root: INFO
+    works.marianciuc.logistic_commerce.gateway: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.cloud.gateway: INFO
+  request-response:
+    enabled: true
+    include-payload: true
+    max-payload-length: 10000
+
+# Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+# SpringDoc OpenAPI configuration
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: gateway
+        url: /v3/api-docs
+      - name: user-service
+        url: /user-service/v3/api-docs
+    # UI customization options
+    doc-expansion: list
+    default-models-expand-depth: 1
+    default-model-expand-depth: 1
+    display-request-duration: true
+    filter: true
+    deep-linking: true
+    syntax-highlight:
+      activated: true
+      theme: monokai
+    operations-sorter: alpha
+    tags-sorter: alpha
+    try-it-out-enabled: true
+    disable-swagger-default-url: true
+    display-operation-id: false
+    persist-authorization: true
+    # Custom CSS
+    theme: flattop
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+    groups:
+      enabled: true
+  cache:
+    disabled: true
+  group-configs:
+    - group: gateway
+      paths-to-match: /fallback/**
+      packages-to-scan: works.marianciuc.logistic_commerce.gateway

@@ -6,20 +6,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.CompanyDto;
 import works.marianciuc.logistic_commerce.userservice.domain.dto.CompanyListObject;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.CreateCompanyRequest;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.Page;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.general.Page;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.requests.CreateCompanyRequest;
+import works.marianciuc.logistic_commerce.userservice.domain.model.Company;
 import works.marianciuc.logistic_commerce.userservice.domain.qfilters.CompanySearchFilter;
 
-@RestController
 @RequestMapping("/api/v1/companies")
 @Tag(name = "Companies", description = "Companies management controller")
 public interface CompanyController {
 
   @Operation(summary = "Register company", description = "Register company in the system")
   @PostMapping
-  ResponseEntity<CompanyDto> registerInSystem(
+  ResponseEntity<Company> registerInSystem(
       @Schema(
               description = "Company registration form",
               implementation = CreateCompanyRequest.class)
@@ -44,7 +43,7 @@ public interface CompanyController {
 
   @Operation(summary = "Get company by id", description = "Get company by id")
   @GetMapping("/{id}")
-  ResponseEntity<CompanyDto> getCompany(
+  ResponseEntity<Company> getCompany(
       @Schema(
               description = "Company id",
               example = "123e4567-e89b-12d3-a456-426655440000",

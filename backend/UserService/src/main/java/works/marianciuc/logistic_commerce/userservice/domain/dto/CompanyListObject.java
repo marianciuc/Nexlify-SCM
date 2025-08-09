@@ -3,6 +3,7 @@ package works.marianciuc.logistic_commerce.userservice.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.UUID;
 import lombok.Value;
 import works.marianciuc.logistic_commerce.userservice.domain.enums.CompanyVerificationStatus;
 
@@ -10,6 +11,10 @@ import works.marianciuc.logistic_commerce.userservice.domain.enums.CompanyVerifi
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Schema(description = "Company list object")
 public class CompanyListObject {
+
+  @Schema(description = "Company id", example = "123e4567-e89b-12d3-a456-426655440000")
+  UUID id;
+
   @Schema(description = "Company name", example = "Example Company sp. zoo")
   String name;
 

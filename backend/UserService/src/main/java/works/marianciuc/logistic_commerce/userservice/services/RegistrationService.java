@@ -1,7 +1,8 @@
 package works.marianciuc.logistic_commerce.userservice.services;
 
-import works.marianciuc.logistic_commerce.userservice.domain.dto.RegistrationRequestDTO;
-import works.marianciuc.logistic_commerce.userservice.domain.dto.UserDto;
+import jakarta.security.auth.message.AuthException;
+import works.marianciuc.logistic_commerce.userservice.domain.dto.RegistrationRequest;
+import works.marianciuc.logistic_commerce.userservice.domain.model.User;
 
 @FunctionalInterface
 public interface RegistrationService {
@@ -17,5 +18,5 @@ public interface RegistrationService {
    * @throws AuthException if the registration process fails due to authentication-related issues,
    *     such as invalid input data, failing data processing consent, or account conflicts.
    */
-  UserDto register(RegistrationRequestDTO request) throws AuthException;
+  User register(RegistrationRequest request) throws AuthException;
 }

@@ -1,9 +1,9 @@
 package works.marianciuc.logistic_commerce.userservice.services;
 
-import works.marianciuc.logistic_commerce.userservice.domain.entity.Company;
+import works.marianciuc.logistic_commerce.userservice.repositories.entity.CompanyEn;
 
 public interface CompanyExecutorService {
-  Company execute(String taxId);
+  CompanyEn execute(String taxId);
 
   boolean supports(String countryCode);
 }

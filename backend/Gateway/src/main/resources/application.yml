@@ -1,0 +1,114 @@
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway
+  cloud:
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        enabled: true
+        instance-id: ${spring.application.name}:${random.value}
+        service-name: ${spring.application.name}
+        healthCheckPath: /actuator/health
+        healthCheckInterval: 15s
+      config:
+        enabled: true
+        format: yaml
+        data-key: application.yml
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          routes:
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/api/v1/auth/**
+
+            - id: user-service-openapi
+              uri: lb://user-service
+              predicates:
+                - Path=/user-service/v3/api-docs/**
+
+            - id: user-service-actuator
+              uri: lb://user-service
+              predicates:
+                - Path=/user-service/actuator/**
+            # Fallback route
+            - id: fallback
+              uri: lb://gateway
+              predicates:
+                - Path=/fallback/**
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:3000"
+                  - "http://localhost:5173"
+                allowedMethods: "*"
+                allowedHeaders: "*"
+                allowCredentials: true
+                maxAge: 3600
+  config:
+    import: 'optional:consul:'
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/LogisticCommerce}
+
+server:
+  port: 8888
+
+# Management endpoints - disable tracing metrics
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    enabled: false
+  zipkin:
+    tracing:
+      enabled: false
+
+# Resilience4j Circuit Breaker Configuration
+resilience4j:
+  circuitbreaker:
+    instances:
+      userServiceCircuitBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+  timelimiter:
+    instances:
+      userServiceTimeLimiter:
+        timeoutDuration: 5s
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    works.marianciuc.logistic_commerce.gateway: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.cloud.gateway: INFO
+    zipkin2.reporter: WARN  # Reduce Zipkin logging
+    brave: WARN             # Reduce tracing logging
+  request-response:
+    enabled: true
+    include-payload: false
+    max-payload-length: 1000
+
