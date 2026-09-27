@@ -10,7 +10,7 @@ function RegisterPage() {
     const navigate = useNavigate();
 
     const handleSuccess = () => {
-        navigate({to: '/dashboard'});
+        navigate({to: '/supplier/dashboard'});
     };
 
     const handleSwitchToLogin = () => {

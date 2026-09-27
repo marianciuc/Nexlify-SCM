@@ -2,454 +2,241 @@ import {
     LayoutDashboard,
     ShoppingCart,
     Package,
-    Building2,
     Truck,
     Users,
-    CreditCard,
-    MessageSquare,
     Settings,
     BarChart3,
     FileText,
-    CheckSquare,
-    Search,
-    Calculator,
-    TrendingUp,
     MapPin,
-    UserPlus,
-    Boxes,
-    PackageOpen,
-    PackageCheck,
-    ClipboardList,
-    Shield,
-    Globe,
     Target,
-    DollarSign,
     Receipt,
-    History,
-    Percent,
-    ArrowLeft,
-    User,
-    Bell,
-    Lock,
-    Database,
-    Warehouse,
-    Navigation,
+    ListChecks,
+    FileQuestion,
+    ShieldAlert,
+    ArrowLeftRight,
+    Grid,
+    Boxes,
+    Award,
+    FileSpreadsheet,
+    Route as RouteIcon,
+    Sparkles,
     UserCheck,
+    FileCheck,
     Activity,
+    AlertTriangle,
 } from 'lucide-react';
 import React from 'react';
 
-import {SecurityScope} from '@/types/api';
-
 import {MenuItemType, type Item} from './types';
 
-// Dashboard & Analytics Menu / Панель управления и аналитика
-const dashboardMenu: Item[] = [
+// ==========================================
+// 1. BUYER WORKSPACE (P03 - P08, P20 + Enterprise 2.0)
+// ==========================================
+export const buyerMenu: Item[] = [
     {
-        title: 'menu.dashboard',
-        url: '/dashboard',
+        title: 'B2B Catalog',
+        url: '/buyer/catalog',
         type: MenuItemType.ITEM,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(LayoutDashboard, {size: 16}),
+        icon: React.createElement(Package, {size: 16}),
     },
     {
-        title: 'menu.reports',
-        url: '/dashboard/reports',
+        title: 'Shopping Cart',
+        url: '/buyer/cart',
         type: MenuItemType.ITEM,
-        permission: [SecurityScope.MOD_001_001],
+        icon: React.createElement(ShoppingCart, {size: 16}),
+    },
+    {
+        title: 'My Orders',
+        url: '/buyer/orders',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(ListChecks, {size: 16}),
+    },
+    {
+        title: 'Invoices (VAT)',
+        url: '/buyer/invoices',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Receipt, {size: 16}),
+    },
+    {
+        title: 'Procurement RFQs',
+        url: '/buyer/requests',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(FileQuestion, {size: 16}),
+    },
+    {
+        title: 'SLA Contracts',
+        url: '/buyer/contracts',
+        type: MenuItemType.ITEM,
         icon: React.createElement(FileText, {size: 16}),
     },
     {
-        title: 'menu.analytics',
-        url: '/dashboard/analytics',
+        title: 'RMA Claims',
+        url: '/buyer/claims',
         type: MenuItemType.ITEM,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(BarChart3, {size: 16}),
+        icon: React.createElement(ShieldAlert, {size: 16}),
     },
-];
-
-// Order Management Menu / Управление заказами
-const orderMenu: Item[] = [
     {
-        title: 'menu.orders.root',
-        url: '/orders',
-        type: MenuItemType.GROUP,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(ShoppingCart, {size: 16}),
-        children: [
-            {
-                title: 'menu.orders.create',
-                url: '/orders/create',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Package, {size: 16}),
-            },
-            {
-                title: 'menu.orders.all',
-                url: '/orders/all',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(ClipboardList, {size: 16}),
-            },
-            {
-                title: 'menu.orders.tracking',
-                url: '/orders/tracking',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(MapPin, {size: 16}),
-            },
-            {
-                title: 'menu.orders.approval',
-                url: '/orders/approval',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(CheckSquare, {size: 16}),
-            },
-        ],
-    },
-];
-
-// Warehouse Management Menu / Управление складами
-const warehouseMenu: Item[] = [
-    {
-        title: 'menu.warehouse.root',
-        url: '/warehouse',
-        type: MenuItemType.GROUP,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(Warehouse, {size: 16}),
-        children: [
-            {
-                title: 'menu.warehouse.create',
-                url: '/warehouse/create',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Building2, {size: 16}),
-            },
-            {
-                title: 'menu.warehouse.directory',
-                url: '/warehouse/directory',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Search, {size: 16}),
-            },
-            {
-                title: 'menu.warehouse.inventory',
-                url: '/warehouse/inventory',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Boxes, {size: 16}),
-            },
-            {
-                title: 'menu.warehouse.receiving',
-                url: '/warehouse/receiving',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(PackageOpen, {size: 16}),
-            },
-            {
-                title: 'menu.warehouse.shipping',
-                url: '/warehouse/shipping',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(PackageCheck, {size: 16}),
-            },
-        ],
-    },
-];
-
-// Logistics & Carrier Management Menu / Логистика и управление перевозчиками
-const logisticsMenu: Item[] = [
-    {
-        title: 'menu.logistics.root',
-        url: '/logistics',
-        type: MenuItemType.GROUP,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(Truck, {size: 16}),
-        children: [
-            {
-                title: 'menu.logistics.carriers',
-                url: '/logistics/carriers',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Users, {size: 16}),
-            },
-            {
-                title: 'menu.logistics.delivery',
-                url: '/logistics/delivery-options',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Navigation, {size: 16}),
-            },
-            {
-                title: 'menu.logistics.tracking',
-                url: '/logistics/tracking',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(MapPin, {size: 16}),
-            },
-            {
-                title: 'menu.logistics.calculator',
-                url: '/logistics/calculator',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Calculator, {size: 16}),
-            },
-            {
-                title: 'menu.logistics.performance',
-                url: '/logistics/performance',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(TrendingUp, {size: 16}),
-            },
-        ],
-    },
-];
-
-// Supplier & Marketplace Menu / Поставщики и торговая площадка
-const supplierMenu: Item[] = [
-    {
-        title: 'menu.suppliers.root',
-        url: '/suppliers',
-        type: MenuItemType.GROUP,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(Users, {size: 16}),
-        children: [
-            {
-                title: 'menu.suppliers.directory',
-                url: '/suppliers/directory',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Search, {size: 16}),
-            },
-            {
-                title: 'menu.suppliers.catalog',
-                url: '/suppliers/catalog',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Package, {size: 16}),
-            },
-            {
-                title: 'menu.suppliers.ratings',
-                url: '/suppliers/ratings',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Target, {size: 16}),
-            },
-            {
-                title: 'menu.suppliers.contracts',
-                url: '/suppliers/contracts',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(FileText, {size: 16}),
-            },
-        ],
-    },
-];
-
-// Financial Management Menu / Финансовое управление
-const financialMenu: Item[] = [
-    {
-        title: 'menu.finance.root',
-        url: '/finance',
-        type: MenuItemType.GROUP,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(CreditCard, {size: 16}),
-        children: [
-            {
-                title: 'menu.finance.invoicing',
-                url: '/finance/invoicing',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Receipt, {size: 16}),
-            },
-            {
-                title: 'menu.finance.payments',
-                url: '/finance/payments',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(DollarSign, {size: 16}),
-            },
-            {
-                title: 'menu.finance.reports',
-                url: '/finance/reports',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(BarChart3, {size: 16}),
-            },
-            {
-                title: 'menu.finance.credit',
-                url: '/finance/credit',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Percent, {size: 16}),
-            },
-            {
-                title: 'menu.finance.history',
-                url: '/finance/history',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(History, {size: 16}),
-            },
-        ],
-    },
-];
-
-// Communication Menu / Коммуникация
-const communicationMenu: Item[] = [
-    {
-        title: 'menu.communication.root',
-        url: '/communication',
-        type: MenuItemType.GROUP,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(MessageSquare, {size: 16}),
-        children: [
-            {
-                title: 'menu.communication.messages',
-                url: '/communication/messages',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(MessageSquare, {size: 16}),
-            },
-            {
-                title: 'menu.communication.notifications',
-                url: '/communication/notifications',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Bell, {size: 16}),
-            },
-        ],
-    },
-];
-
-// User Management Menu / Управление пользователями
-const userManagementMenu: Item[] = [
-    {
-        title: 'menu.users.root',
-        url: '/users',
-        type: MenuItemType.GROUP,
-        permission: [SecurityScope.MOD_001_002],
-        icon: React.createElement(Users, {size: 16}),
-        children: [
-            {
-                title: 'menu.users.employees',
-                url: '/users/employees',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_002],
-                icon: React.createElement(UserPlus, {size: 16}),
-            },
-            {
-                title: 'menu.users.roles',
-                url: '/users/roles',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_002],
-                icon: React.createElement(Shield, {size: 16}),
-            },
-            {
-                title: 'menu.users.verification',
-                url: '/users/verification',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_002],
-                icon: React.createElement(UserCheck, {size: 16}),
-            },
-        ],
-    },
-];
-
-// Administrator Menu / Администратор
-const administatorMenu: Item[] = [
-    {
-        title: 'menu.admin.root',
-        url: '/admin',
-        type: MenuItemType.GROUP,
-        permission: [SecurityScope.MOD_001_001, SecurityScope.MOD_001_002],
-        icon: React.createElement(Shield, {size: 16}),
-        children: [
-            {
-                title: 'menu.admin.system',
-                url: '/admin/system',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Settings, {size: 16}),
-            },
-            {
-                title: 'menu.admin.users',
-                url: '/admin/users',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_002],
-                icon: React.createElement(Users, {size: 16}),
-            },
-            {
-                title: 'menu.admin.analytics',
-                url: '/admin/analytics',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Activity, {size: 16}),
-            },
-            {
-                title: 'menu.admin.security',
-                url: '/admin/security',
-                type: MenuItemType.ITEM,
-                permission: [SecurityScope.MOD_001_001],
-                icon: React.createElement(Lock, {size: 16}),
-            },
-        ],
-    },
-];
-
-// Settings Menu / Настройки
-const settingsMenu: Item[] = [
-    {
-        title: 'menu.back',
-        url: '/dashboard',
+        title: 'Buyer Settings',
+        url: '/buyer/settings',
         type: MenuItemType.ITEM,
-        icon: React.createElement(ArrowLeft, {size: 16}),
-    },
-    {
-        title: 'menu.settingsMenu.profile',
-        url: '/settings/profile',
-        type: MenuItemType.ITEM,
-        icon: React.createElement(User, {size: 16}),
-    },
-    {
-        title: 'menu.settingsMenu.system',
-        url: '/settings/system',
-        type: MenuItemType.ITEM,
-        permission: [SecurityScope.MOD_001_001],
         icon: React.createElement(Settings, {size: 16}),
     },
+];
+
+// ==========================================
+// 2. SUPPLIER WORKSPACE (P09 - P12, P19 + Enterprise 2.0)
+// ==========================================
+export const supplierMenu: Item[] = [
     {
-        title: 'menu.settingsMenu.integration',
-        url: '/settings/integration',
+        title: 'Supplier Dashboard',
+        url: '/supplier/dashboard',
         type: MenuItemType.ITEM,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(Globe, {size: 16}),
+        icon: React.createElement(LayoutDashboard, {size: 16}),
     },
     {
-        title: 'menu.settingsMenu.security',
-        url: '/settings/security',
+        title: 'SKU & Inventory',
+        url: '/supplier/products',
         type: MenuItemType.ITEM,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(Lock, {size: 16}),
+        icon: React.createElement(Package, {size: 16}),
     },
     {
-        title: 'menu.settingsMenu.backup',
-        url: '/settings/backup',
+        title: 'Stock Transfers',
+        url: '/supplier/inventory/transfers',
         type: MenuItemType.ITEM,
-        permission: [SecurityScope.MOD_001_001],
-        icon: React.createElement(Database, {size: 16}),
+        icon: React.createElement(ArrowLeftRight, {size: 16}),
+    },
+    {
+        title: 'ABC/XYZ Matrix',
+        url: '/supplier/inventory/abc-xyz',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Grid, {size: 16}),
+    },
+    {
+        title: 'Fulfillment Queue',
+        url: '/supplier/orders',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Boxes, {size: 16}),
+    },
+    {
+        title: 'Pricing Contracts',
+        url: '/supplier/pricing',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Target, {size: 16}),
+    },
+    {
+        title: 'Open RFQ Board',
+        url: '/supplier/bids/board',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(FileText, {size: 16}),
+    },
+    {
+        title: 'Quality Scorecard',
+        url: '/supplier/scorecard',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Award, {size: 16}),
+    },
+    {
+        title: 'EDI & Peppol Hub',
+        url: '/supplier/edi',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(FileSpreadsheet, {size: 16}),
+    },
+    {
+        title: 'Supplier Settings',
+        url: '/supplier/settings',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Settings, {size: 16}),
     },
 ];
 
-export const sidebarMenu: Item[] = [
-    ...dashboardMenu,
-    ...orderMenu,
-    ...warehouseMenu,
-    ...logisticsMenu,
-    ...supplierMenu,
-    ...financialMenu,
-    ...communicationMenu,
-    ...userManagementMenu,
-    ...administatorMenu,
+// ==========================================
+// 3. LOGISTICS WORKSPACE (P13 - P15 + Enterprise 2.0)
+// ==========================================
+export const logisticsMenu: Item[] = [
+    {
+        title: 'Live GPS Map',
+        url: '/logistics/map',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(MapPin, {size: 16}),
+    },
+    {
+        title: 'Freight Routes',
+        url: '/logistics/routes',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(RouteIcon, {size: 16}),
+    },
+    {
+        title: 'VRP Route Planner',
+        url: '/logistics/routes/planner',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Sparkles, {size: 16}),
+    },
+    {
+        title: 'Fleet & Vehicles',
+        url: '/logistics/fleet',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Truck, {size: 16}),
+    },
+    {
+        title: 'Drivers Registry',
+        url: '/logistics/drivers',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Users, {size: 16}),
+    },
+    {
+        title: 'e-CMR Consignments',
+        url: '/logistics/ecmr',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(FileCheck, {size: 16}),
+    },
+    {
+        title: 'TMS Settings',
+        url: '/logistics/settings',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Settings, {size: 16}),
+    },
 ];
 
-export const settingsSidebarMenu: Item[] = [...settingsMenu];
+// ==========================================
+// 4. ADMIN WORKSPACE (P16 - P18 + Enterprise 2.0)
+// ==========================================
+export const adminMenu: Item[] = [
+    {
+        title: 'Global Analytics',
+        url: '/admin/analytics',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(BarChart3, {size: 16}),
+    },
+    {
+        title: 'Tenants Directory',
+        url: '/admin/users',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Users, {size: 16}),
+    },
+    {
+        title: 'KYC Queue',
+        url: '/admin/users/verification',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(UserCheck, {size: 16}),
+    },
+    {
+        title: 'System Audit & Saga',
+        url: '/admin/system-audit',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Activity, {size: 16}),
+    },
+    {
+        title: 'Kafka DLT Inspector',
+        url: '/admin/system-audit/kafka-dlt',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(AlertTriangle, {size: 16}),
+    },
+    {
+        title: 'Platform Settings',
+        url: '/admin/settings',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(Settings, {size: 16}),
+    },
+];
+
+export const sidebarMenu: Item[] = [...buyerMenu];

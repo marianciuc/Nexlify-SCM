@@ -69,7 +69,7 @@ export function CallToAction() {
 
     const testimonialQuotes = [
         {
-            quote: 'LogisticCommerce reduced our logistics costs by 32% in the first quarter.',
+            quote: 'Nexlify-SCM reduced our logistics costs by 32% in the first quarter.',
             author: 'Sarah Chen',
             position: 'VP Supply Chain, TechCorp Industries',
             rating: 5,
@@ -220,7 +220,7 @@ export function CallToAction() {
                         Start Your Registration
                     </h3>
                     <p className='text-slate-300 text-center mb-12 text-lg'>
-                        Begin your registration process and see how LogisticCommerce can revolutionize your
+                        Begin your registration process and see how Nexlify-SCM can revolutionize your
                         operations
                     </p>
                     <ContactForm/>
@@ -247,7 +247,7 @@ export function CallToAction() {
                     <div className='flex justify-center space-x-8 text-sm'>
             <span className='flex items-center space-x-1'>
               <MessageCircle className='w-4 h-4'/>
-              <span>enterprise@logisticcommerce.com</span>
+              <span>contact@nexlify-scm.com</span>
             </span>
                         <span className='flex items-center space-x-1'>
               <Clock className='w-4 h-4'/>

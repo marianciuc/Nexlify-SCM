@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-stock-items
+      author: nexlify-scm
+      changes:
+        - createTable:
+            schemaName: inventory
+            tableName: stock_items
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_stock_product
+                    references: inventory.products(id)
+              - column:
+                  name: warehouse_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_stock_warehouse
+                    references: inventory.warehouses(id)
+              - column:
+                  name: quantity_available
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity_reserved
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: batch_number
+                  type: varchar(100)
+              - column:
+                  name: lot_number
+                  type: varchar(100)
+              - column:
+                  name: expiry_date
+                  type: date
+              - column:
+                  name: status
+                  type: varchar(30)
+                  defaultValue: "IN_STOCK"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_counted_at
+                  type: timestamp with time zone
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: now()
+        - addUniqueConstraint:
+            schemaName: inventory
+            tableName: stock_items
+            columnNames: product_id, warehouse_id, batch_number
+            constraintName: uq_stock_product_warehouse_batch
+        - createIndex:
+            schemaName: inventory
+            tableName: stock_items
+            indexName: idx_stock_product
+            columns:
+              - column:
+                  name: product_id
+        - createIndex:
+            schemaName: inventory
+            tableName: stock_items
+            indexName: idx_stock_warehouse
+            columns:
+              - column:
+                  name: warehouse_id
+        - createIndex:
+            schemaName: inventory
+            tableName: stock_items
+            indexName: idx_stock_status
+            columns:
+              - column:
+                  name: status

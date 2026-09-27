@@ -36,7 +36,9 @@ export function useIntersectionObserver(options = {}) {
 
         const observer = new IntersectionObserver(
             ([entry]) => {
-                setIsVisible(entry.isIntersecting);
+                if (entry) {
+                    setIsVisible(entry.isIntersecting);
+                }
             },
             {
                 threshold: 0.1,

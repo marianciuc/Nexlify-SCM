@@ -2,6 +2,17 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/analytics.main.iml" filepath="$PROJECT_DIR$/.idea/modules/analytics.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/billing.main.iml" filepath="$PROJECT_DIR$/.idea/modules/billing.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway.test.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/integration.main.iml" filepath="$PROJECT_DIR$/.idea/modules/integration.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/inventory.main.iml" filepath="$PROJECT_DIR$/.idea/modules/inventory.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/logistic.main.iml" filepath="$PROJECT_DIR$/.idea/modules/logistic.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/orders.main.iml" filepath="$PROJECT_DIR$/.idea/modules/orders.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rfq.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rfq.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/users.main.iml" filepath="$PROJECT_DIR$/.idea/modules/users.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/users.test.iml" filepath="$PROJECT_DIR$/.idea/modules/users.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/workspace.iml" filepath="$PROJECT_DIR$/.idea/workspace.iml" />
     </modules>
   </component>

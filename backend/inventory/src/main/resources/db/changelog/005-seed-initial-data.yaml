@@ -1,0 +1,181 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-seed-initial-data
+      author: nexlify-scm
+      context: dev
+      changes:
+        # Categories
+        - insert:
+            schemaName: inventory
+            tableName: categories
+            columns:
+              - column: { name: id, value: "c0000001-0000-0000-0000-000000000001" }
+              - column: { name: name, value: "Packaging & Cargo Units" }
+              - column: { name: slug, value: "packaging-cargo-units" }
+              - column: { name: description, value: "Pallets, containers, and cargo packaging solutions" }
+              - column: { name: sort_order, valueNumeric: 1 }
+        - insert:
+            schemaName: inventory
+            tableName: categories
+            columns:
+              - column: { name: id, value: "c0000001-0000-0000-0000-000000000002" }
+              - column: { name: name, value: "Packaging Supplies" }
+              - column: { name: slug, value: "packaging-supplies" }
+              - column: { name: description, value: "Stretch films, tapes, labels, and wrapping materials" }
+              - column: { name: sort_order, valueNumeric: 2 }
+        - insert:
+            schemaName: inventory
+            tableName: categories
+            columns:
+              - column: { name: id, value: "c0000001-0000-0000-0000-000000000003" }
+              - column: { name: name, value: "Material Handling Equipment" }
+              - column: { name: slug, value: "material-handling-equipment" }
+              - column: { name: description, value: "Pallet trucks, forklifts, and warehouse handling machinery" }
+              - column: { name: sort_order, valueNumeric: 3 }
+        - insert:
+            schemaName: inventory
+            tableName: categories
+            columns:
+              - column: { name: id, value: "c0000001-0000-0000-0000-000000000004" }
+              - column: { name: name, value: "Cold Chain & Temperature Control" }
+              - column: { name: slug, value: "cold-chain-temperature" }
+              - column: { name: description, value: "Insulated containers, thermoboxes, and reefer equipment" }
+              - column: { name: sort_order, valueNumeric: 4 }
+
+        # Products
+        - insert:
+            schemaName: inventory
+            tableName: products
+            columns:
+              - column: { name: id, value: "44444444-4444-4444-4444-444444444444" }
+              - column: { name: sku, value: "SKU-PAL-01" }
+              - column: { name: name, value: "EPAL Euro-Pallet Standard (Pine)" }
+              - column: { name: description, value: "Standard EPAL 1200x800mm certified wooden pallet, dry pine wood, UIC/EPAL grade. Suitable for high-bay automated warehouse operations." }
+              - column: { name: category_id, value: "c0000001-0000-0000-0000-000000000001" }
+              - column: { name: unit, value: "pcs" }
+              - column: { name: unit_price, valueNumeric: 120.00 }
+              - column: { name: currency, value: "PLN" }
+              - column: { name: weight_kg, valueNumeric: 25.000 }
+              - column: { name: dimensions, value: "1200x800x144mm" }
+              - column: { name: manufacturer, value: "EPAL Certified Mills" }
+              - column: { name: min_order_quantity, valueNumeric: 10 }
+              - column: { name: reorder_point, valueNumeric: 200 }
+        - insert:
+            schemaName: inventory
+            tableName: products
+            columns:
+              - column: { name: id, value: "55555555-5555-5555-5555-555555555555" }
+              - column: { name: sku, value: "SKU-STR-05" }
+              - column: { name: name, value: "Industrial Stretch Film 23mic (Roll 300m)" }
+              - column: { name: description, value: "Machine-grade blown stretch wrap film, 23 micron thickness, 500mm width, 300m roll. High puncture resistance for automated pallet wrapping." }
+              - column: { name: category_id, value: "c0000001-0000-0000-0000-000000000002" }
+              - column: { name: unit, value: "rolls" }
+              - column: { name: unit_price, valueNumeric: 411.25 }
+              - column: { name: currency, value: "PLN" }
+              - column: { name: weight_kg, valueNumeric: 17.500 }
+              - column: { name: dimensions, value: "500mm x 300m" }
+              - column: { name: manufacturer, value: "PlastChem Industrial" }
+              - column: { name: min_order_quantity, valueNumeric: 5 }
+              - column: { name: reorder_point, valueNumeric: 50 }
+        - insert:
+            schemaName: inventory
+            tableName: products
+            columns:
+              - column: { name: id, value: "66666666-6666-6666-6666-666666666666" }
+              - column: { name: sku, value: "SKU-HYD-02" }
+              - column: { name: name, value: "Hydraulic Hand Pallet Truck 2.5t" }
+              - column: { name: description, value: "Manual hydraulic pallet truck, 2500kg capacity, 1150mm fork length, polyurethane wheels. Industry standard for warehouse floor operations." }
+              - column: { name: category_id, value: "c0000001-0000-0000-0000-000000000003" }
+              - column: { name: unit, value: "units" }
+              - column: { name: unit_price, valueNumeric: 1420.05 }
+              - column: { name: currency, value: "PLN" }
+              - column: { name: weight_kg, valueNumeric: 78.000 }
+              - column: { name: dimensions, value: "1550x540x1150mm" }
+              - column: { name: manufacturer, value: "LiftMaster Polska" }
+              - column: { name: brand, value: "LiftMaster" }
+              - column: { name: min_order_quantity, valueNumeric: 1 }
+              - column: { name: reorder_point, valueNumeric: 5 }
+        - insert:
+            schemaName: inventory
+            tableName: products
+            columns:
+              - column: { name: id, value: "77777777-7777-7777-7777-777777777701" }
+              - column: { name: sku, value: "SKU-COL-09" }
+              - column: { name: name, value: "Insulated Thermobox 60L Pharma/Food" }
+              - column: { name: description, value: "High-performance insulated container, 60-liter capacity, temperature maintenance +2°C to +8°C for 48h. Pharma and food-grade certified." }
+              - column: { name: category_id, value: "c0000001-0000-0000-0000-000000000004" }
+              - column: { name: unit, value: "pcs" }
+              - column: { name: unit_price, valueNumeric: 224.33 }
+              - column: { name: currency, value: "PLN" }
+              - column: { name: weight_kg, valueNumeric: 4.200 }
+              - column: { name: dimensions, value: "600x400x400mm" }
+              - column: { name: manufacturer, value: "CoolPack Systems" }
+              - column: { name: min_order_quantity, valueNumeric: 10 }
+              - column: { name: reorder_point, valueNumeric: 30 }
+
+        # Warehouses
+        - insert:
+            schemaName: inventory
+            tableName: warehouses
+            columns:
+              - column: { name: id, value: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }
+              - column: { name: code, value: "WH-WAW-01" }
+              - column: { name: name, value: "Central Distribution Center Warszawa" }
+              - column: { name: city, value: "Warszawa" }
+              - column: { name: address, value: "ul. Przemysłowa 88, 05-850 Ożarów Mazowiecki" }
+              - column: { name: latitude, valueNumeric: 52.2297 }
+              - column: { name: longitude, valueNumeric: 20.9017 }
+              - column: { name: total_capacity_pallets, valueNumeric: 12000 }
+              - column: { name: utilized_capacity_pallets, valueNumeric: 9450 }
+              - column: { name: temperature_zone_min, valueNumeric: 15.0 }
+              - column: { name: temperature_zone_max, valueNumeric: 25.0 }
+        - insert:
+            schemaName: inventory
+            tableName: warehouses
+            columns:
+              - column: { name: id, value: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" }
+              - column: { name: code, value: "WH-SZC-02" }
+              - column: { name: name, value: "Port Logistics Hub Szczecin" }
+              - column: { name: city, value: "Szczecin" }
+              - column: { name: address, value: "ul. Gdańska 21, 70-660 Szczecin" }
+              - column: { name: latitude, valueNumeric: 53.4285 }
+              - column: { name: longitude, valueNumeric: 14.5528 }
+              - column: { name: total_capacity_pallets, valueNumeric: 8500 }
+              - column: { name: utilized_capacity_pallets, valueNumeric: 6100 }
+              - column: { name: temperature_zone_min, valueNumeric: 2.0 }
+              - column: { name: temperature_zone_max, valueNumeric: 8.0 }
+
+        # Stock Items
+        - insert:
+            schemaName: inventory
+            tableName: stock_items
+            columns:
+              - column: { name: id, value: "a0000001-0000-0000-0000-000000000001" }
+              - column: { name: product_id, value: "44444444-4444-4444-4444-444444444444" }
+              - column: { name: warehouse_id, value: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }
+              - column: { name: quantity_available, valueNumeric: 1850 }
+              - column: { name: quantity_reserved, valueNumeric: 100 }
+              - column: { name: batch_number, value: "BATCH-2026-Q3-001" }
+              - column: { name: status, value: "IN_STOCK" }
+        - insert:
+            schemaName: inventory
+            tableName: stock_items
+            columns:
+              - column: { name: id, value: "a0000001-0000-0000-0000-000000000002" }
+              - column: { name: product_id, value: "55555555-5555-5555-5555-555555555555" }
+              - column: { name: warehouse_id, value: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }
+              - column: { name: quantity_available, valueNumeric: 420 }
+              - column: { name: quantity_reserved, valueNumeric: 40 }
+              - column: { name: batch_number, value: "BATCH-2026-Q3-002" }
+              - column: { name: status, value: "IN_STOCK" }
+        - insert:
+            schemaName: inventory
+            tableName: stock_items
+            columns:
+              - column: { name: id, value: "a0000001-0000-0000-0000-000000000003" }
+              - column: { name: product_id, value: "66666666-6666-6666-6666-666666666666" }
+              - column: { name: warehouse_id, value: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" }
+              - column: { name: quantity_available, valueNumeric: 18 }
+              - column: { name: quantity_reserved, valueNumeric: 10 }
+              - column: { name: batch_number, value: "BATCH-2026-Q2-005" }
+              - column: { name: status, value: "LOW_STOCK" }

@@ -8,154 +8,1343 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import {Route as rootRouteImport} from './routes/__root'
-import {Route as DashboardRouteRouteImport} from './routes/dashboard/route'
-import {Route as IndexRouteImport} from './routes/index'
-import {Route as AuthRegisterRouteImport} from './routes/auth/register'
-import {Route as AuthLoginRouteImport} from './routes/auth/login'
-import {Route as DashboardSettingsRouteRouteImport} from './routes/dashboard/settings/route'
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as SupplierRouteRouteImport } from './routes/supplier/route'
+import { Route as LogisticsRouteRouteImport } from './routes/logistics/route'
+import { Route as BuyerRouteRouteImport } from './routes/buyer/route'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as SupplierSettingsRouteImport } from './routes/supplier/settings'
+import { Route as SupplierScorecardRouteImport } from './routes/supplier/scorecard'
+import { Route as SupplierProductsRouteImport } from './routes/supplier/products'
+import { Route as SupplierPricingRouteImport } from './routes/supplier/pricing'
+import { Route as SupplierOrdersRouteImport } from './routes/supplier/orders'
+import { Route as SupplierEdiRouteImport } from './routes/supplier/edi'
+import { Route as SupplierDashboardRouteImport } from './routes/supplier/dashboard'
+import { Route as LogisticsSettingsRouteImport } from './routes/logistics/settings'
+import { Route as LogisticsRoutesRouteImport } from './routes/logistics/routes'
+import { Route as LogisticsMapRouteImport } from './routes/logistics/map'
+import { Route as LogisticsFleetRouteImport } from './routes/logistics/fleet'
+import { Route as LogisticsEcmrRouteImport } from './routes/logistics/ecmr'
+import { Route as LogisticsDriversRouteImport } from './routes/logistics/drivers'
+import { Route as BuyerSettingsRouteImport } from './routes/buyer/settings'
+import { Route as BuyerRequestsRouteImport } from './routes/buyer/requests'
+import { Route as BuyerOrdersRouteImport } from './routes/buyer/orders'
+import { Route as BuyerInvoicesRouteImport } from './routes/buyer/invoices'
+import { Route as BuyerContractsRouteImport } from './routes/buyer/contracts'
+import { Route as BuyerClaimsRouteImport } from './routes/buyer/claims'
+import { Route as BuyerCheckoutRouteImport } from './routes/buyer/checkout'
+import { Route as BuyerCatalogRouteImport } from './routes/buyer/catalog'
+import { Route as BuyerCartRouteImport } from './routes/buyer/cart'
+import { Route as AuthRegisterRouteImport } from './routes/auth/register'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminSystemAuditRouteImport } from './routes/admin/system-audit'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
+import { Route as SupplierProductsNewRouteImport } from './routes/supplier/products.new'
+import { Route as SupplierProductsSkuRouteImport } from './routes/supplier/products.$sku'
+import { Route as SupplierPricingContractIdRouteImport } from './routes/supplier/pricing.$contractId'
+import { Route as SupplierInventoryTransfersRouteImport } from './routes/supplier/inventory.transfers'
+import { Route as SupplierInventoryAbcXyzRouteImport } from './routes/supplier/inventory.abc-xyz'
+import { Route as SupplierBidsBoardRouteImport } from './routes/supplier/bids.board'
+import { Route as LogisticsRoutesPlannerRouteImport } from './routes/logistics/routes.planner'
+import { Route as LogisticsRoutesRouteIdRouteImport } from './routes/logistics/routes.$routeId'
+import { Route as LogisticsFleetNewRouteImport } from './routes/logistics/fleet.new'
+import { Route as LogisticsFleetVehicleIdRouteImport } from './routes/logistics/fleet.$vehicleId'
+import { Route as BuyerRequestsNewRouteImport } from './routes/buyer/requests.new'
+import { Route as BuyerRequestsRequestIdRouteImport } from './routes/buyer/requests.$requestId'
+import { Route as BuyerOrdersOrderIdRouteImport } from './routes/buyer/orders.$orderId'
+import { Route as BuyerInvoicesInvoiceIdRouteImport } from './routes/buyer/invoices.$invoiceId'
+import { Route as BuyerCatalogSkuRouteImport } from './routes/buyer/catalog.$sku'
+import { Route as AdminUsersVerificationRouteImport } from './routes/admin/users.verification'
+import { Route as AdminUsersTenantIdRouteImport } from './routes/admin/users.$tenantId'
+import { Route as AdminSystemAuditKafkaDltRouteImport } from './routes/admin/system-audit.kafka-dlt'
+import { Route as AdminSystemAuditDisputesRouteImport } from './routes/admin/system-audit.disputes'
+import { Route as SupplierOrdersOrderIdFulfillmentRouteImport } from './routes/supplier/orders.$orderId.fulfillment'
+import { Route as SupplierBidsRfqIdSubmitRouteImport } from './routes/supplier/bids.$rfqId.submit'
 
-const DashboardRouteRoute = DashboardRouteRouteImport.update({
-    id: '/dashboard',
-    path: '/dashboard',
-    getParentRoute: () => rootRouteImport,
+const SupplierRouteRoute = SupplierRouteRouteImport.update({
+  id: '/supplier',
+  path: '/supplier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogisticsRouteRoute = LogisticsRouteRouteImport.update({
+  id: '/logistics',
+  path: '/logistics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuyerRouteRoute = BuyerRouteRouteImport.update({
+  id: '/buyer',
+  path: '/buyer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupplierSettingsRoute = SupplierSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => SupplierRouteRoute,
+} as any)
+const SupplierScorecardRoute = SupplierScorecardRouteImport.update({
+  id: '/scorecard',
+  path: '/scorecard',
+  getParentRoute: () => SupplierRouteRoute,
+} as any)
+const SupplierProductsRoute = SupplierProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => SupplierRouteRoute,
+} as any)
+const SupplierPricingRoute = SupplierPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => SupplierRouteRoute,
+} as any)
+const SupplierOrdersRoute = SupplierOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => SupplierRouteRoute,
+} as any)
+const SupplierEdiRoute = SupplierEdiRouteImport.update({
+  id: '/edi',
+  path: '/edi',
+  getParentRoute: () => SupplierRouteRoute,
+} as any)
+const SupplierDashboardRoute = SupplierDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => SupplierRouteRoute,
+} as any)
+const LogisticsSettingsRoute = LogisticsSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => LogisticsRouteRoute,
+} as any)
+const LogisticsRoutesRoute = LogisticsRoutesRouteImport.update({
+  id: '/routes',
+  path: '/routes',
+  getParentRoute: () => LogisticsRouteRoute,
+} as any)
+const LogisticsMapRoute = LogisticsMapRouteImport.update({
+  id: '/map',
+  path: '/map',
+  getParentRoute: () => LogisticsRouteRoute,
+} as any)
+const LogisticsFleetRoute = LogisticsFleetRouteImport.update({
+  id: '/fleet',
+  path: '/fleet',
+  getParentRoute: () => LogisticsRouteRoute,
+} as any)
+const LogisticsEcmrRoute = LogisticsEcmrRouteImport.update({
+  id: '/ecmr',
+  path: '/ecmr',
+  getParentRoute: () => LogisticsRouteRoute,
+} as any)
+const LogisticsDriversRoute = LogisticsDriversRouteImport.update({
+  id: '/drivers',
+  path: '/drivers',
+  getParentRoute: () => LogisticsRouteRoute,
+} as any)
+const BuyerSettingsRoute = BuyerSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => BuyerRouteRoute,
+} as any)
+const BuyerRequestsRoute = BuyerRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => BuyerRouteRoute,
+} as any)
+const BuyerOrdersRoute = BuyerOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => BuyerRouteRoute,
+} as any)
+const BuyerInvoicesRoute = BuyerInvoicesRouteImport.update({
+  id: '/invoices',
+  path: '/invoices',
+  getParentRoute: () => BuyerRouteRoute,
+} as any)
+const BuyerContractsRoute = BuyerContractsRouteImport.update({
+  id: '/contracts',
+  path: '/contracts',
+  getParentRoute: () => BuyerRouteRoute,
+} as any)
+const BuyerClaimsRoute = BuyerClaimsRouteImport.update({
+  id: '/claims',
+  path: '/claims',
+  getParentRoute: () => BuyerRouteRoute,
+} as any)
+const BuyerCheckoutRoute = BuyerCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => BuyerRouteRoute,
+} as any)
+const BuyerCatalogRoute = BuyerCatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
+  getParentRoute: () => BuyerRouteRoute,
+} as any)
+const BuyerCartRoute = BuyerCartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => BuyerRouteRoute,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
-    id: '/auth/register',
-    path: '/auth/register',
-    getParentRoute: () => rootRouteImport,
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
-    id: '/auth/login',
-    path: '/auth/login',
-    getParentRoute: () => rootRouteImport,
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardSettingsRouteRoute = DashboardSettingsRouteRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => DashboardRouteRoute,
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSystemAuditRoute = AdminSystemAuditRouteImport.update({
+  id: '/system-audit',
+  path: '/system-audit',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const SupplierProductsNewRoute = SupplierProductsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => SupplierProductsRoute,
+} as any)
+const SupplierProductsSkuRoute = SupplierProductsSkuRouteImport.update({
+  id: '/$sku',
+  path: '/$sku',
+  getParentRoute: () => SupplierProductsRoute,
+} as any)
+const SupplierPricingContractIdRoute =
+  SupplierPricingContractIdRouteImport.update({
+    id: '/$contractId',
+    path: '/$contractId',
+    getParentRoute: () => SupplierPricingRoute,
+  } as any)
+const SupplierInventoryTransfersRoute =
+  SupplierInventoryTransfersRouteImport.update({
+    id: '/inventory/transfers',
+    path: '/inventory/transfers',
+    getParentRoute: () => SupplierRouteRoute,
+  } as any)
+const SupplierInventoryAbcXyzRoute = SupplierInventoryAbcXyzRouteImport.update({
+  id: '/inventory/abc-xyz',
+  path: '/inventory/abc-xyz',
+  getParentRoute: () => SupplierRouteRoute,
+} as any)
+const SupplierBidsBoardRoute = SupplierBidsBoardRouteImport.update({
+  id: '/bids/board',
+  path: '/bids/board',
+  getParentRoute: () => SupplierRouteRoute,
+} as any)
+const LogisticsRoutesPlannerRoute = LogisticsRoutesPlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
+  getParentRoute: () => LogisticsRoutesRoute,
+} as any)
+const LogisticsRoutesRouteIdRoute = LogisticsRoutesRouteIdRouteImport.update({
+  id: '/$routeId',
+  path: '/$routeId',
+  getParentRoute: () => LogisticsRoutesRoute,
+} as any)
+const LogisticsFleetNewRoute = LogisticsFleetNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => LogisticsFleetRoute,
+} as any)
+const LogisticsFleetVehicleIdRoute = LogisticsFleetVehicleIdRouteImport.update({
+  id: '/$vehicleId',
+  path: '/$vehicleId',
+  getParentRoute: () => LogisticsFleetRoute,
+} as any)
+const BuyerRequestsNewRoute = BuyerRequestsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => BuyerRequestsRoute,
+} as any)
+const BuyerRequestsRequestIdRoute = BuyerRequestsRequestIdRouteImport.update({
+  id: '/$requestId',
+  path: '/$requestId',
+  getParentRoute: () => BuyerRequestsRoute,
+} as any)
+const BuyerOrdersOrderIdRoute = BuyerOrdersOrderIdRouteImport.update({
+  id: '/$orderId',
+  path: '/$orderId',
+  getParentRoute: () => BuyerOrdersRoute,
+} as any)
+const BuyerInvoicesInvoiceIdRoute = BuyerInvoicesInvoiceIdRouteImport.update({
+  id: '/$invoiceId',
+  path: '/$invoiceId',
+  getParentRoute: () => BuyerInvoicesRoute,
+} as any)
+const BuyerCatalogSkuRoute = BuyerCatalogSkuRouteImport.update({
+  id: '/$sku',
+  path: '/$sku',
+  getParentRoute: () => BuyerCatalogRoute,
+} as any)
+const AdminUsersVerificationRoute = AdminUsersVerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => AdminUsersRoute,
+} as any)
+const AdminUsersTenantIdRoute = AdminUsersTenantIdRouteImport.update({
+  id: '/$tenantId',
+  path: '/$tenantId',
+  getParentRoute: () => AdminUsersRoute,
+} as any)
+const AdminSystemAuditKafkaDltRoute =
+  AdminSystemAuditKafkaDltRouteImport.update({
+    id: '/kafka-dlt',
+    path: '/kafka-dlt',
+    getParentRoute: () => AdminSystemAuditRoute,
+  } as any)
+const AdminSystemAuditDisputesRoute =
+  AdminSystemAuditDisputesRouteImport.update({
+    id: '/disputes',
+    path: '/disputes',
+    getParentRoute: () => AdminSystemAuditRoute,
+  } as any)
+const SupplierOrdersOrderIdFulfillmentRoute =
+  SupplierOrdersOrderIdFulfillmentRouteImport.update({
+    id: '/$orderId/fulfillment',
+    path: '/$orderId/fulfillment',
+    getParentRoute: () => SupplierOrdersRoute,
+  } as any)
+const SupplierBidsRfqIdSubmitRoute = SupplierBidsRfqIdSubmitRouteImport.update({
+  id: '/bids/$rfqId/submit',
+  path: '/bids/$rfqId/submit',
+  getParentRoute: () => SupplierRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-    '/': typeof IndexRoute
-    '/dashboard': typeof DashboardRouteRouteWithChildren
-    '/dashboard/settings': typeof DashboardSettingsRouteRoute
-    '/auth/login': typeof AuthLoginRoute
-    '/auth/register': typeof AuthRegisterRoute
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/buyer': typeof BuyerRouteRouteWithChildren
+  '/logistics': typeof LogisticsRouteRouteWithChildren
+  '/supplier': typeof SupplierRouteRouteWithChildren
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/system-audit': typeof AdminSystemAuditRouteWithChildren
+  '/admin/users': typeof AdminUsersRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/buyer/cart': typeof BuyerCartRoute
+  '/buyer/catalog': typeof BuyerCatalogRouteWithChildren
+  '/buyer/checkout': typeof BuyerCheckoutRoute
+  '/buyer/claims': typeof BuyerClaimsRoute
+  '/buyer/contracts': typeof BuyerContractsRoute
+  '/buyer/invoices': typeof BuyerInvoicesRouteWithChildren
+  '/buyer/orders': typeof BuyerOrdersRouteWithChildren
+  '/buyer/requests': typeof BuyerRequestsRouteWithChildren
+  '/buyer/settings': typeof BuyerSettingsRoute
+  '/logistics/drivers': typeof LogisticsDriversRoute
+  '/logistics/ecmr': typeof LogisticsEcmrRoute
+  '/logistics/fleet': typeof LogisticsFleetRouteWithChildren
+  '/logistics/map': typeof LogisticsMapRoute
+  '/logistics/routes': typeof LogisticsRoutesRouteWithChildren
+  '/logistics/settings': typeof LogisticsSettingsRoute
+  '/supplier/dashboard': typeof SupplierDashboardRoute
+  '/supplier/edi': typeof SupplierEdiRoute
+  '/supplier/orders': typeof SupplierOrdersRouteWithChildren
+  '/supplier/pricing': typeof SupplierPricingRouteWithChildren
+  '/supplier/products': typeof SupplierProductsRouteWithChildren
+  '/supplier/scorecard': typeof SupplierScorecardRoute
+  '/supplier/settings': typeof SupplierSettingsRoute
+  '/admin/system-audit/disputes': typeof AdminSystemAuditDisputesRoute
+  '/admin/system-audit/kafka-dlt': typeof AdminSystemAuditKafkaDltRoute
+  '/admin/users/$tenantId': typeof AdminUsersTenantIdRoute
+  '/admin/users/verification': typeof AdminUsersVerificationRoute
+  '/buyer/catalog/$sku': typeof BuyerCatalogSkuRoute
+  '/buyer/invoices/$invoiceId': typeof BuyerInvoicesInvoiceIdRoute
+  '/buyer/orders/$orderId': typeof BuyerOrdersOrderIdRoute
+  '/buyer/requests/$requestId': typeof BuyerRequestsRequestIdRoute
+  '/buyer/requests/new': typeof BuyerRequestsNewRoute
+  '/logistics/fleet/$vehicleId': typeof LogisticsFleetVehicleIdRoute
+  '/logistics/fleet/new': typeof LogisticsFleetNewRoute
+  '/logistics/routes/$routeId': typeof LogisticsRoutesRouteIdRoute
+  '/logistics/routes/planner': typeof LogisticsRoutesPlannerRoute
+  '/supplier/bids/board': typeof SupplierBidsBoardRoute
+  '/supplier/inventory/abc-xyz': typeof SupplierInventoryAbcXyzRoute
+  '/supplier/inventory/transfers': typeof SupplierInventoryTransfersRoute
+  '/supplier/pricing/$contractId': typeof SupplierPricingContractIdRoute
+  '/supplier/products/$sku': typeof SupplierProductsSkuRoute
+  '/supplier/products/new': typeof SupplierProductsNewRoute
+  '/supplier/bids/$rfqId/submit': typeof SupplierBidsRfqIdSubmitRoute
+  '/supplier/orders/$orderId/fulfillment': typeof SupplierOrdersOrderIdFulfillmentRoute
 }
-
 export interface FileRoutesByTo {
-    '/': typeof IndexRoute
-    '/dashboard': typeof DashboardRouteRouteWithChildren
-    '/dashboard/settings': typeof DashboardSettingsRouteRoute
-    '/auth/login': typeof AuthLoginRoute
-    '/auth/register': typeof AuthRegisterRoute
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/buyer': typeof BuyerRouteRouteWithChildren
+  '/logistics': typeof LogisticsRouteRouteWithChildren
+  '/supplier': typeof SupplierRouteRouteWithChildren
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/system-audit': typeof AdminSystemAuditRouteWithChildren
+  '/admin/users': typeof AdminUsersRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/buyer/cart': typeof BuyerCartRoute
+  '/buyer/catalog': typeof BuyerCatalogRouteWithChildren
+  '/buyer/checkout': typeof BuyerCheckoutRoute
+  '/buyer/claims': typeof BuyerClaimsRoute
+  '/buyer/contracts': typeof BuyerContractsRoute
+  '/buyer/invoices': typeof BuyerInvoicesRouteWithChildren
+  '/buyer/orders': typeof BuyerOrdersRouteWithChildren
+  '/buyer/requests': typeof BuyerRequestsRouteWithChildren
+  '/buyer/settings': typeof BuyerSettingsRoute
+  '/logistics/drivers': typeof LogisticsDriversRoute
+  '/logistics/ecmr': typeof LogisticsEcmrRoute
+  '/logistics/fleet': typeof LogisticsFleetRouteWithChildren
+  '/logistics/map': typeof LogisticsMapRoute
+  '/logistics/routes': typeof LogisticsRoutesRouteWithChildren
+  '/logistics/settings': typeof LogisticsSettingsRoute
+  '/supplier/dashboard': typeof SupplierDashboardRoute
+  '/supplier/edi': typeof SupplierEdiRoute
+  '/supplier/orders': typeof SupplierOrdersRouteWithChildren
+  '/supplier/pricing': typeof SupplierPricingRouteWithChildren
+  '/supplier/products': typeof SupplierProductsRouteWithChildren
+  '/supplier/scorecard': typeof SupplierScorecardRoute
+  '/supplier/settings': typeof SupplierSettingsRoute
+  '/admin/system-audit/disputes': typeof AdminSystemAuditDisputesRoute
+  '/admin/system-audit/kafka-dlt': typeof AdminSystemAuditKafkaDltRoute
+  '/admin/users/$tenantId': typeof AdminUsersTenantIdRoute
+  '/admin/users/verification': typeof AdminUsersVerificationRoute
+  '/buyer/catalog/$sku': typeof BuyerCatalogSkuRoute
+  '/buyer/invoices/$invoiceId': typeof BuyerInvoicesInvoiceIdRoute
+  '/buyer/orders/$orderId': typeof BuyerOrdersOrderIdRoute
+  '/buyer/requests/$requestId': typeof BuyerRequestsRequestIdRoute
+  '/buyer/requests/new': typeof BuyerRequestsNewRoute
+  '/logistics/fleet/$vehicleId': typeof LogisticsFleetVehicleIdRoute
+  '/logistics/fleet/new': typeof LogisticsFleetNewRoute
+  '/logistics/routes/$routeId': typeof LogisticsRoutesRouteIdRoute
+  '/logistics/routes/planner': typeof LogisticsRoutesPlannerRoute
+  '/supplier/bids/board': typeof SupplierBidsBoardRoute
+  '/supplier/inventory/abc-xyz': typeof SupplierInventoryAbcXyzRoute
+  '/supplier/inventory/transfers': typeof SupplierInventoryTransfersRoute
+  '/supplier/pricing/$contractId': typeof SupplierPricingContractIdRoute
+  '/supplier/products/$sku': typeof SupplierProductsSkuRoute
+  '/supplier/products/new': typeof SupplierProductsNewRoute
+  '/supplier/bids/$rfqId/submit': typeof SupplierBidsRfqIdSubmitRoute
+  '/supplier/orders/$orderId/fulfillment': typeof SupplierOrdersOrderIdFulfillmentRoute
 }
-
 export interface FileRoutesById {
-    __root__: typeof rootRouteImport
-    '/': typeof IndexRoute
-    '/dashboard': typeof DashboardRouteRouteWithChildren
-    '/dashboard/settings': typeof DashboardSettingsRouteRoute
-    '/auth/login': typeof AuthLoginRoute
-    '/auth/register': typeof AuthRegisterRoute
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/buyer': typeof BuyerRouteRouteWithChildren
+  '/logistics': typeof LogisticsRouteRouteWithChildren
+  '/supplier': typeof SupplierRouteRouteWithChildren
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/system-audit': typeof AdminSystemAuditRouteWithChildren
+  '/admin/users': typeof AdminUsersRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/buyer/cart': typeof BuyerCartRoute
+  '/buyer/catalog': typeof BuyerCatalogRouteWithChildren
+  '/buyer/checkout': typeof BuyerCheckoutRoute
+  '/buyer/claims': typeof BuyerClaimsRoute
+  '/buyer/contracts': typeof BuyerContractsRoute
+  '/buyer/invoices': typeof BuyerInvoicesRouteWithChildren
+  '/buyer/orders': typeof BuyerOrdersRouteWithChildren
+  '/buyer/requests': typeof BuyerRequestsRouteWithChildren
+  '/buyer/settings': typeof BuyerSettingsRoute
+  '/logistics/drivers': typeof LogisticsDriversRoute
+  '/logistics/ecmr': typeof LogisticsEcmrRoute
+  '/logistics/fleet': typeof LogisticsFleetRouteWithChildren
+  '/logistics/map': typeof LogisticsMapRoute
+  '/logistics/routes': typeof LogisticsRoutesRouteWithChildren
+  '/logistics/settings': typeof LogisticsSettingsRoute
+  '/supplier/dashboard': typeof SupplierDashboardRoute
+  '/supplier/edi': typeof SupplierEdiRoute
+  '/supplier/orders': typeof SupplierOrdersRouteWithChildren
+  '/supplier/pricing': typeof SupplierPricingRouteWithChildren
+  '/supplier/products': typeof SupplierProductsRouteWithChildren
+  '/supplier/scorecard': typeof SupplierScorecardRoute
+  '/supplier/settings': typeof SupplierSettingsRoute
+  '/admin/system-audit/disputes': typeof AdminSystemAuditDisputesRoute
+  '/admin/system-audit/kafka-dlt': typeof AdminSystemAuditKafkaDltRoute
+  '/admin/users/$tenantId': typeof AdminUsersTenantIdRoute
+  '/admin/users/verification': typeof AdminUsersVerificationRoute
+  '/buyer/catalog/$sku': typeof BuyerCatalogSkuRoute
+  '/buyer/invoices/$invoiceId': typeof BuyerInvoicesInvoiceIdRoute
+  '/buyer/orders/$orderId': typeof BuyerOrdersOrderIdRoute
+  '/buyer/requests/$requestId': typeof BuyerRequestsRequestIdRoute
+  '/buyer/requests/new': typeof BuyerRequestsNewRoute
+  '/logistics/fleet/$vehicleId': typeof LogisticsFleetVehicleIdRoute
+  '/logistics/fleet/new': typeof LogisticsFleetNewRoute
+  '/logistics/routes/$routeId': typeof LogisticsRoutesRouteIdRoute
+  '/logistics/routes/planner': typeof LogisticsRoutesPlannerRoute
+  '/supplier/bids/board': typeof SupplierBidsBoardRoute
+  '/supplier/inventory/abc-xyz': typeof SupplierInventoryAbcXyzRoute
+  '/supplier/inventory/transfers': typeof SupplierInventoryTransfersRoute
+  '/supplier/pricing/$contractId': typeof SupplierPricingContractIdRoute
+  '/supplier/products/$sku': typeof SupplierProductsSkuRoute
+  '/supplier/products/new': typeof SupplierProductsNewRoute
+  '/supplier/bids/$rfqId/submit': typeof SupplierBidsRfqIdSubmitRoute
+  '/supplier/orders/$orderId/fulfillment': typeof SupplierOrdersOrderIdFulfillmentRoute
 }
-
 export interface FileRouteTypes {
-    fileRoutesByFullPath: FileRoutesByFullPath
-    fullPaths:
-        | '/'
-        | '/dashboard'
-        | '/dashboard/settings'
-        | '/auth/login'
-        | '/auth/register'
-    fileRoutesByTo: FileRoutesByTo
-    to:
-        | '/'
-        | '/dashboard'
-        | '/dashboard/settings'
-        | '/auth/login'
-        | '/auth/register'
-    id:
-        | '__root__'
-        | '/'
-        | '/dashboard'
-        | '/dashboard/settings'
-        | '/auth/login'
-        | '/auth/register'
-    fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/buyer'
+    | '/logistics'
+    | '/supplier'
+    | '/admin/analytics'
+    | '/admin/settings'
+    | '/admin/system-audit'
+    | '/admin/users'
+    | '/auth/callback'
+    | '/auth/login'
+    | '/auth/register'
+    | '/buyer/cart'
+    | '/buyer/catalog'
+    | '/buyer/checkout'
+    | '/buyer/claims'
+    | '/buyer/contracts'
+    | '/buyer/invoices'
+    | '/buyer/orders'
+    | '/buyer/requests'
+    | '/buyer/settings'
+    | '/logistics/drivers'
+    | '/logistics/ecmr'
+    | '/logistics/fleet'
+    | '/logistics/map'
+    | '/logistics/routes'
+    | '/logistics/settings'
+    | '/supplier/dashboard'
+    | '/supplier/edi'
+    | '/supplier/orders'
+    | '/supplier/pricing'
+    | '/supplier/products'
+    | '/supplier/scorecard'
+    | '/supplier/settings'
+    | '/admin/system-audit/disputes'
+    | '/admin/system-audit/kafka-dlt'
+    | '/admin/users/$tenantId'
+    | '/admin/users/verification'
+    | '/buyer/catalog/$sku'
+    | '/buyer/invoices/$invoiceId'
+    | '/buyer/orders/$orderId'
+    | '/buyer/requests/$requestId'
+    | '/buyer/requests/new'
+    | '/logistics/fleet/$vehicleId'
+    | '/logistics/fleet/new'
+    | '/logistics/routes/$routeId'
+    | '/logistics/routes/planner'
+    | '/supplier/bids/board'
+    | '/supplier/inventory/abc-xyz'
+    | '/supplier/inventory/transfers'
+    | '/supplier/pricing/$contractId'
+    | '/supplier/products/$sku'
+    | '/supplier/products/new'
+    | '/supplier/bids/$rfqId/submit'
+    | '/supplier/orders/$orderId/fulfillment'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/admin'
+    | '/buyer'
+    | '/logistics'
+    | '/supplier'
+    | '/admin/analytics'
+    | '/admin/settings'
+    | '/admin/system-audit'
+    | '/admin/users'
+    | '/auth/callback'
+    | '/auth/login'
+    | '/auth/register'
+    | '/buyer/cart'
+    | '/buyer/catalog'
+    | '/buyer/checkout'
+    | '/buyer/claims'
+    | '/buyer/contracts'
+    | '/buyer/invoices'
+    | '/buyer/orders'
+    | '/buyer/requests'
+    | '/buyer/settings'
+    | '/logistics/drivers'
+    | '/logistics/ecmr'
+    | '/logistics/fleet'
+    | '/logistics/map'
+    | '/logistics/routes'
+    | '/logistics/settings'
+    | '/supplier/dashboard'
+    | '/supplier/edi'
+    | '/supplier/orders'
+    | '/supplier/pricing'
+    | '/supplier/products'
+    | '/supplier/scorecard'
+    | '/supplier/settings'
+    | '/admin/system-audit/disputes'
+    | '/admin/system-audit/kafka-dlt'
+    | '/admin/users/$tenantId'
+    | '/admin/users/verification'
+    | '/buyer/catalog/$sku'
+    | '/buyer/invoices/$invoiceId'
+    | '/buyer/orders/$orderId'
+    | '/buyer/requests/$requestId'
+    | '/buyer/requests/new'
+    | '/logistics/fleet/$vehicleId'
+    | '/logistics/fleet/new'
+    | '/logistics/routes/$routeId'
+    | '/logistics/routes/planner'
+    | '/supplier/bids/board'
+    | '/supplier/inventory/abc-xyz'
+    | '/supplier/inventory/transfers'
+    | '/supplier/pricing/$contractId'
+    | '/supplier/products/$sku'
+    | '/supplier/products/new'
+    | '/supplier/bids/$rfqId/submit'
+    | '/supplier/orders/$orderId/fulfillment'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/buyer'
+    | '/logistics'
+    | '/supplier'
+    | '/admin/analytics'
+    | '/admin/settings'
+    | '/admin/system-audit'
+    | '/admin/users'
+    | '/auth/callback'
+    | '/auth/login'
+    | '/auth/register'
+    | '/buyer/cart'
+    | '/buyer/catalog'
+    | '/buyer/checkout'
+    | '/buyer/claims'
+    | '/buyer/contracts'
+    | '/buyer/invoices'
+    | '/buyer/orders'
+    | '/buyer/requests'
+    | '/buyer/settings'
+    | '/logistics/drivers'
+    | '/logistics/ecmr'
+    | '/logistics/fleet'
+    | '/logistics/map'
+    | '/logistics/routes'
+    | '/logistics/settings'
+    | '/supplier/dashboard'
+    | '/supplier/edi'
+    | '/supplier/orders'
+    | '/supplier/pricing'
+    | '/supplier/products'
+    | '/supplier/scorecard'
+    | '/supplier/settings'
+    | '/admin/system-audit/disputes'
+    | '/admin/system-audit/kafka-dlt'
+    | '/admin/users/$tenantId'
+    | '/admin/users/verification'
+    | '/buyer/catalog/$sku'
+    | '/buyer/invoices/$invoiceId'
+    | '/buyer/orders/$orderId'
+    | '/buyer/requests/$requestId'
+    | '/buyer/requests/new'
+    | '/logistics/fleet/$vehicleId'
+    | '/logistics/fleet/new'
+    | '/logistics/routes/$routeId'
+    | '/logistics/routes/planner'
+    | '/supplier/bids/board'
+    | '/supplier/inventory/abc-xyz'
+    | '/supplier/inventory/transfers'
+    | '/supplier/pricing/$contractId'
+    | '/supplier/products/$sku'
+    | '/supplier/products/new'
+    | '/supplier/bids/$rfqId/submit'
+    | '/supplier/orders/$orderId/fulfillment'
+  fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
-    IndexRoute: typeof IndexRoute
-    DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
-    AuthLoginRoute: typeof AuthLoginRoute
-    AuthRegisterRoute: typeof AuthRegisterRoute
+  IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  BuyerRouteRoute: typeof BuyerRouteRouteWithChildren
+  LogisticsRouteRoute: typeof LogisticsRouteRouteWithChildren
+  SupplierRouteRoute: typeof SupplierRouteRouteWithChildren
+  AuthCallbackRoute: typeof AuthCallbackRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
 }
 
 declare module '@tanstack/react-router' {
-    interface FileRoutesByPath {
-        '/dashboard': {
-            id: '/dashboard'
-            path: '/dashboard'
-            fullPath: '/dashboard'
-            preLoaderRoute: typeof DashboardRouteRouteImport
-            parentRoute: typeof rootRouteImport
-        }
-        '/': {
-            id: '/'
-            path: '/'
-            fullPath: '/'
-            preLoaderRoute: typeof IndexRouteImport
-            parentRoute: typeof rootRouteImport
-        }
-        '/auth/register': {
-            id: '/auth/register'
-            path: '/auth/register'
-            fullPath: '/auth/register'
-            preLoaderRoute: typeof AuthRegisterRouteImport
-            parentRoute: typeof rootRouteImport
-        }
-        '/auth/login': {
-            id: '/auth/login'
-            path: '/auth/login'
-            fullPath: '/auth/login'
-            preLoaderRoute: typeof AuthLoginRouteImport
-            parentRoute: typeof rootRouteImport
-        }
-        '/dashboard/settings': {
-            id: '/dashboard/settings'
-            path: '/settings'
-            fullPath: '/dashboard/settings'
-            preLoaderRoute: typeof DashboardSettingsRouteRouteImport
-            parentRoute: typeof DashboardRouteRoute
-        }
+  interface FileRoutesByPath {
+    '/supplier': {
+      id: '/supplier'
+      path: '/supplier'
+      fullPath: '/supplier'
+      preLoaderRoute: typeof SupplierRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
+    '/logistics': {
+      id: '/logistics'
+      path: '/logistics'
+      fullPath: '/logistics'
+      preLoaderRoute: typeof LogisticsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/buyer': {
+      id: '/buyer'
+      path: '/buyer'
+      fullPath: '/buyer'
+      preLoaderRoute: typeof BuyerRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/supplier/settings': {
+      id: '/supplier/settings'
+      path: '/settings'
+      fullPath: '/supplier/settings'
+      preLoaderRoute: typeof SupplierSettingsRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/supplier/scorecard': {
+      id: '/supplier/scorecard'
+      path: '/scorecard'
+      fullPath: '/supplier/scorecard'
+      preLoaderRoute: typeof SupplierScorecardRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/supplier/products': {
+      id: '/supplier/products'
+      path: '/products'
+      fullPath: '/supplier/products'
+      preLoaderRoute: typeof SupplierProductsRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/supplier/pricing': {
+      id: '/supplier/pricing'
+      path: '/pricing'
+      fullPath: '/supplier/pricing'
+      preLoaderRoute: typeof SupplierPricingRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/supplier/orders': {
+      id: '/supplier/orders'
+      path: '/orders'
+      fullPath: '/supplier/orders'
+      preLoaderRoute: typeof SupplierOrdersRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/supplier/edi': {
+      id: '/supplier/edi'
+      path: '/edi'
+      fullPath: '/supplier/edi'
+      preLoaderRoute: typeof SupplierEdiRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/supplier/dashboard': {
+      id: '/supplier/dashboard'
+      path: '/dashboard'
+      fullPath: '/supplier/dashboard'
+      preLoaderRoute: typeof SupplierDashboardRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/logistics/settings': {
+      id: '/logistics/settings'
+      path: '/settings'
+      fullPath: '/logistics/settings'
+      preLoaderRoute: typeof LogisticsSettingsRouteImport
+      parentRoute: typeof LogisticsRouteRoute
+    }
+    '/logistics/routes': {
+      id: '/logistics/routes'
+      path: '/routes'
+      fullPath: '/logistics/routes'
+      preLoaderRoute: typeof LogisticsRoutesRouteImport
+      parentRoute: typeof LogisticsRouteRoute
+    }
+    '/logistics/map': {
+      id: '/logistics/map'
+      path: '/map'
+      fullPath: '/logistics/map'
+      preLoaderRoute: typeof LogisticsMapRouteImport
+      parentRoute: typeof LogisticsRouteRoute
+    }
+    '/logistics/fleet': {
+      id: '/logistics/fleet'
+      path: '/fleet'
+      fullPath: '/logistics/fleet'
+      preLoaderRoute: typeof LogisticsFleetRouteImport
+      parentRoute: typeof LogisticsRouteRoute
+    }
+    '/logistics/ecmr': {
+      id: '/logistics/ecmr'
+      path: '/ecmr'
+      fullPath: '/logistics/ecmr'
+      preLoaderRoute: typeof LogisticsEcmrRouteImport
+      parentRoute: typeof LogisticsRouteRoute
+    }
+    '/logistics/drivers': {
+      id: '/logistics/drivers'
+      path: '/drivers'
+      fullPath: '/logistics/drivers'
+      preLoaderRoute: typeof LogisticsDriversRouteImport
+      parentRoute: typeof LogisticsRouteRoute
+    }
+    '/buyer/settings': {
+      id: '/buyer/settings'
+      path: '/settings'
+      fullPath: '/buyer/settings'
+      preLoaderRoute: typeof BuyerSettingsRouteImport
+      parentRoute: typeof BuyerRouteRoute
+    }
+    '/buyer/requests': {
+      id: '/buyer/requests'
+      path: '/requests'
+      fullPath: '/buyer/requests'
+      preLoaderRoute: typeof BuyerRequestsRouteImport
+      parentRoute: typeof BuyerRouteRoute
+    }
+    '/buyer/orders': {
+      id: '/buyer/orders'
+      path: '/orders'
+      fullPath: '/buyer/orders'
+      preLoaderRoute: typeof BuyerOrdersRouteImport
+      parentRoute: typeof BuyerRouteRoute
+    }
+    '/buyer/invoices': {
+      id: '/buyer/invoices'
+      path: '/invoices'
+      fullPath: '/buyer/invoices'
+      preLoaderRoute: typeof BuyerInvoicesRouteImport
+      parentRoute: typeof BuyerRouteRoute
+    }
+    '/buyer/contracts': {
+      id: '/buyer/contracts'
+      path: '/contracts'
+      fullPath: '/buyer/contracts'
+      preLoaderRoute: typeof BuyerContractsRouteImport
+      parentRoute: typeof BuyerRouteRoute
+    }
+    '/buyer/claims': {
+      id: '/buyer/claims'
+      path: '/claims'
+      fullPath: '/buyer/claims'
+      preLoaderRoute: typeof BuyerClaimsRouteImport
+      parentRoute: typeof BuyerRouteRoute
+    }
+    '/buyer/checkout': {
+      id: '/buyer/checkout'
+      path: '/checkout'
+      fullPath: '/buyer/checkout'
+      preLoaderRoute: typeof BuyerCheckoutRouteImport
+      parentRoute: typeof BuyerRouteRoute
+    }
+    '/buyer/catalog': {
+      id: '/buyer/catalog'
+      path: '/catalog'
+      fullPath: '/buyer/catalog'
+      preLoaderRoute: typeof BuyerCatalogRouteImport
+      parentRoute: typeof BuyerRouteRoute
+    }
+    '/buyer/cart': {
+      id: '/buyer/cart'
+      path: '/cart'
+      fullPath: '/buyer/cart'
+      preLoaderRoute: typeof BuyerCartRouteImport
+      parentRoute: typeof BuyerRouteRoute
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/system-audit': {
+      id: '/admin/system-audit'
+      path: '/system-audit'
+      fullPath: '/admin/system-audit'
+      preLoaderRoute: typeof AdminSystemAuditRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/supplier/products/new': {
+      id: '/supplier/products/new'
+      path: '/new'
+      fullPath: '/supplier/products/new'
+      preLoaderRoute: typeof SupplierProductsNewRouteImport
+      parentRoute: typeof SupplierProductsRoute
+    }
+    '/supplier/products/$sku': {
+      id: '/supplier/products/$sku'
+      path: '/$sku'
+      fullPath: '/supplier/products/$sku'
+      preLoaderRoute: typeof SupplierProductsSkuRouteImport
+      parentRoute: typeof SupplierProductsRoute
+    }
+    '/supplier/pricing/$contractId': {
+      id: '/supplier/pricing/$contractId'
+      path: '/$contractId'
+      fullPath: '/supplier/pricing/$contractId'
+      preLoaderRoute: typeof SupplierPricingContractIdRouteImport
+      parentRoute: typeof SupplierPricingRoute
+    }
+    '/supplier/inventory/transfers': {
+      id: '/supplier/inventory/transfers'
+      path: '/inventory/transfers'
+      fullPath: '/supplier/inventory/transfers'
+      preLoaderRoute: typeof SupplierInventoryTransfersRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/supplier/inventory/abc-xyz': {
+      id: '/supplier/inventory/abc-xyz'
+      path: '/inventory/abc-xyz'
+      fullPath: '/supplier/inventory/abc-xyz'
+      preLoaderRoute: typeof SupplierInventoryAbcXyzRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/supplier/bids/board': {
+      id: '/supplier/bids/board'
+      path: '/bids/board'
+      fullPath: '/supplier/bids/board'
+      preLoaderRoute: typeof SupplierBidsBoardRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/logistics/routes/planner': {
+      id: '/logistics/routes/planner'
+      path: '/planner'
+      fullPath: '/logistics/routes/planner'
+      preLoaderRoute: typeof LogisticsRoutesPlannerRouteImport
+      parentRoute: typeof LogisticsRoutesRoute
+    }
+    '/logistics/routes/$routeId': {
+      id: '/logistics/routes/$routeId'
+      path: '/$routeId'
+      fullPath: '/logistics/routes/$routeId'
+      preLoaderRoute: typeof LogisticsRoutesRouteIdRouteImport
+      parentRoute: typeof LogisticsRoutesRoute
+    }
+    '/logistics/fleet/new': {
+      id: '/logistics/fleet/new'
+      path: '/new'
+      fullPath: '/logistics/fleet/new'
+      preLoaderRoute: typeof LogisticsFleetNewRouteImport
+      parentRoute: typeof LogisticsFleetRoute
+    }
+    '/logistics/fleet/$vehicleId': {
+      id: '/logistics/fleet/$vehicleId'
+      path: '/$vehicleId'
+      fullPath: '/logistics/fleet/$vehicleId'
+      preLoaderRoute: typeof LogisticsFleetVehicleIdRouteImport
+      parentRoute: typeof LogisticsFleetRoute
+    }
+    '/buyer/requests/new': {
+      id: '/buyer/requests/new'
+      path: '/new'
+      fullPath: '/buyer/requests/new'
+      preLoaderRoute: typeof BuyerRequestsNewRouteImport
+      parentRoute: typeof BuyerRequestsRoute
+    }
+    '/buyer/requests/$requestId': {
+      id: '/buyer/requests/$requestId'
+      path: '/$requestId'
+      fullPath: '/buyer/requests/$requestId'
+      preLoaderRoute: typeof BuyerRequestsRequestIdRouteImport
+      parentRoute: typeof BuyerRequestsRoute
+    }
+    '/buyer/orders/$orderId': {
+      id: '/buyer/orders/$orderId'
+      path: '/$orderId'
+      fullPath: '/buyer/orders/$orderId'
+      preLoaderRoute: typeof BuyerOrdersOrderIdRouteImport
+      parentRoute: typeof BuyerOrdersRoute
+    }
+    '/buyer/invoices/$invoiceId': {
+      id: '/buyer/invoices/$invoiceId'
+      path: '/$invoiceId'
+      fullPath: '/buyer/invoices/$invoiceId'
+      preLoaderRoute: typeof BuyerInvoicesInvoiceIdRouteImport
+      parentRoute: typeof BuyerInvoicesRoute
+    }
+    '/buyer/catalog/$sku': {
+      id: '/buyer/catalog/$sku'
+      path: '/$sku'
+      fullPath: '/buyer/catalog/$sku'
+      preLoaderRoute: typeof BuyerCatalogSkuRouteImport
+      parentRoute: typeof BuyerCatalogRoute
+    }
+    '/admin/users/verification': {
+      id: '/admin/users/verification'
+      path: '/verification'
+      fullPath: '/admin/users/verification'
+      preLoaderRoute: typeof AdminUsersVerificationRouteImport
+      parentRoute: typeof AdminUsersRoute
+    }
+    '/admin/users/$tenantId': {
+      id: '/admin/users/$tenantId'
+      path: '/$tenantId'
+      fullPath: '/admin/users/$tenantId'
+      preLoaderRoute: typeof AdminUsersTenantIdRouteImport
+      parentRoute: typeof AdminUsersRoute
+    }
+    '/admin/system-audit/kafka-dlt': {
+      id: '/admin/system-audit/kafka-dlt'
+      path: '/kafka-dlt'
+      fullPath: '/admin/system-audit/kafka-dlt'
+      preLoaderRoute: typeof AdminSystemAuditKafkaDltRouteImport
+      parentRoute: typeof AdminSystemAuditRoute
+    }
+    '/admin/system-audit/disputes': {
+      id: '/admin/system-audit/disputes'
+      path: '/disputes'
+      fullPath: '/admin/system-audit/disputes'
+      preLoaderRoute: typeof AdminSystemAuditDisputesRouteImport
+      parentRoute: typeof AdminSystemAuditRoute
+    }
+    '/supplier/orders/$orderId/fulfillment': {
+      id: '/supplier/orders/$orderId/fulfillment'
+      path: '/$orderId/fulfillment'
+      fullPath: '/supplier/orders/$orderId/fulfillment'
+      preLoaderRoute: typeof SupplierOrdersOrderIdFulfillmentRouteImport
+      parentRoute: typeof SupplierOrdersRoute
+    }
+    '/supplier/bids/$rfqId/submit': {
+      id: '/supplier/bids/$rfqId/submit'
+      path: '/bids/$rfqId/submit'
+      fullPath: '/supplier/bids/$rfqId/submit'
+      preLoaderRoute: typeof SupplierBidsRfqIdSubmitRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+  }
 }
 
-interface DashboardRouteRouteChildren {
-    DashboardSettingsRouteRoute: typeof DashboardSettingsRouteRoute
+interface AdminSystemAuditRouteChildren {
+  AdminSystemAuditDisputesRoute: typeof AdminSystemAuditDisputesRoute
+  AdminSystemAuditKafkaDltRoute: typeof AdminSystemAuditKafkaDltRoute
 }
 
-const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
-    DashboardSettingsRouteRoute: DashboardSettingsRouteRoute,
+const AdminSystemAuditRouteChildren: AdminSystemAuditRouteChildren = {
+  AdminSystemAuditDisputesRoute: AdminSystemAuditDisputesRoute,
+  AdminSystemAuditKafkaDltRoute: AdminSystemAuditKafkaDltRoute,
 }
 
-const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
-    DashboardRouteRouteChildren,
+const AdminSystemAuditRouteWithChildren =
+  AdminSystemAuditRoute._addFileChildren(AdminSystemAuditRouteChildren)
+
+interface AdminUsersRouteChildren {
+  AdminUsersTenantIdRoute: typeof AdminUsersTenantIdRoute
+  AdminUsersVerificationRoute: typeof AdminUsersVerificationRoute
+}
+
+const AdminUsersRouteChildren: AdminUsersRouteChildren = {
+  AdminUsersTenantIdRoute: AdminUsersTenantIdRoute,
+  AdminUsersVerificationRoute: AdminUsersVerificationRoute,
+}
+
+const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
+  AdminUsersRouteChildren,
+)
+
+interface AdminRouteRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminSystemAuditRoute: typeof AdminSystemAuditRouteWithChildren
+  AdminUsersRoute: typeof AdminUsersRouteWithChildren
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminSystemAuditRoute: AdminSystemAuditRouteWithChildren,
+  AdminUsersRoute: AdminUsersRouteWithChildren,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
+interface BuyerCatalogRouteChildren {
+  BuyerCatalogSkuRoute: typeof BuyerCatalogSkuRoute
+}
+
+const BuyerCatalogRouteChildren: BuyerCatalogRouteChildren = {
+  BuyerCatalogSkuRoute: BuyerCatalogSkuRoute,
+}
+
+const BuyerCatalogRouteWithChildren = BuyerCatalogRoute._addFileChildren(
+  BuyerCatalogRouteChildren,
+)
+
+interface BuyerInvoicesRouteChildren {
+  BuyerInvoicesInvoiceIdRoute: typeof BuyerInvoicesInvoiceIdRoute
+}
+
+const BuyerInvoicesRouteChildren: BuyerInvoicesRouteChildren = {
+  BuyerInvoicesInvoiceIdRoute: BuyerInvoicesInvoiceIdRoute,
+}
+
+const BuyerInvoicesRouteWithChildren = BuyerInvoicesRoute._addFileChildren(
+  BuyerInvoicesRouteChildren,
+)
+
+interface BuyerOrdersRouteChildren {
+  BuyerOrdersOrderIdRoute: typeof BuyerOrdersOrderIdRoute
+}
+
+const BuyerOrdersRouteChildren: BuyerOrdersRouteChildren = {
+  BuyerOrdersOrderIdRoute: BuyerOrdersOrderIdRoute,
+}
+
+const BuyerOrdersRouteWithChildren = BuyerOrdersRoute._addFileChildren(
+  BuyerOrdersRouteChildren,
+)
+
+interface BuyerRequestsRouteChildren {
+  BuyerRequestsRequestIdRoute: typeof BuyerRequestsRequestIdRoute
+  BuyerRequestsNewRoute: typeof BuyerRequestsNewRoute
+}
+
+const BuyerRequestsRouteChildren: BuyerRequestsRouteChildren = {
+  BuyerRequestsRequestIdRoute: BuyerRequestsRequestIdRoute,
+  BuyerRequestsNewRoute: BuyerRequestsNewRoute,
+}
+
+const BuyerRequestsRouteWithChildren = BuyerRequestsRoute._addFileChildren(
+  BuyerRequestsRouteChildren,
+)
+
+interface BuyerRouteRouteChildren {
+  BuyerCartRoute: typeof BuyerCartRoute
+  BuyerCatalogRoute: typeof BuyerCatalogRouteWithChildren
+  BuyerCheckoutRoute: typeof BuyerCheckoutRoute
+  BuyerClaimsRoute: typeof BuyerClaimsRoute
+  BuyerContractsRoute: typeof BuyerContractsRoute
+  BuyerInvoicesRoute: typeof BuyerInvoicesRouteWithChildren
+  BuyerOrdersRoute: typeof BuyerOrdersRouteWithChildren
+  BuyerRequestsRoute: typeof BuyerRequestsRouteWithChildren
+  BuyerSettingsRoute: typeof BuyerSettingsRoute
+}
+
+const BuyerRouteRouteChildren: BuyerRouteRouteChildren = {
+  BuyerCartRoute: BuyerCartRoute,
+  BuyerCatalogRoute: BuyerCatalogRouteWithChildren,
+  BuyerCheckoutRoute: BuyerCheckoutRoute,
+  BuyerClaimsRoute: BuyerClaimsRoute,
+  BuyerContractsRoute: BuyerContractsRoute,
+  BuyerInvoicesRoute: BuyerInvoicesRouteWithChildren,
+  BuyerOrdersRoute: BuyerOrdersRouteWithChildren,
+  BuyerRequestsRoute: BuyerRequestsRouteWithChildren,
+  BuyerSettingsRoute: BuyerSettingsRoute,
+}
+
+const BuyerRouteRouteWithChildren = BuyerRouteRoute._addFileChildren(
+  BuyerRouteRouteChildren,
+)
+
+interface LogisticsFleetRouteChildren {
+  LogisticsFleetVehicleIdRoute: typeof LogisticsFleetVehicleIdRoute
+  LogisticsFleetNewRoute: typeof LogisticsFleetNewRoute
+}
+
+const LogisticsFleetRouteChildren: LogisticsFleetRouteChildren = {
+  LogisticsFleetVehicleIdRoute: LogisticsFleetVehicleIdRoute,
+  LogisticsFleetNewRoute: LogisticsFleetNewRoute,
+}
+
+const LogisticsFleetRouteWithChildren = LogisticsFleetRoute._addFileChildren(
+  LogisticsFleetRouteChildren,
+)
+
+interface LogisticsRoutesRouteChildren {
+  LogisticsRoutesRouteIdRoute: typeof LogisticsRoutesRouteIdRoute
+  LogisticsRoutesPlannerRoute: typeof LogisticsRoutesPlannerRoute
+}
+
+const LogisticsRoutesRouteChildren: LogisticsRoutesRouteChildren = {
+  LogisticsRoutesRouteIdRoute: LogisticsRoutesRouteIdRoute,
+  LogisticsRoutesPlannerRoute: LogisticsRoutesPlannerRoute,
+}
+
+const LogisticsRoutesRouteWithChildren = LogisticsRoutesRoute._addFileChildren(
+  LogisticsRoutesRouteChildren,
+)
+
+interface LogisticsRouteRouteChildren {
+  LogisticsDriversRoute: typeof LogisticsDriversRoute
+  LogisticsEcmrRoute: typeof LogisticsEcmrRoute
+  LogisticsFleetRoute: typeof LogisticsFleetRouteWithChildren
+  LogisticsMapRoute: typeof LogisticsMapRoute
+  LogisticsRoutesRoute: typeof LogisticsRoutesRouteWithChildren
+  LogisticsSettingsRoute: typeof LogisticsSettingsRoute
+}
+
+const LogisticsRouteRouteChildren: LogisticsRouteRouteChildren = {
+  LogisticsDriversRoute: LogisticsDriversRoute,
+  LogisticsEcmrRoute: LogisticsEcmrRoute,
+  LogisticsFleetRoute: LogisticsFleetRouteWithChildren,
+  LogisticsMapRoute: LogisticsMapRoute,
+  LogisticsRoutesRoute: LogisticsRoutesRouteWithChildren,
+  LogisticsSettingsRoute: LogisticsSettingsRoute,
+}
+
+const LogisticsRouteRouteWithChildren = LogisticsRouteRoute._addFileChildren(
+  LogisticsRouteRouteChildren,
+)
+
+interface SupplierOrdersRouteChildren {
+  SupplierOrdersOrderIdFulfillmentRoute: typeof SupplierOrdersOrderIdFulfillmentRoute
+}
+
+const SupplierOrdersRouteChildren: SupplierOrdersRouteChildren = {
+  SupplierOrdersOrderIdFulfillmentRoute: SupplierOrdersOrderIdFulfillmentRoute,
+}
+
+const SupplierOrdersRouteWithChildren = SupplierOrdersRoute._addFileChildren(
+  SupplierOrdersRouteChildren,
+)
+
+interface SupplierPricingRouteChildren {
+  SupplierPricingContractIdRoute: typeof SupplierPricingContractIdRoute
+}
+
+const SupplierPricingRouteChildren: SupplierPricingRouteChildren = {
+  SupplierPricingContractIdRoute: SupplierPricingContractIdRoute,
+}
+
+const SupplierPricingRouteWithChildren = SupplierPricingRoute._addFileChildren(
+  SupplierPricingRouteChildren,
+)
+
+interface SupplierProductsRouteChildren {
+  SupplierProductsSkuRoute: typeof SupplierProductsSkuRoute
+  SupplierProductsNewRoute: typeof SupplierProductsNewRoute
+}
+
+const SupplierProductsRouteChildren: SupplierProductsRouteChildren = {
+  SupplierProductsSkuRoute: SupplierProductsSkuRoute,
+  SupplierProductsNewRoute: SupplierProductsNewRoute,
+}
+
+const SupplierProductsRouteWithChildren =
+  SupplierProductsRoute._addFileChildren(SupplierProductsRouteChildren)
+
+interface SupplierRouteRouteChildren {
+  SupplierDashboardRoute: typeof SupplierDashboardRoute
+  SupplierEdiRoute: typeof SupplierEdiRoute
+  SupplierOrdersRoute: typeof SupplierOrdersRouteWithChildren
+  SupplierPricingRoute: typeof SupplierPricingRouteWithChildren
+  SupplierProductsRoute: typeof SupplierProductsRouteWithChildren
+  SupplierScorecardRoute: typeof SupplierScorecardRoute
+  SupplierSettingsRoute: typeof SupplierSettingsRoute
+  SupplierBidsBoardRoute: typeof SupplierBidsBoardRoute
+  SupplierInventoryAbcXyzRoute: typeof SupplierInventoryAbcXyzRoute
+  SupplierInventoryTransfersRoute: typeof SupplierInventoryTransfersRoute
+  SupplierBidsRfqIdSubmitRoute: typeof SupplierBidsRfqIdSubmitRoute
+}
+
+const SupplierRouteRouteChildren: SupplierRouteRouteChildren = {
+  SupplierDashboardRoute: SupplierDashboardRoute,
+  SupplierEdiRoute: SupplierEdiRoute,
+  SupplierOrdersRoute: SupplierOrdersRouteWithChildren,
+  SupplierPricingRoute: SupplierPricingRouteWithChildren,
+  SupplierProductsRoute: SupplierProductsRouteWithChildren,
+  SupplierScorecardRoute: SupplierScorecardRoute,
+  SupplierSettingsRoute: SupplierSettingsRoute,
+  SupplierBidsBoardRoute: SupplierBidsBoardRoute,
+  SupplierInventoryAbcXyzRoute: SupplierInventoryAbcXyzRoute,
+  SupplierInventoryTransfersRoute: SupplierInventoryTransfersRoute,
+  SupplierBidsRfqIdSubmitRoute: SupplierBidsRfqIdSubmitRoute,
+}
+
+const SupplierRouteRouteWithChildren = SupplierRouteRoute._addFileChildren(
+  SupplierRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-    IndexRoute: IndexRoute,
-    DashboardRouteRoute: DashboardRouteRouteWithChildren,
-    AuthLoginRoute: AuthLoginRoute,
-    AuthRegisterRoute: AuthRegisterRoute,
+  IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
+  BuyerRouteRoute: BuyerRouteRouteWithChildren,
+  LogisticsRouteRoute: LogisticsRouteRouteWithChildren,
+  SupplierRouteRoute: SupplierRouteRouteWithChildren,
+  AuthCallbackRoute: AuthCallbackRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
 }
 export const routeTree = rootRouteImport
-    ._addFileChildren(rootRouteChildren)
-    ._addFileTypes<FileRouteTypes>()
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()

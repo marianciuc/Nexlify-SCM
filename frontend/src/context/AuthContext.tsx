@@ -20,23 +20,18 @@ const AuthProvider = ({children}: { children: ReactNode }) => {
     }, []);
 
     useEffect(() => {
-        if (
-            !isAuthenticated &&
-            !matchRoute({
-                to: '/auth/login',
-            }) &&
-            !matchRoute({
-                to: '/auth/register',
-            }) &&
-            !matchRoute({to: '/'})
-        ) {
+        const isAuthRoute =
+            matchRoute({to: '/auth/login'}) ||
+            matchRoute({to: '/auth/register'}) ||
+            matchRoute({to: '/auth/callback'});
+        const isPublicHome = matchRoute({to: '/'});
+
+        if (!isAuthenticated && !isAuthRoute && !isPublicHome) {
             navigate({to: '/auth/login'});
         }
-        if (
-            (isAuthenticated && matchRoute({to: '/auth/login'})) ||
-            matchRoute({to: '/auth/register'})
-        ) {
-            navigate({to: '/dashboard'});
+
+        if (isAuthenticated && (matchRoute({to: '/auth/login'}) || matchRoute({to: '/auth/register'}))) {
+            navigate({to: '/supplier/dashboard'});
         }
     }, [isAuthenticated, matchRoute, navigate]);
 

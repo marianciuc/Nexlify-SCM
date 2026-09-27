@@ -1,35 +1,6 @@
-/**
- * Performance optimization utilities for the landing page
- */
+// Performance optimization utilities
 
-import {lazy} from 'react';
-
-// Lazy load components that are below the fold
-export const LazyPlatformModules = lazy(() =>
-    import('@/components/landing/PlatformModules').then(module => ({
-        default: module.PlatformModules,
-    }))
-);
-
-export const LazyTechnology = lazy(() =>
-    import('@/components/landing/Technology').then(module => ({default: module.Technology}))
-);
-
-export const LazyPricing = lazy(() =>
-    import('@/components/landing/Pricing').then(module => ({default: module.Pricing}))
-);
-
-export const LazySocialProof = lazy(() =>
-    import('@/components/landing/SocialProof').then(module => ({default: module.SocialProof}))
-);
-
-export const LazyCallToAction = lazy(() =>
-    import('@/components/landing/CallToAction').then(module => ({default: module.CallToAction}))
-);
-
-export const LazyLandingFooter = lazy(() =>
-    import('@/components/landing/LandingFooter').then(module => ({default: module.LandingFooter}))
-);
+// Scroll and image performance utilities
 
 // Preload critical images
 export const preloadImages = () => {

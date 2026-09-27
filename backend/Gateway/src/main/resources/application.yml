@@ -5,16 +5,20 @@ spring:
     name: gateway
   cloud:
     consul:
+      enabled: ${CONSUL_ENABLED:true}
       host: ${CONSUL_HOST:localhost}
       port: ${CONSUL_PORT:8500}
       discovery:
-        enabled: true
+        enabled: ${CONSUL_DISCOVERY_ENABLED:true}
+        register: ${CONSUL_REGISTER:false}
+        fail-fast: false
         instance-id: ${spring.application.name}:${random.value}
         service-name: ${spring.application.name}
         healthCheckPath: /actuator/health
         healthCheckInterval: 15s
       config:
-        enabled: true
+        enabled: ${CONSUL_CONFIG_ENABLED:false}
+        fail-fast: false
         format: yaml
         data-key: application.yml
     gateway:
@@ -24,20 +28,131 @@ spring:
             locator:
               enabled: true
           routes:
-            - id: user-service
-              uri: lb://user-service
+            - id: user-service-auth
+              uri: ${USER_SERVICE_URL:http://localhost:8081}
               predicates:
                 - Path=/api/v1/auth/**
 
+            - id: user-service-api
+              uri: ${USER_SERVICE_URL:http://localhost:8081}
+              predicates:
+                - Path=/api/v1/users/**, /api/v1/companies/**, /api/v1/locations/**, /api/v1/employers/**, /api/v1/onboarding/**, /api/security-scopes/**
+
+            - id: order-service-api
+              uri: ${ORDER_SERVICE_URL:http://localhost:8082}
+              predicates:
+                - Path=/api/v1/orders/**
+
+            - id: inventory-service-api
+              uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
+              predicates:
+                - Path=/api/v1/inventory/**
+
+            - id: logistics-service-api
+              uri: ${LOGISTICS_SERVICE_URL:http://localhost:8084}
+              predicates:
+                - Path=/api/v1/logistics/**
+
+            - id: billing-service-api
+              uri: ${BILLING_SERVICE_URL:http://localhost:8085}
+              predicates:
+                - Path=/api/v1/billing/**
+
+            - id: rfq-service-api
+              uri: ${RFQ_SERVICE_URL:http://localhost:8088}
+              predicates:
+                - Path=/api/v1/rfq/**
+
+            - id: analytics-service-api
+              uri: ${ANALYTICS_SERVICE_URL:http://localhost:8087}
+              predicates:
+                - Path=/api/v1/analytics/**
+
+            - id: notification-service-api
+              uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
+              predicates:
+                - Path=/api/v1/notifications/**
+
+            - id: integration-service-api
+              uri: ${INTEGRATION_SERVICE_URL:http://localhost:8089}
+              predicates:
+                - Path=/api/v1/integration/**
+
             - id: user-service-openapi
-              uri: lb://user-service
+              uri: ${USER_SERVICE_URL:http://localhost:8081}
               predicates:
                 - Path=/user-service/v3/api-docs/**
+              filters:
+                - RewritePath=/user-service/(?<remaining>.*), /${remaining}
+
+            - id: order-service-openapi
+              uri: ${ORDER_SERVICE_URL:http://localhost:8082}
+              predicates:
+                - Path=/order-service/v3/api-docs/**
+              filters:
+                - RewritePath=/order-service/(?<remaining>.*), /${remaining}
+
+            - id: inventory-service-openapi
+              uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
+              predicates:
+                - Path=/inventory-service/v3/api-docs/**
+              filters:
+                - RewritePath=/inventory-service/(?<remaining>.*), /${remaining}
+
+            - id: logistics-service-openapi
+              uri: ${LOGISTICS_SERVICE_URL:http://localhost:8084}
+              predicates:
+                - Path=/logistics-service/v3/api-docs/**
+              filters:
+                - RewritePath=/logistics-service/(?<remaining>.*), /${remaining}
+
+            - id: billing-service-openapi
+              uri: ${BILLING_SERVICE_URL:http://localhost:8085}
+              predicates:
+                - Path=/billing-service/v3/api-docs/**
+              filters:
+                - RewritePath=/billing-service/(?<remaining>.*), /${remaining}
+
+            - id: notification-service-openapi
+              uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
+              predicates:
+                - Path=/notification-service/v3/api-docs/**
+              filters:
+                - RewritePath=/notification-service/(?<remaining>.*), /${remaining}
+
+            - id: analytics-service-openapi
+              uri: ${ANALYTICS_SERVICE_URL:http://localhost:8087}
+              predicates:
+                - Path=/analytics-service/v3/api-docs/**
+              filters:
+                - RewritePath=/analytics-service/(?<remaining>.*), /${remaining}
+
+            - id: rfq-service-openapi
+              uri: ${RFQ_SERVICE_URL:http://localhost:8088}
+              predicates:
+                - Path=/rfq-service/v3/api-docs/**
+              filters:
+                - RewritePath=/rfq-service/(?<remaining>.*), /${remaining}
+
+            - id: integration-service-openapi
+              uri: ${INTEGRATION_SERVICE_URL:http://localhost:8089}
+              predicates:
+                - Path=/integration-service/v3/api-docs/**
+              filters:
+                - RewritePath=/integration-service/(?<remaining>.*), /${remaining}
 
             - id: user-service-actuator
-              uri: lb://user-service
+              uri: ${USER_SERVICE_URL:http://localhost:8081}
               predicates:
                 - Path=/user-service/actuator/**
+              filters:
+                - RewritePath=/user-service/(?<remaining>.*), /${remaining}
+
+            - id: notification-service-ws
+              uri: ${NOTIFICATION_SERVICE_WS_URL:ws://localhost:8086}
+              predicates:
+                - Path=/ws/**
+
             # Fallback route
             - id: fallback
               uri: lb://gateway
@@ -59,10 +174,73 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/LogisticCommerce}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/nexlify}
+
+# SpringDoc OpenAPI configuration
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    urls:
+      - name: "API Gateway"
+        url: /v3/api-docs
+      - name: "Aggregated Platform API"
+        url: /v3/api-docs/aggregated
+      - name: "User Service"
+        url: /user-service/v3/api-docs
+      - name: "Order Service"
+        url: /order-service/v3/api-docs
+      - name: "Inventory Service"
+        url: /inventory-service/v3/api-docs
+      - name: "Logistics Service"
+        url: /logistics-service/v3/api-docs
+      - name: "Billing Service"
+        url: /billing-service/v3/api-docs
+      - name: "Notification Service"
+        url: /notification-service/v3/api-docs
+      - name: "Analytics Service"
+        url: /analytics-service/v3/api-docs
+      - name: "RFQ Service"
+        url: /rfq-service/v3/api-docs
+      - name: "Integration Service"
+        url: /integration-service/v3/api-docs
+    urlsPrimaryName: "Aggregated Platform API"
+    doc-expansion: list
+    default-models-expand-depth: 1
+    default-model-expand-depth: 1
+    display-request-duration: true
+    filter: true
+    deep-linking: true
+    operations-sorter: alpha
+    tags-sorter: alpha
+    try-it-out-enabled: true
+    persist-authorization: true
+
+# OpenAPI Aggregation Configuration
+gateway:
+  openapi:
+    aggregation:
+      enabled: true
+      excluded-services:
+        - consul
+        - keycloak
+        - gateway
+      static-service-urls:
+        user-service: ${USER_SERVICE_URL:http://localhost:8081}
+        order-service: ${ORDER_SERVICE_URL:http://localhost:8082}
+        inventory-service: ${INVENTORY_SERVICE_URL:http://localhost:8083}
+        logistics-service: ${LOGISTICS_SERVICE_URL:http://localhost:8084}
+        billing-service: ${BILLING_SERVICE_URL:http://localhost:8085}
+        notification-service: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
+        analytics-service: ${ANALYTICS_SERVICE_URL:http://localhost:8087}
+        rfq-service: ${RFQ_SERVICE_URL:http://localhost:8088}
+        integration-service: ${INTEGRATION_SERVICE_URL:http://localhost:8089}
 
 server:
-  port: 8888
+  port: 8080
 
 # Management endpoints - disable tracing metrics
 management:
@@ -82,8 +260,8 @@ management:
 # Resilience4j Circuit Breaker Configuration
 resilience4j:
   circuitbreaker:
-    instances:
-      userServiceCircuitBreaker:
+    configs:
+      default:
         registerHealthIndicator: true
         slidingWindowSize: 10
         minimumNumberOfCalls: 5
@@ -92,10 +270,30 @@ resilience4j:
         waitDurationInOpenState: 5s
         failureRateThreshold: 50
         eventConsumerBufferSize: 10
+    instances:
+      userServiceCircuitBreaker:
+        baseConfig: default
+      orderServiceCircuitBreaker:
+        baseConfig: default
+      inventoryServiceCircuitBreaker:
+        baseConfig: default
+      logisticsServiceCircuitBreaker:
+        baseConfig: default
+      billingServiceCircuitBreaker:
+        baseConfig: default
+      notificationServiceCircuitBreaker:
+        baseConfig: default
+      analyticsServiceCircuitBreaker:
+        baseConfig: default
+      rfqServiceCircuitBreaker:
+        baseConfig: default
   timelimiter:
+    configs:
+      default:
+        timeoutDuration: 5s
     instances:
       userServiceTimeLimiter:
-        timeoutDuration: 5s
+        baseConfig: default
 
 # Logging Configuration
 logging:

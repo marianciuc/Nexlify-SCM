@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 000-create-schema
+      author: nexlify-scm
+      changes:
+        - sql:
+            sql: CREATE SCHEMA IF NOT EXISTS inventory
+
+  - include:
+      file: db/changelog/001-create-categories.yaml
+
+  - include:
+      file: db/changelog/002-create-products.yaml
+
+  - include:
+      file: db/changelog/003-create-warehouses.yaml
+
+  - include:
+      file: db/changelog/004-create-stock-items.yaml
+
+  - include:
+      file: db/changelog/005-seed-initial-data.yaml

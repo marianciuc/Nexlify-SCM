@@ -1,5 +1,5 @@
 import {useForm} from '@tanstack/react-form';
-import {Eye, EyeOff, Loader2} from 'lucide-react';
+import {ArrowRight, Eye, EyeOff, Loader2, ShieldCheck} from 'lucide-react';
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {toast} from 'sonner';
@@ -18,8 +18,13 @@ interface LoginFormProps {
 
 export function LoginForm({onSuccess, onSwitchToRegister}: LoginFormProps) {
     const {t} = useTranslation();
-    const {login, isLoading} = useAuthStore();
+    const {login, getKeycloakLoginUrl, isLoading} = useAuthStore();
     const [showPassword, setShowPassword] = useState(false);
+
+    const handleKeycloakLogin = () => {
+        window.location.href = getKeycloakLoginUrl();
+    };
+
     const form = useForm({
         defaultValues: {
             email: '',
@@ -45,7 +50,26 @@ export function LoginForm({onSuccess, onSwitchToRegister}: LoginFormProps) {
                 <CardTitle className='text-2xl font-bold text-center'>{t('auth.signInTitle')}</CardTitle>
                 <CardDescription className='text-center'>{t('auth.enterCredentials')}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className='space-y-4'>
+                {/* Keycloak Hosted SSO Button */}
+                <Button
+                    type='button'
+                    onClick={handleKeycloakLogin}
+                    disabled={isLoading}
+                    className='w-full bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-700 hover:from-blue-800 hover:to-violet-800 text-white font-semibold py-5 shadow-md shadow-indigo-600/20 cursor-pointer flex items-center justify-center gap-2.5 transition-all'
+                >
+                    <ShieldCheck className='w-5 h-5 text-indigo-200' />
+                    Sign In with Keycloak Form
+                    <ArrowRight className='w-4 h-4 ml-auto opacity-70' />
+                </Button>
+
+                <div className='relative flex items-center justify-center my-2'>
+                    <div className='border-t border-slate-200 dark:border-slate-800 w-full' />
+                    <span className='bg-background px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider relative'>
+                        Or Direct Login
+                    </span>
+                </div>
+
                 <form
                     onSubmit={e => {
                         e.preventDefault();

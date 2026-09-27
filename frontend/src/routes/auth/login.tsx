@@ -13,11 +13,11 @@ function LoginPage() {
     const [showRegister, setShowRegister] = useState(false);
 
     const handleLoginSuccess = () => {
-        navigate({to: '/dashboard'});
+        navigate({to: '/supplier/dashboard'});
     };
 
     const handleRegisterSuccess = () => {
-        navigate({to: '/dashboard'});
+        navigate({to: '/supplier/dashboard'});
     };
 
     return (

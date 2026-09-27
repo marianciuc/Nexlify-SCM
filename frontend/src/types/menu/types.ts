@@ -7,7 +7,7 @@ export enum MenuItemType {
 }
 
 export type Item = {
-    title: TranslationPath;
+    title: TranslationPath | string;
     url: string;
     permission?: SecurityScope[];
     icon: React.ReactNode;

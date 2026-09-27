@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS orders.consumed_events (
+    event_id VARCHAR(255) PRIMARY KEY,
+    consumed_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

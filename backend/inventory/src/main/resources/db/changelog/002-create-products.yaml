@@ -1,0 +1,107 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-products
+      author: nexlify-scm
+      changes:
+        - createTable:
+            schemaName: inventory
+            tableName: products
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: sku
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(300)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: category_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_product_category
+                    references: inventory.categories(id)
+              - column:
+                  name: unit
+                  type: varchar(30)
+                  defaultValue: "pcs"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: unit_price
+                  type: numeric(14,2)
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(3)
+                  defaultValue: "PLN"
+              - column:
+                  name: weight_kg
+                  type: numeric(10,3)
+              - column:
+                  name: dimensions
+                  type: varchar(100)
+              - column:
+                  name: manufacturer
+                  type: varchar(200)
+              - column:
+                  name: brand
+                  type: varchar(200)
+              - column:
+                  name: min_order_quantity
+                  type: int
+                  defaultValueNumeric: 1
+              - column:
+                  name: reorder_point
+                  type: int
+                  defaultValueNumeric: 0
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: now()
+        - createIndex:
+            schemaName: inventory
+            tableName: products
+            indexName: idx_product_sku
+            columns:
+              - column:
+                  name: sku
+        - createIndex:
+            schemaName: inventory
+            tableName: products
+            indexName: idx_product_category
+            columns:
+              - column:
+                  name: category_id
+        - createIndex:
+            schemaName: inventory
+            tableName: products
+            indexName: idx_product_name
+            columns:
+              - column:
+                  name: name

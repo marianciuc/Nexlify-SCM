@@ -19,7 +19,7 @@ spring:
         register: true
         deregister: true
         fail-fast: false
-        health-check-url: http://localhost:8888/actuator/health
+        health-check-url: http://localhost:${server.port:8080}/actuator/health
       config:
         enabled: true
         format: yaml
@@ -28,7 +28,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9090/realms/LogisticCommerce
+          issuer-uri: http://localhost:9090/realms/nexlify
 
 # Logging configuration
 logging:
@@ -69,8 +69,8 @@ springdoc:
     urls:
       - name: gateway
         url: /v3/api-docs
-      - name: user-service
-        url: /user-service/v3/api-docs
+      - name: aggregated
+        url: /v3/api-docs/aggregated
     # UI customization options
     doc-expansion: list
     default-models-expand-depth: 1
@@ -100,3 +100,15 @@ springdoc:
     - group: gateway
       paths-to-match: /fallback/**
       packages-to-scan: works.marianciuc.logistic_commerce.gateway
+
+# OpenAPI Aggregation Configuration
+gateway:
+  openapi:
+    aggregation:
+      enabled: true
+      excluded-services:
+        - consul
+        - keycloak
+        - gateway
+      static-service-urls:
+        user-service: http://localhost:8081

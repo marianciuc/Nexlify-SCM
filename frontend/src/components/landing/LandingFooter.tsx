@@ -78,11 +78,11 @@ export function LandingFooter() {
     const socialLinks = [
         {
             icon: LinkedinIcon,
-            href: 'https://linkedin.com/company/logisticcommerce',
+            href: 'https://linkedin.com/company/nexlify-scm',
             label: 'LinkedIn',
         },
-        {icon: Twitter, href: 'https://twitter.com/logisticcommerce', label: 'Twitter'},
-        {icon: Youtube, href: 'https://youtube.com/logisticcommerce', label: 'YouTube'},
+        {icon: Twitter, href: 'https://twitter.com/nexlify_scm', label: 'Twitter'},
+        {icon: Youtube, href: 'https://youtube.com/@nexlify-scm', label: 'YouTube'},
     ];
 
     const certifications = [
@@ -152,7 +152,7 @@ export function LandingFooter() {
                                     <Truck className='w-7 h-7 text-white'/>
                                 </div>
                                 <div>
-                                    <h2 className='text-2xl font-bold'>LogisticCommerce</h2>
+                                    <h2 className='text-2xl font-bold'>Nexlify-SCM</h2>
                                     <p className='text-gray-400 text-sm'>Enterprise Supply Chain Platform</p>
                                 </div>
                             </div>
@@ -246,7 +246,7 @@ export function LandingFooter() {
                     <div className='flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0'>
                         <div
                             className='flex flex-col lg:flex-row items-center space-y-2 lg:space-y-0 lg:space-x-6 text-sm text-gray-400'>
-                            <p>&copy; 2025 LogisticCommerce. All rights reserved.</p>
+                            <p>&copy; 2026 Nexlify-SCM. All rights reserved.</p>
                             <div className='flex items-center space-x-4'>
                 <span className='flex items-center space-x-1'>
                   <Globe className='w-4 h-4'/>
@@ -263,11 +263,11 @@ export function LandingFooter() {
                         <div
                             className='flex flex-col lg:flex-row items-center space-y-2 lg:space-y-0 lg:space-x-6 text-sm'>
                             <a
-                                href='mailto:enterprise@logisticcommerce.com'
+                                href='mailto:contact@nexlify-scm.com'
                                 className='flex items-center space-x-1 text-gray-400 hover:text-white transition-colors'
                             >
                                 <Mail className='w-4 h-4'/>
-                                <span>enterprise@logisticcommerce.com</span>
+                                <span>contact@nexlify-scm.com</span>
                             </a>
                             <a
                                 href='tel:+15551234567'

@@ -3,33 +3,56 @@
   <component name="CompilerConfiguration">
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
-      <profile name="Annotation profile for UserService" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+      <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.46/a5cfe99fdf320e84955ef653f2ce1bf789d11385/lombok-1.18.46.jar" />
         </processorPath>
-        <module name="UserService" />
+        <module name="integration.test" />
       </profile>
-      <profile name="Annotation profile for gateway" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+      <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.46/a5cfe99fdf320e84955ef653f2ce1bf789d11385/lombok-1.18.46.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/4.1.1/af11d86c263f1ea22d63a05f5cac733c005cf899/spring-boot-configuration-processor-4.1.1.jar" />
         </processorPath>
-        <module name="gateway" />
+        <module name="integration.main" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="UserService" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="UserService" options="-parameters" />
+      <module name="analytics" options="-parameters" />
+      <module name="analytics.main" options="-parameters" />
+      <module name="analytics.test" options="-parameters" />
+      <module name="billing" options="-parameters" />
+      <module name="billing.main" options="-parameters" />
+      <module name="billing.test" options="-parameters" />
       <module name="gateway" options="-parameters" />
+      <module name="gateway.main" options="-parameters" />
+      <module name="gateway.test" options="-parameters" />
+      <module name="integration" options="-parameters" />
+      <module name="integration.main" options="-parameters" />
+      <module name="integration.test" options="-parameters" />
+      <module name="inventory" options="-parameters" />
+      <module name="inventory.main" options="-parameters" />
+      <module name="inventory.test" options="-parameters" />
+      <module name="logistic" options="-parameters" />
+      <module name="logistic.main" options="-parameters" />
+      <module name="logistic.test" options="-parameters" />
+      <module name="orders" options="-parameters" />
+      <module name="orders.main" options="-parameters" />
+      <module name="orders.test" options="-parameters" />
+      <module name="rfq" options="-parameters" />
+      <module name="rfq.main" options="-parameters" />
+      <module name="rfq.test" options="-parameters" />
+      <module name="users" options="-parameters" />
+      <module name="users.main" options="-parameters" />
+      <module name="users.test" options="-parameters" />
     </option>
   </component>
 </project>

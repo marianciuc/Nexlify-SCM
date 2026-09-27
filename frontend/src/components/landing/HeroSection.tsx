@@ -1,4 +1,5 @@
-import {ArrowRight, Shield, Zap, Globe, TrendingUp} from 'lucide-react';
+import {useNavigate} from '@tanstack/react-router';
+import {ArrowRight, Shield, Zap, Globe, TrendingUp, LayoutDashboard} from 'lucide-react';
 
 import {Badge} from '@/components/ui/badge';
 import {Button} from '@/components/ui/button';
@@ -8,6 +9,7 @@ import {Button} from '@/components/ui/button';
  * Professional B2B design with sophisticated animations
  */
 export function HeroSection() {
+    const navigate = useNavigate();
     return (
         <section
             className='relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 min-h-screen flex items-center'>
@@ -55,9 +57,9 @@ export function HeroSection() {
                                 Enterprise
                                 <span
                                     className='bg-gradient-to-r from-slate-300 to-slate-400 bg-clip-text text-transparent'>
-                  {' '}
+                                    {' '}
                                     Supply Chain{' '}
-                </span>
+                                </span>
                                 Platform
                             </h1>
                             <p className='text-xl lg:text-2xl text-slate-300 font-light leading-relaxed'>
@@ -74,14 +76,14 @@ export function HeroSection() {
                             <div className='flex items-center space-x-3'>
                                 <Zap className='w-6 h-6 text-slate-400'/>
                                 <span className='text-lg text-slate-200'>
-                  AI-powered carrier selection and route optimization
-                </span>
+                                    AI-powered carrier selection and route optimization
+                                </span>
                             </div>
                             <div className='flex items-center space-x-3'>
                                 <Globe className='w-6 h-6 text-slate-400'/>
                                 <span className='text-lg text-slate-200'>
-                  Unified platform for global supply chain operations
-                </span>
+                                    Unified platform for global supply chain operations
+                                </span>
                             </div>
                         </div>
                         {' '}
@@ -89,7 +91,8 @@ export function HeroSection() {
                         <div className='flex flex-col sm:flex-row gap-4 pt-6'>
                             <Button
                                 size='lg'
-                                className='bg-slate-700 hover:bg-slate-600 text-white font-semibold px-8 py-4 text-lg transition-all duration-200 border border-slate-600'
+                                className='bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 text-lg transition-all duration-200 shadow-lg shadow-indigo-600/30 cursor-pointer'
+                                onClick={() => navigate({to: '/auth/login'})}
                             >
                                 Start Registration
                                 <ArrowRight className='w-5 h-5 ml-2'/>
@@ -97,9 +100,11 @@ export function HeroSection() {
                             <Button
                                 size='lg'
                                 variant='outline'
-                                className='border-slate-400/30 text-slate-200 hover:bg-slate-700/30 px-8 py-4 text-lg transition-all duration-200'
+                                className='border-slate-400/30 text-slate-200 hover:bg-slate-700/50 hover:text-white px-8 py-4 text-lg transition-all duration-200 cursor-pointer flex items-center gap-2'
+                                onClick={() => navigate({to: '/supplier/dashboard'})}
                             >
-                                View Platform Tour
+                                <LayoutDashboard className='w-5 h-5 text-indigo-400' />
+                                Explore Dashboard
                             </Button>
                         </div>
                         {' '}

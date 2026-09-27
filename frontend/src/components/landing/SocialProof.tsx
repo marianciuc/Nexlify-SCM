@@ -12,7 +12,7 @@ export function SocialProof() {
     const customerTestimonials = [
         {
             quote:
-                "LogisticCommerce transformed our supply chain operations. We've seen a 32% reduction in logistics costs and 40% improvement in delivery times within the first quarter.",
+                "Nexlify-SCM transformed our supply chain operations. We've seen a 32% reduction in logistics costs and 40% improvement in delivery times within the first quarter.",
             author: 'Sarah Chen',
             position: 'VP Supply Chain Operations',
             company: 'TechCorp Industries',
@@ -199,7 +199,7 @@ export function SocialProof() {
                     </div>
 
                     <p className='text-slate-600 max-w-2xl mx-auto'>
-                        LogisticCommerce meets the highest standards for enterprise security, compliance, and
+                        Nexlify-SCM meets the highest standards for enterprise security, compliance, and
                         data protection. Your business-critical supply chain data is always secure and
                         accessible.
                     </p>
@@ -209,7 +209,7 @@ export function SocialProof() {
                 <div className='mt-16 bg-slate-900 rounded-3xl p-12 text-center text-white'>
                     <h3 className='text-3xl font-bold mb-4'>Join the Supply Chain Revolution</h3>
                     <p className='text-slate-300 text-lg mb-8 max-w-2xl mx-auto'>
-                        See why enterprise leaders choose LogisticCommerce to optimize their supply chain
+                        See why enterprise leaders choose Nexlify-SCM to optimize their supply chain
                         operations and drive measurable business results.
                     </p>
 

@@ -65,7 +65,7 @@ export function CookieConsent() {
                         <h3 className='font-semibold text-slate-900'>We value your privacy</h3>
 
                         <p className='text-sm text-slate-600 leading-relaxed'>
-                            LogisticCommerce uses cookies to enhance your experience, provide analytics, and
+                            Nexlify-SCM uses cookies to enhance your experience, provide analytics, and
                             improve our services. By continuing, you agree to our use of cookies.
                         </p>
 

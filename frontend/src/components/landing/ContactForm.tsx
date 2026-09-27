@@ -102,7 +102,7 @@ export function ContactForm() {
                 </div>
                 <CardTitle className='text-2xl font-bold text-gray-900'>Start Your Registration</CardTitle>
                 <p className='text-gray-600'>
-                    See how LogisticCommerce can transform your supply chain operations
+                    See how Nexlify-SCM can transform your supply chain operations
                 </p>
             </CardHeader>
 
@@ -251,11 +251,11 @@ export function ContactForm() {
                                 +1 (555) LOGIC-1
                             </a>
                             <a
-                                href='mailto:enterprise@logisticcommerce.com'
+                                href='mailto:contact@nexlify-scm.com'
                                 className='flex items-center text-blue-600 hover:text-blue-700'
                             >
                                 <Mail className='w-4 h-4 mr-1'/>
-                                enterprise@logisticcommerce.com
+                                contact@nexlify-scm.com
                             </a>
                         </div>
                     </div>

@@ -9,7 +9,7 @@ interface PublicRouteProps {
     redirectPath?: string;
 }
 
-export function PublicRoute({children, redirectPath = '/dashboard'}: PublicRouteProps) {
+export function PublicRoute({children, redirectPath = '/supplier/dashboard'}: PublicRouteProps) {
     const {isAuthenticated, isLoading} = useAuth();
     const navigate = useNavigate();
     useEffect(() => {

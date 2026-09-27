@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/backend/analytics" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/billing" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/gateway" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/integration" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/inventory" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/logistic" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/orders" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/rfq" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/users" />
+  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
@@ -9,6 +20,11 @@
         <option value="$PROJECT_DIR$/backend/UserService/pom.xml" />
         <option value="$PROJECT_DIR$/backend/Gateway/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/backend/UserService/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_24" default="true" project-jdk-name="openjdk-24" project-jdk-type="JavaSDK">

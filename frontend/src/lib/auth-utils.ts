@@ -58,7 +58,7 @@ export function getUserFromToken(token: string): User {
             role: decoded.role,
             securityScopes: decoded.scopes,
         };
-    } catch (error) {
+    } catch {
         throw new AuthError('Invalid token format', 'INVALID_TOKEN');
     }
 }
