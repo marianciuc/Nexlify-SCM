@@ -1,0 +1,197 @@
+{
+  "id": "nexlify",
+  "realm": "nexlify",
+  "displayName": "Nexlify SCM Platform",
+  "displayNameHtml": "<div class=\"kc-logo-text\"><span>Nexlify</span> SCM</div>",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "accessTokenLifespan": 3600,
+  "ssoSessionIdleTimeout": 86400,
+  "ssoSessionMaxLifespan": 604800,
+  "roles": {
+    "realm": [
+      {
+        "name": "ADMIN",
+        "description": "System Administrator with full access to all SCM modules"
+      },
+      {
+        "name": "ROLE_ADMIN",
+        "description": "Spring Security mapped admin role"
+      },
+      {
+        "name": "USER",
+        "description": "Standard B2B platform user"
+      },
+      {
+        "name": "ROLE_USER",
+        "description": "Spring Security mapped user role"
+      },
+      {
+        "name": "SUPPLIER",
+        "description": "Supplier role for order fulfillment and catalog management"
+      },
+      {
+        "name": "CUSTOMER",
+        "description": "Buyer/Customer role for placing orders and RFQ tenders"
+      },
+      {
+        "name": "WAREHOUSE_MANAGER",
+        "description": "Warehouse and inventory manager"
+      },
+      {
+        "name": "LOGISTICS_OPERATOR",
+        "description": "Logistics and dispatch operator"
+      },
+      {
+        "name": "MOD_001_001",
+        "description": "Core Administration & Analytics Module scope"
+      },
+      {
+        "name": "MOD_001_002",
+        "description": "User & Company Profile Management scope"
+      },
+      {
+        "name": "MOD_002_001",
+        "description": "Order Management & FSM transitions scope"
+      },
+      {
+        "name": "MOD_003_001",
+        "description": "Warehouse & Stock Reservations scope"
+      },
+      {
+        "name": "MOD_004_001",
+        "description": "Logistics & GraphHopper VRP routing scope"
+      },
+      {
+        "name": "MOD_005_001",
+        "description": "Billing & Polish Faktura VAT scope"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "application-client",
+      "name": "Nexlify Application Client",
+      "description": "Client for Web Frontend, Gateway and Microservices",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "v8lNkDJFwbcrMsTe7TZ5OQVE3gTYqd2f",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "http://localhost:8080/*",
+        "http://localhost:5173/*",
+        "*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "attributes": {
+        "access.token.lifespan": "3600",
+        "client.secret.creation.time": "1710000000"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "role_list",
+        "profile",
+        "roles",
+        "email"
+      ]
+    },
+    {
+      "clientId": "gateway",
+      "name": "API Gateway Client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "gateway-secret-nexlify-2026",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect"
+    }
+  ],
+  "users": [
+    {
+      "username": "admin@nexlify.com",
+      "email": "admin@nexlify.com",
+      "firstName": "Admin",
+      "lastName": "Nexlify",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ADMIN",
+        "ROLE_ADMIN",
+        "USER",
+        "ROLE_USER",
+        "MOD_001_001",
+        "MOD_001_002",
+        "MOD_002_001",
+        "MOD_003_001",
+        "MOD_004_001",
+        "MOD_005_001"
+      ]
+    },
+    {
+      "username": "manager@nexlify.com",
+      "email": "manager@nexlify.com",
+      "firstName": "Warehouse",
+      "lastName": "Manager",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "manager123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "WAREHOUSE_MANAGER",
+        "USER",
+        "ROLE_USER",
+        "MOD_001_001",
+        "MOD_003_001"
+      ]
+    },
+    {
+      "username": "supplier@nexlify.com",
+      "email": "supplier@nexlify.com",
+      "firstName": "Apex",
+      "lastName": "Supplier",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "supplier123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "SUPPLIER",
+        "USER",
+        "ROLE_USER",
+        "MOD_001_001",
+        "MOD_002_001"
+      ]
+    }
+  ]
+}
