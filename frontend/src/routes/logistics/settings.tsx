@@ -1,57 +1,74 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
 import { Settings, Save, ShieldCheck, Clock } from 'lucide-react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { FormFieldSelect, FormFieldNumber } from '@/components/forms/common';
 import { KycSubmissionModal } from '@/components/kyc/KycSubmissionModal';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/page-header';
+import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
-import { useTenantListQuery, useKycApplicationsQuery } from '@/hooks/useScmQueries';
+import { useLocale } from '@/hooks/useLocale';
+import { useTenantListQuery } from '@/hooks/useScmQueries';
+import { type TranslationPath } from '@/types/generated-locale';
 
 export const Route = createFileRoute('/logistics/settings')({
   component: LogisticsSettingsPage,
   staticData: {
     crumb: {
-      label: 'TMS Settings',
+      label: 'nav.logistics.settings',
     },
   },
 });
 
-const logisticsSettingsSchema = z.object({
-  graphHopperProfile: z.string().min(1, 'Profile is required'),
-  maxDriveHours: z.number().min(1, 'Must be at least 1 hour').max(24, 'Cannot exceed 24 hours'),
-  fuelPricePln: z.number().positive('Fuel price must be positive'),
-  co2Factor: z.number().positive('CO2 factor must be positive'),
-});
+type ProfileOption = 'truck_heavy_40t' | 'delivery_van_3_5t';
 
-type LogisticsSettingsFormData = z.infer<typeof logisticsSettingsSchema>;
-
-const profileOptions = [
-  {
-    value: 'truck_heavy_40t',
-    label: 'truck_heavy_40t (Bridge heights > 4.0m, Weight < 40t)',
-  },
-  {
-    value: 'delivery_van_3_5t',
-    label: 'delivery_van_3_5t (Urban streets allowed, No toll roads)',
-  },
+const PROFILE_OPTIONS: { value: ProfileOption; labelKey: TranslationPath }[] = [
+  { value: 'truck_heavy_40t', labelKey: 'logistics.settings.profile.heavy' },
+  { value: 'delivery_van_3_5t', labelKey: 'logistics.settings.profile.van' },
 ];
 
+type KycStatus = 'VERIFIED' | 'PENDING_AUDIT';
+
+const KYC_TONE: Record<KycStatus, 'success' | 'warning'> = {
+  VERIFIED: 'success',
+  PENDING_AUDIT: 'warning',
+};
+
+const KYC_LABEL_KEY: Record<KycStatus, TranslationPath> = {
+  VERIFIED: 'logistics.settings.kyc.verified',
+  PENDING_AUDIT: 'logistics.settings.kyc.pending',
+};
+
 function LogisticsSettingsPage() {
+  return <LogisticsSettingsContent />;
+}
+
+function LogisticsSettingsContent() {
+  const { t } = useLocale();
   const { data: tenants = [] } = useTenantListQuery();
-  const { data: kycApps = [] } = useKycApplicationsQuery();
 
   const currentCarrier = tenants.find((t) => t.role === 'LOGISTICS_CARRIER') || tenants[4];
-  const currentKyc = kycApps.find(
-    (app) => (currentCarrier && app.nip === currentCarrier.nip) || (currentCarrier && app.tenantId === currentCarrier.id)
+
+  const kycStatus: KycStatus = currentCarrier?.kycStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING_AUDIT';
+
+  const logisticsSettingsSchema = useMemo(
+    () =>
+      z.object({
+        graphHopperProfile: z.enum(['truck_heavy_40t', 'delivery_van_3_5t'] as const),
+        maxDriveHours: z.number().min(1, t('logistics.settings.validation.driveHoursMin')).max(24, t('logistics.settings.validation.driveHoursMax')),
+        fuelPricePln: z.number().positive(t('logistics.settings.validation.fuelPricePositive')),
+        co2Factor: z.number().positive(t('logistics.settings.validation.co2Positive')),
+      }),
+    [t]
   );
 
-  const kycStatus = currentCarrier?.kycStatus || currentKyc?.status || 'PENDING_AUDIT';
+  type LogisticsSettingsFormData = z.infer<typeof logisticsSettingsSchema>;
 
   const form = useForm<LogisticsSettingsFormData>({
     resolver: zodResolver(logisticsSettingsSchema),
@@ -64,92 +81,84 @@ function LogisticsSettingsPage() {
   });
 
   const onSubmit = (_data: LogisticsSettingsFormData) => {
-    toast.success('Параметры маршрутизации и автопарка успешно обновлены!');
+    toast.success(t('logistics.settings.savedToast'));
   };
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <Settings className="h-6 w-6 text-amber-500" />
-          TMS Fleet & Routing Settings
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Configure vehicle physical constraints, GLEC emissions coefficients, and dynamic fuel costing for route optimization.
-        </p>
-      </div>
+    <div className="space-y-6 max-w-3xl mx-auto min-w-0">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <Settings className="h-5 w-5 text-primary" aria-hidden="true" />
+            {t('logistics.settings.title')}
+          </span>
+        }
+        subtitle={t('logistics.settings.subtitle')}
+      />
 
       {/* Carrier Compliance & KYC Card */}
-      {kycStatus === 'VERIFIED' ? (
-        <Card className="border-emerald-200 bg-emerald-50/30 dark:bg-emerald-950/15 shadow-xs">
-          <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="h-7 w-7 text-emerald-600 shrink-0" />
-              <div>
-                <div className="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                  <span>{currentCarrier?.name || 'Vistula Trans Sp. z o.o.'}</span>
-                  <Badge className="bg-emerald-600 text-white text-2xs">Licencja Transportowa GITD: Aktywna</Badge>
-                </div>
-                <div className="text-xs text-slate-500 mt-0.5">
-                  Biała Lista VAT oraz licencja na międzynarodowy transport drogowy rzeczy zweryfikowana. Uprawniony do obsługi e-CMR.
-                </div>
+      <Card className="border-border shadow-xs bg-card">
+        <CardContent className="p-4 sm:p-6 space-y-3">
+          <div className="flex items-start gap-3">
+            {kycStatus === 'VERIFIED' ? (
+              <ShieldCheck className="h-6 w-6 text-emerald-600 shrink-0" aria-hidden="true" />
+            ) : (
+              <Clock className="h-6 w-6 text-amber-600 shrink-0" aria-hidden="true" />
+            )}
+            <div className="min-w-0 flex-1 space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-semibold text-sm text-foreground">
+                  {currentCarrier?.name || t('logistics.settings.kyc.fallbackCarrier')}
+                </span>
+                <StatusBadge tone={KYC_TONE[kycStatus]} label={t(KYC_LABEL_KEY[kycStatus])} size="sm" />
               </div>
+              <p className="text-xs text-muted-foreground">
+                {kycStatus === 'VERIFIED'
+                  ? t('logistics.settings.kyc.verifiedBody')
+                  : t('logistics.settings.kyc.pendingBody')}
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="border-amber-300 bg-amber-50/50 dark:bg-amber-950/20 shadow-xs">
-          <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Clock className="h-7 w-7 text-amber-600 shrink-0 animate-spin" />
-              <div>
-                <div className="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                  <span>{currentCarrier?.name || 'Vistula Trans Sp. z o.o.'}</span>
-                  <Badge className="bg-amber-600 text-white text-2xs">Weryfikacja Licencji w Toku</Badge>
-                </div>
-                <div className="text-xs text-slate-500 mt-0.5">
-                  Wniosek o autoryzację przewoźnika i rejestrację rachunku MPP oczekuje na akceptację przez Compliance.
-                </div>
-              </div>
-            </div>
-
-            <KycSubmissionModal
-              initialValues={{
-                companyName: currentCarrier?.name,
-                nip: currentCarrier?.nip,
-                role: 'LOGISTICS_CARRIER',
-              }}
-              triggerButton={
-                <Button variant="outline" size="sm" className="w-full sm:w-auto border-amber-300">
-                  Uzupełnij dokumenty licencji
-                </Button>
-              }
-            />
-          </CardContent>
-        </Card>
-      )}
+            {kycStatus !== 'VERIFIED' && (
+              <KycSubmissionModal
+                initialValues={{
+                  companyName: currentCarrier?.name,
+                  nip: currentCarrier?.nip,
+                  role: 'LOGISTICS_CARRIER',
+                }}
+                triggerButton={
+                  <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                    {t('logistics.settings.kyc.submitLicense')}
+                  </Button>
+                }
+              />
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <Card className="border-slate-200 dark:border-slate-800">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Vehicle Routing Engine Profiles</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-xs">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="border-border shadow-xs bg-card">
+            <CardContent className="p-4 sm:p-6 space-y-4">
+              <span className="text-sm font-semibold text-foreground block">
+                {t('logistics.settings.routingTitle')}
+              </span>
+              <p className="text-xs text-muted-foreground -mt-2">
+                {t('logistics.settings.routingDescription')}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormFieldSelect
                   control={form.control}
                   name="graphHopperProfile"
-                  label="Vehicle Constraint Profile:"
-                  options={profileOptions}
+                  label={t('logistics.settings.profileLabel')}
+                  options={PROFILE_OPTIONS.map((o) => ({ value: o.value, label: t(o.labelKey) }))}
                   className="font-mono"
                 />
 
                 <FormFieldNumber
                   control={form.control}
                   name="maxDriveHours"
-                  label="Max Continuous Driving Shift (Hours):"
+                  label={t('logistics.settings.maxDriveHoursLabel')}
                   min={1}
                   max={24}
                   className="font-bold"
@@ -158,7 +167,7 @@ function LogisticsSettingsPage() {
                 <FormFieldNumber
                   control={form.control}
                   name="fuelPricePln"
-                  label="Base Diesel Price (PLN / Liter):"
+                  label={t('logistics.settings.fuelPriceLabel')}
                   step={0.01}
                   min={0.01}
                   className="font-bold"
@@ -167,7 +176,7 @@ function LogisticsSettingsPage() {
                 <FormFieldNumber
                   control={form.control}
                   name="co2Factor"
-                  label="GLEC CO2 Emission Factor (kg CO2 / L):"
+                  label={t('logistics.settings.co2FactorLabel')}
                   step={0.01}
                   min={0.01}
                 />
@@ -176,8 +185,9 @@ function LogisticsSettingsPage() {
           </Card>
 
           <div className="flex justify-end">
-            <Button type="submit" size="sm" className="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white gap-2 font-semibold">
-              <Save className="h-4 w-4" /> Save TMS Configuration
+            <Button type="submit" size="sm" className="gap-1.5 w-full sm:w-auto font-medium">
+              <Save className="h-4 w-4" aria-hidden="true" />
+              {t('logistics.settings.save')}
             </Button>
           </div>
         </form>

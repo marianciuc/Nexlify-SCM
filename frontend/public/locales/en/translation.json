@@ -868,6 +868,164 @@
         "title": "No vehicles found",
         "subtitle": "Adjust the filters or clear the search"
       }
+    },
+    "drivers": {
+      "title": "Drivers",
+      "subtitle": "Driver licenses (Code 95), ADR qualifications and digital tachograph work/rest intervals",
+      "searchLabel": "Search drivers",
+      "searchPlaceholder": "Name, license or vehicle…",
+      "searchClear": "Clear search",
+      "clearAll": "Clear filters",
+      "filter": {
+        "ariaLabel": "Filter by driver status",
+        "all": "All",
+        "onRoute": "On route",
+        "resting": "Resting",
+        "offShift": "Off shift"
+      },
+      "stats": {
+        "total": "Drivers",
+        "totalHelper": "in registry",
+        "onRoute": "On route",
+        "onRouteHelper": "active now",
+        "resting": "Resting",
+        "restingHelper": "tachograph pause",
+        "adr": "ADR certified",
+        "adrHelper": "hazardous materials"
+      },
+      "status": {
+        "onRoute": "On route",
+        "resting": "Resting",
+        "offShift": "Off shift"
+      },
+      "adr": {
+        "yes": "ADR certified",
+        "no": "General cargo"
+      },
+      "table": {
+        "name": "Driver",
+        "license": "License / qualification",
+        "phone": "Phone",
+        "vehicle": "Assigned vehicle",
+        "hours": "Driving today",
+        "rest": "Rest remaining",
+        "adr": "ADR",
+        "status": "Status"
+      },
+      "empty": {
+        "title": "No drivers found",
+        "subtitle": "Adjust the filters or clear the search"
+      }
+    },
+    "ecmr": {
+      "title": "e-CMR waybills",
+      "subtitle": "Electronic consignment notes with cryptographic sign-on-glass delivery confirmation",
+      "table": {
+        "number": "e-CMR number",
+        "order": "Order ref",
+        "route": "Consignee / city",
+        "vehicle": "Carrier / vehicle",
+        "issued": "Issued",
+        "delivered": "Delivered",
+        "status": "Status"
+      },
+      "status": {
+        "signed": "Signed (POD)",
+        "pending": "Awaiting unloading"
+      },
+      "actions": {
+        "sign": "Sign POD",
+        "signAria": "Sign proof of delivery for e-CMR {{cmr}}",
+        "print": "Print",
+        "printAria": "Print e-CMR {{cmr}}",
+        "view": "View",
+        "viewAria": "View e-CMR {{cmr}}"
+      },
+      "signDialog": {
+        "title": "Sign-on-glass proof of delivery",
+        "body": "Confirm handover for e-CMR {{cmr}} (order {{order}}).",
+        "signerLabel": "Recipient authorised representative",
+        "signerPlaceholder": "Full name (e.g. Jan Kowalski)",
+        "pinLabel": "Delivery handover PIN",
+        "pinPlaceholder": "4-digit PIN",
+        "notesLabel": "Cargo condition & acceptance notes",
+        "notesDefault": "Cargo intact, seal verified, full pallet count accepted.",
+        "handshakeLabel": "Digital signature handshake",
+        "handshakePlaceholder": "Digital signature canvas",
+        "handshakeHelper": "SHA-256 timestamped delivery confirmation",
+        "confirm": "Confirm delivery"
+      },
+      "empty": {
+        "title": "No waybills found",
+        "subtitle": "New e-CMR documents appear here as shipments are dispatched"
+      }
+    },
+    "map": {
+      "title": "Fleet map & route calculator",
+      "subtitle": "Live shipment tracking, multi-stop optimisation and dispatch control",
+      "calculator": {
+        "title": "Route calculator",
+        "originLabel": "Origin warehouse / hub",
+        "destinationLabel": "Destination city / terminal",
+        "submit": "Calculate optimal route",
+        "distance": "Distance (OSM)",
+        "duration": "Time on road",
+        "cost": "Fuel & tolls",
+        "co2": "CO₂ emissions"
+      },
+      "shipments": {
+        "title": "Active shipments & manifests",
+        "count": "{{count}} shipments",
+        "table": {
+          "tracking": "Tracking",
+          "carrier": "Carrier & vehicle",
+          "route": "Route",
+          "distance": "Distance",
+          "status": "Status",
+          "eta": "ETA"
+        },
+        "actions": {
+          "dispatch": "Dispatch",
+          "dispatchAria": "Dispatch shipment {{tracking}}"
+        }
+      },
+      "status": {
+        "inTransit": "In transit",
+        "delivered": "Delivered",
+        "planned": "Planned",
+        "dispatched": "Dispatched"
+      },
+      "dispatchToast": "Fleet vehicle dispatched with digital e-CMR manifest"
+    },
+    "settings": {
+      "title": "TMS fleet & routing settings",
+      "subtitle": "Vehicle constraints, GLEC emissions coefficients and fuel costing for route optimisation",
+      "routingTitle": "Vehicle routing engine profiles",
+      "routingDescription": "Constraints applied by the GraphHopper routing engine for every optimisation request.",
+      "profileLabel": "Vehicle constraint profile",
+      "profile": {
+        "heavy": "truck_heavy_40t — Bridge heights > 4.0 m, weight < 40 t",
+        "van": "delivery_van_3_5t — Urban streets allowed, no toll roads"
+      },
+      "maxDriveHoursLabel": "Max continuous driving shift (hours)",
+      "fuelPriceLabel": "Base diesel price (PLN / L)",
+      "co2FactorLabel": "GLEC CO₂ emission factor (kg CO₂ / L)",
+      "save": "Save TMS configuration",
+      "savedToast": "Routing and fleet parameters updated successfully",
+      "kyc": {
+        "verified": "Verified",
+        "pending": "Audit in progress",
+        "fallbackCarrier": "Vistula Trans Sp. z o.o.",
+        "verifiedBody": "VAT white-list clearance and international road haulage licence verified; authorised for e-CMR operations.",
+        "pendingBody": "Carrier authorisation and MPP account registration are awaiting compliance acceptance.",
+        "submitLicense": "Submit licence documents"
+      },
+      "validation": {
+        "driveHoursMin": "Must be at least 1 hour",
+        "driveHoursMax": "Cannot exceed 24 hours",
+        "fuelPricePositive": "Fuel price must be positive",
+        "co2Positive": "CO₂ factor must be positive"
+      }
     }
   },
   "admin": {
