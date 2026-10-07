@@ -1174,6 +1174,80 @@
       "warehouse": "Warehouse",
       "turnover": "Turnover",
       "daysOnHand": "Days on hand"
+    },
+    "systemAudit": {
+      "title": "System audit",
+      "subtitle": "Platform-wide dispute arbitration and event-stream infrastructure health.",
+      "tab": {
+        "disputes": "Disputes",
+        "dlt": "Event errors / DLT"
+      },
+      "disputes": {
+        "title": "RMA arbitration queue",
+        "subtitle": "Binding resolution for B2B disputes when supplier and buyer fail to reach consensus.",
+        "emptyTitle": "No disputes in the arbitration queue",
+        "emptySubtitle": "All discrepancies have been resolved by the platform.",
+        "tableCaption": "Disputes awaiting platform arbitration",
+        "table": {
+          "claim": "Claim",
+          "order": "Order / supplier",
+          "amount": "Amount",
+          "status": "Status",
+          "reason": "Reason",
+          "reported": "Reported",
+          "settlement": "Settlement"
+        },
+        "status": {
+          "approved": "Credit note issued",
+          "pending": "Pending supplier response"
+        },
+        "actions": {
+          "reject": "Reject discrepancy",
+          "enforce": "Enforce forced credit note to buyer"
+        }
+      },
+      "dlt": {
+        "title": "Event errors & dead-letter queue",
+        "subtitle": "Inspect unrecoverable Kafka exceptions, review raw payload data and re-drive failed messages into the pipeline.",
+        "tableCaption": "Failed events captured in DLT topics",
+        "filterAria": "Filter DLT events by status",
+        "filter": {
+          "all": "All events",
+          "unresolved": "Unresolved only",
+          "recovered": "Re-driven"
+        },
+        "metrics": {
+          "total": "Total dead letters",
+          "totalHelper": "Captured in DLT topics",
+          "unresolved": "Unresolved exceptions",
+          "unresolvedHelper": "Pending human or redrive audit",
+          "recovered": "Successfully re-driven",
+          "recoveredHelper": "Re-dispatched into event stream"
+        },
+        "message": {
+          "exception": "Exception",
+          "payload": "Raw event JSON payload",
+          "copy": "Copy payload",
+          "copied": "Copied",
+          "copySuccess": "JSON payload copied to clipboard",
+          "redrive": "Re-drive message into pipeline",
+          "redriveSuccess": "Event {{id}} re-driven into processing pipeline successfully!"
+        },
+        "badge": {
+          "redriven": "Re-driven / recovered",
+          "unresolved": "Unresolved exception"
+        },
+        "redriveDialog": {
+          "title": "Confirm event redrive",
+          "body": "You are about to re-dispatch this event into the Kafka processing pipeline.",
+          "eventId": "Event ID",
+          "topic": "Topic",
+          "partitionOffset": "Partition / Offset",
+          "warning": "Make sure the cause of the failure (for example an optimistic lock or a KSeF gateway timeout) has been resolved before re-driving.",
+          "cancel": "Cancel",
+          "confirm": "Re-dispatch (redrive)"
+        }
+      }
     }
   },
   "supplier": {

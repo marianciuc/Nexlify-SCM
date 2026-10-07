@@ -60,8 +60,6 @@ import { Route as BuyerInvoicesInvoiceIdRouteImport } from './routes/buyer/invoi
 import { Route as BuyerCatalogSkuRouteImport } from './routes/buyer/catalog.$sku'
 import { Route as AdminUsersVerificationRouteImport } from './routes/admin/users.verification'
 import { Route as AdminUsersTenantIdRouteImport } from './routes/admin/users.$tenantId'
-import { Route as AdminSystemAuditKafkaDltRouteImport } from './routes/admin/system-audit.kafka-dlt'
-import { Route as AdminSystemAuditDisputesRouteImport } from './routes/admin/system-audit.disputes'
 import { Route as SupplierOrdersOrderIdFulfillmentRouteImport } from './routes/supplier/orders.$orderId.fulfillment'
 import { Route as SupplierBidsRfqIdSubmitRouteImport } from './routes/supplier/bids.$rfqId.submit'
 
@@ -322,18 +320,6 @@ const AdminUsersTenantIdRoute = AdminUsersTenantIdRouteImport.update({
   path: '/$tenantId',
   getParentRoute: () => AdminUsersRoute,
 } as any)
-const AdminSystemAuditKafkaDltRoute =
-  AdminSystemAuditKafkaDltRouteImport.update({
-    id: '/kafka-dlt',
-    path: '/kafka-dlt',
-    getParentRoute: () => AdminSystemAuditRoute,
-  } as any)
-const AdminSystemAuditDisputesRoute =
-  AdminSystemAuditDisputesRouteImport.update({
-    id: '/disputes',
-    path: '/disputes',
-    getParentRoute: () => AdminSystemAuditRoute,
-  } as any)
 const SupplierOrdersOrderIdFulfillmentRoute =
   SupplierOrdersOrderIdFulfillmentRouteImport.update({
     id: '/$orderId/fulfillment',
@@ -354,7 +340,7 @@ export interface FileRoutesByFullPath {
   '/supplier': typeof SupplierRouteRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/admin/system-audit': typeof AdminSystemAuditRouteWithChildren
+  '/admin/system-audit': typeof AdminSystemAuditRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
@@ -380,8 +366,6 @@ export interface FileRoutesByFullPath {
   '/supplier/products': typeof SupplierProductsRouteWithChildren
   '/supplier/scorecard': typeof SupplierScorecardRoute
   '/supplier/settings': typeof SupplierSettingsRoute
-  '/admin/system-audit/disputes': typeof AdminSystemAuditDisputesRoute
-  '/admin/system-audit/kafka-dlt': typeof AdminSystemAuditKafkaDltRoute
   '/admin/users/$tenantId': typeof AdminUsersTenantIdRoute
   '/admin/users/verification': typeof AdminUsersVerificationRoute
   '/buyer/catalog/$sku': typeof BuyerCatalogSkuRoute
@@ -411,7 +395,7 @@ export interface FileRoutesByTo {
   '/supplier': typeof SupplierRouteRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/admin/system-audit': typeof AdminSystemAuditRouteWithChildren
+  '/admin/system-audit': typeof AdminSystemAuditRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
@@ -437,8 +421,6 @@ export interface FileRoutesByTo {
   '/supplier/products': typeof SupplierProductsRouteWithChildren
   '/supplier/scorecard': typeof SupplierScorecardRoute
   '/supplier/settings': typeof SupplierSettingsRoute
-  '/admin/system-audit/disputes': typeof AdminSystemAuditDisputesRoute
-  '/admin/system-audit/kafka-dlt': typeof AdminSystemAuditKafkaDltRoute
   '/admin/users/$tenantId': typeof AdminUsersTenantIdRoute
   '/admin/users/verification': typeof AdminUsersVerificationRoute
   '/buyer/catalog/$sku': typeof BuyerCatalogSkuRoute
@@ -469,7 +451,7 @@ export interface FileRoutesById {
   '/supplier': typeof SupplierRouteRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/settings': typeof AdminSettingsRoute
-  '/admin/system-audit': typeof AdminSystemAuditRouteWithChildren
+  '/admin/system-audit': typeof AdminSystemAuditRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
@@ -495,8 +477,6 @@ export interface FileRoutesById {
   '/supplier/products': typeof SupplierProductsRouteWithChildren
   '/supplier/scorecard': typeof SupplierScorecardRoute
   '/supplier/settings': typeof SupplierSettingsRoute
-  '/admin/system-audit/disputes': typeof AdminSystemAuditDisputesRoute
-  '/admin/system-audit/kafka-dlt': typeof AdminSystemAuditKafkaDltRoute
   '/admin/users/$tenantId': typeof AdminUsersTenantIdRoute
   '/admin/users/verification': typeof AdminUsersVerificationRoute
   '/buyer/catalog/$sku': typeof BuyerCatalogSkuRoute
@@ -554,8 +534,6 @@ export interface FileRouteTypes {
     | '/supplier/products'
     | '/supplier/scorecard'
     | '/supplier/settings'
-    | '/admin/system-audit/disputes'
-    | '/admin/system-audit/kafka-dlt'
     | '/admin/users/$tenantId'
     | '/admin/users/verification'
     | '/buyer/catalog/$sku'
@@ -611,8 +589,6 @@ export interface FileRouteTypes {
     | '/supplier/products'
     | '/supplier/scorecard'
     | '/supplier/settings'
-    | '/admin/system-audit/disputes'
-    | '/admin/system-audit/kafka-dlt'
     | '/admin/users/$tenantId'
     | '/admin/users/verification'
     | '/buyer/catalog/$sku'
@@ -668,8 +644,6 @@ export interface FileRouteTypes {
     | '/supplier/products'
     | '/supplier/scorecard'
     | '/supplier/settings'
-    | '/admin/system-audit/disputes'
-    | '/admin/system-audit/kafka-dlt'
     | '/admin/users/$tenantId'
     | '/admin/users/verification'
     | '/buyer/catalog/$sku'
@@ -1062,20 +1036,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersTenantIdRouteImport
       parentRoute: typeof AdminUsersRoute
     }
-    '/admin/system-audit/kafka-dlt': {
-      id: '/admin/system-audit/kafka-dlt'
-      path: '/kafka-dlt'
-      fullPath: '/admin/system-audit/kafka-dlt'
-      preLoaderRoute: typeof AdminSystemAuditKafkaDltRouteImport
-      parentRoute: typeof AdminSystemAuditRoute
-    }
-    '/admin/system-audit/disputes': {
-      id: '/admin/system-audit/disputes'
-      path: '/disputes'
-      fullPath: '/admin/system-audit/disputes'
-      preLoaderRoute: typeof AdminSystemAuditDisputesRouteImport
-      parentRoute: typeof AdminSystemAuditRoute
-    }
     '/supplier/orders/$orderId/fulfillment': {
       id: '/supplier/orders/$orderId/fulfillment'
       path: '/$orderId/fulfillment'
@@ -1092,19 +1052,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface AdminSystemAuditRouteChildren {
-  AdminSystemAuditDisputesRoute: typeof AdminSystemAuditDisputesRoute
-  AdminSystemAuditKafkaDltRoute: typeof AdminSystemAuditKafkaDltRoute
-}
-
-const AdminSystemAuditRouteChildren: AdminSystemAuditRouteChildren = {
-  AdminSystemAuditDisputesRoute: AdminSystemAuditDisputesRoute,
-  AdminSystemAuditKafkaDltRoute: AdminSystemAuditKafkaDltRoute,
-}
-
-const AdminSystemAuditRouteWithChildren =
-  AdminSystemAuditRoute._addFileChildren(AdminSystemAuditRouteChildren)
 
 interface AdminUsersRouteChildren {
   AdminUsersTenantIdRoute: typeof AdminUsersTenantIdRoute
@@ -1123,14 +1070,14 @@ const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
 interface AdminRouteRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
-  AdminSystemAuditRoute: typeof AdminSystemAuditRouteWithChildren
+  AdminSystemAuditRoute: typeof AdminSystemAuditRoute
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
-  AdminSystemAuditRoute: AdminSystemAuditRouteWithChildren,
+  AdminSystemAuditRoute: AdminSystemAuditRoute,
   AdminUsersRoute: AdminUsersRouteWithChildren,
 }
 
