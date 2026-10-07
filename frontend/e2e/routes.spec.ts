@@ -27,8 +27,7 @@ const routes: Array<{ path: string; role: Role }> = [
   ].map((path) => ({ path, role: 'CARRIER' as const })),
   ...[
     '/admin', '/admin/analytics', '/admin/settings', '/admin/system-audit',
-    '/admin/system-audit/disputes', '/admin/system-audit/kafka-dlt', '/admin/users',
-    '/admin/users/tenant-demo', '/admin/users/verification',
+    '/admin/users', '/admin/users/tenant-demo', '/admin/users/verification',
   ].map((path) => ({ path, role: 'ADMIN' as const })),
 ];
 
