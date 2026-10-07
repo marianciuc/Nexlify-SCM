@@ -1,9 +1,33 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Warehouse, Search, Layers, Thermometer, ShieldAlert, TrendingUp, Truck, Box, CheckCircle2, Navigation, RefreshCw, Plus, Minus, X, Zap, Edit3, Move, Trash2, Save, ArrowLeftRight, RotateCcw, ListOrdered, Square, Building, BatteryCharging } from 'lucide-react';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import {
+  Warehouse,
+  Search,
+  Layers,
+  TrendingUp,
+  Truck,
+  Box,
+  CheckCircle2,
+  Navigation,
+  Plus,
+  Minus,
+  X,
+  Zap,
+  Edit3,
+  Move,
+  Trash2,
+  Save,
+  ArrowLeftRight,
+  RotateCcw,
+  ListOrdered,
+  Square,
+  Building,
+  BatteryCharging,
+} from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/page-header';
+import { StatusBadge, type StatusTone } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -15,8 +39,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import '@/hooks/useScmQueries';
-import '@/types/scm-domain';
+import { useLocale } from '@/hooks/useLocale';
+import { type TranslationPath } from '@/types/generated-locale';
 import {
   ALL_WAREHOUSES,
   CENTRAL_DC_WARSZAWA,
@@ -27,13 +51,14 @@ import {
   type WarehouseRack,
   type WarehouseBin,
   type WarehouseSpecialZone,
+  type WarehouseEquipment,
 } from '@/types/warehouse-map-data';
 
 export const Route = createFileRoute('/supplier/inventory/map')({
   component: VirtualWarehouseMapPage,
   staticData: {
     crumb: {
-      label: 'Warehouse Map (2D)',
+      label: 'nav.supplier.warehouseMap',
     },
   },
   validateSearch: (search: Record<string, unknown>) => {
@@ -57,9 +82,83 @@ interface WavePickingStop {
   isPicked: boolean;
 }
 
+const M = 'supplier.inventory.map';
+
+const HEATMAP_LAYERS: { id: HeatmapMode; labelKey: TranslationPath; activeClass?: string }[] = [
+  { id: 'OCCUPANCY', labelKey: `${M}.layers.occupancy` },
+  { id: 'ABC_VELOCITY', labelKey: `${M}.layers.abc`, activeClass: 'bg-purple-600 hover:bg-purple-700 text-white' },
+  { id: 'COLD_CHAIN', labelKey: `${M}.layers.cold`, activeClass: 'bg-cyan-600 hover:bg-cyan-700 text-white' },
+  { id: 'HAZARDOUS', labelKey: `${M}.layers.hazardous`, activeClass: 'bg-amber-600 hover:bg-amber-700 text-white' },
+];
+
+type BinStatus = 'OCCUPIED' | 'FREE' | 'RESERVED' | 'MAINTENANCE';
+
+const BIN_TONE: Record<BinStatus, StatusTone> = {
+  OCCUPIED: 'success',
+  FREE: 'neutral',
+  RESERVED: 'warning',
+  MAINTENANCE: 'danger',
+};
+
+const BIN_LABEL_KEY: Record<BinStatus, TranslationPath> = {
+  OCCUPIED: `${M}.binStatus.occupied`,
+  FREE: `${M}.binStatus.free`,
+  RESERVED: `${M}.binStatus.reserved`,
+  MAINTENANCE: `${M}.binStatus.maintenance`,
+};
+
+type EquipmentStatus = 'ACTIVE_PICKING' | 'PUTAWAY' | 'IDLE' | 'CHARGING';
+
+const EQ_TONE: Record<EquipmentStatus, StatusTone> = {
+  ACTIVE_PICKING: 'success',
+  PUTAWAY: 'info',
+  IDLE: 'neutral',
+  CHARGING: 'warning',
+};
+
+const EQ_LABEL_KEY: Record<EquipmentStatus, TranslationPath> = {
+  ACTIVE_PICKING: `${M}.eqStatus.active`,
+  PUTAWAY: `${M}.eqStatus.putaway`,
+  IDLE: `${M}.eqStatus.idle`,
+  CHARGING: `${M}.eqStatus.charging`,
+};
+
+const RACK_ZONE_TYPE_LABEL_KEY: Record<WarehouseRack['zoneType'], TranslationPath> = {
+  PALLET_RACKS: `${M}.zoneType.palletRacks`,
+  MEZZANINE: `${M}.zoneType.mezzanine`,
+  COLD_CHAIN: `${M}.zoneType.coldChain`,
+  HAZARDOUS: `${M}.zoneType.hazardous`,
+};
+
+const SPECIAL_ZONE_TYPE_LABEL_KEY: Record<WarehouseSpecialZone['type'], TranslationPath> = {
+  INBOUND_DOCK: `${M}.specialZoneType.inboundDock`,
+  OUTBOUND_DOCK: `${M}.specialZoneType.outboundDock`,
+  PACK_STATION: `${M}.specialZoneType.packStation`,
+  QUARANTINE: `${M}.specialZoneType.quarantine`,
+  CHARGING: `${M}.specialZoneType.charging`,
+};
+
+const TIER_LABEL_KEY: Record<number, TranslationPath> = {
+  4: `${M}.inspector.tier4`,
+  3: `${M}.inspector.tier3`,
+  2: `${M}.inspector.tier2`,
+  1: `${M}.inspector.tier1`,
+};
+
+const EQ_TYPE_LABEL_KEY: Record<WarehouseEquipment['type'], TranslationPath> = {
+  FORKLIFT: `${M}.svg.eqForklift`,
+  REACH_TRUCK: `${M}.svg.eqReach`,
+  AGV_ROBOT: `${M}.svg.eqAgv`,
+};
+
+const WAVE_ORDERS: { id: string; labelKey: TranslationPath }[] = [
+  { id: 'ORD-2026-0891', labelKey: `${M}.wave.order1` },
+  { id: 'ORD-2026-0892', labelKey: `${M}.wave.order2` },
+];
+
 function VirtualWarehouseMapPage() {
+  const { t } = useLocale();
   const searchParams = Route.useSearch();
-  const svgRef = useRef<SVGSVGElement | null>(null);
 
   // Persistent Facilities State
   const [facilities, setFacilities] = useState<WarehouseFacility[]>(getStoredFacilities);
@@ -84,7 +183,7 @@ function VirtualWarehouseMapPage() {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
   // -------------------------------------------------------------
-  // WAVE PICKING (Сборка заказа с обходом нескольких ячеек)
+  // WAVE PICKING (multi-bin order picking circuit)
   // -------------------------------------------------------------
   const [isWavePickingMode, setIsWavePickingMode] = useState<boolean>(false);
   const [selectedWaveOrder, setSelectedWaveOrder] = useState<string>('ORD-2026-0891');
@@ -249,7 +348,10 @@ function VirtualWarehouseMapPage() {
     if (bin) setSelectedBin(bin);
     setIsWavePickingMode(false);
     toast.success(
-      `Маршрут отбора построен к ячейке ${bin ? bin.code : rack.code} (${distanceMeters} м)`
+      t(`${M}.toast.routeBuilt`, {
+        target: bin ? bin.code : rack.code,
+        m: distanceMeters,
+      })
     );
   };
 
@@ -289,7 +391,7 @@ function VirtualWarehouseMapPage() {
   };
 
   // -------------------------------------------------------------
-  // Drag & Drop for Racks AND Zones ("Где что находится")
+  // Drag & Drop for Racks AND Zones
   // -------------------------------------------------------------
   const handleEntityMouseDown = (
     e: React.MouseEvent,
@@ -339,13 +441,15 @@ function VirtualWarehouseMapPage() {
       saveStoredFacilities(facilities);
       setDraggingEntity(null);
       toast.success(
-        draggingEntity.type === 'RACK' ? 'Позиция стеллажа сохранена!' : 'Позиция зоны склада сохранена!'
+        draggingEntity.type === 'RACK'
+          ? t(`${M}.toast.rackPosSaved`)
+          : t(`${M}.toast.zonePosSaved`)
       );
     }
   };
 
   // -------------------------------------------------------------
-  // Zone CRUD ("Управление зонами склада")
+  // Zone CRUD
   // -------------------------------------------------------------
   const handleSaveZone = (zone: WarehouseSpecialZone) => {
     const updated = facilities.map((fac) => {
@@ -360,7 +464,7 @@ function VirtualWarehouseMapPage() {
     updateFacilities(updated);
     setEditingZoneData(null);
     setIsAddingZoneOpen(false);
-    toast.success(`Зона склада «${zone.name}» сохранена!`);
+    toast.success(t(`${M}.toast.zoneSaved`, { name: zone.name }));
   };
 
   const handleDeleteZone = (zoneId: string) => {
@@ -375,7 +479,7 @@ function VirtualWarehouseMapPage() {
     });
 
     updateFacilities(updated);
-    toast.success('Зона склада удалена.');
+    toast.success(t(`${M}.toast.zoneDeleted`));
   };
 
   // -------------------------------------------------------------
@@ -423,7 +527,7 @@ function VirtualWarehouseMapPage() {
 
     updateFacilities(updated);
     setSelectedRack(newRack);
-    toast.success(`Новый стеллаж ${newRack.code} добавлен на карту!`);
+    toast.success(t(`${M}.toast.rackAdded`, { code: newRack.code }));
   };
 
   const handleSaveRackSettings = (updatedRack: WarehouseRack) => {
@@ -440,7 +544,7 @@ function VirtualWarehouseMapPage() {
     updateFacilities(updated);
     setSelectedRack(updatedRack);
     setEditingRackData(null);
-    toast.success(`Параметры стеллажа ${updatedRack.code} сохранены!`);
+    toast.success(t(`${M}.toast.rackSaved`, { code: updatedRack.code }));
   };
 
   const handleDeleteRack = (rackId: string) => {
@@ -459,7 +563,7 @@ function VirtualWarehouseMapPage() {
       setSelectedRack(null);
       setSelectedBin(null);
     }
-    toast.success('Стеллаж удален из планировки.');
+    toast.success(t(`${M}.toast.rackDeleted`));
   };
 
   const handleResetLayoutToDefault = () => {
@@ -469,11 +573,11 @@ function VirtualWarehouseMapPage() {
     setSelectedBin(null);
     setActiveRouteTarget(null);
     setIsWavePickingMode(false);
-    toast.success('Планировка склада сброшена к исходной!');
+    toast.success(t(`${M}.toast.layoutReset`));
   };
 
   // -------------------------------------------------------------
-  // Bin & Inventory Management ("Что где лежит")
+  // Bin & Inventory Management
   // -------------------------------------------------------------
   const handleSaveBinContent = (rackId: string, updatedBin: WarehouseBin) => {
     const updated = facilities.map((fac) => {
@@ -504,7 +608,7 @@ function VirtualWarehouseMapPage() {
       if (refreshedRack) setSelectedRack(refreshedRack);
     }
     setEditingBinData(null);
-    toast.success(`Товар в ячейке ${updatedBin.code} обновлен!`);
+    toast.success(t(`${M}.toast.binUpdated`, { code: updatedBin.code }));
   };
 
   const handleClearBin = (rackId: string, binId: string) => {
@@ -540,7 +644,7 @@ function VirtualWarehouseMapPage() {
     if (selectedBin?.id === binId) {
       setSelectedBin((b) => (b ? { ...b, status: 'FREE', sku: undefined, productName: undefined, quantity: 0 } : null));
     }
-    toast.success('Ячейка очищена.');
+    toast.success(t(`${M}.toast.binCleared`));
   };
 
   const allAvailableBins = useMemo(() => {
@@ -555,7 +659,7 @@ function VirtualWarehouseMapPage() {
 
   const handleExecuteRelocation = () => {
     if (!relocatingBinData || !targetBinCode) {
-      toast.error('Выберите ячейку назначения.');
+      toast.error(t(`${M}.toast.relocateTargetMissing`));
       return;
     }
 
@@ -563,7 +667,7 @@ function VirtualWarehouseMapPage() {
     const targetEntry = allAvailableBins.find((entry) => entry.bin.code === targetBinCode);
 
     if (!targetEntry) {
-      toast.error('Ячейка назначения не найдена.');
+      toast.error(t(`${M}.toast.relocateNotFound`));
       return;
     }
 
@@ -620,11 +724,16 @@ function VirtualWarehouseMapPage() {
     updateFacilities(updated);
     setRelocatingBinData(null);
     toast.success(
-      `Перемещено ${movedQty} шт. (${fromBin.sku}) из ${fromBin.code} ➔ ${targetBinCode}!`
+      t(`${M}.toast.relocated`, {
+        qty: movedQty,
+        sku: fromBin.sku,
+        from: fromBin.code,
+        to: targetBinCode,
+      })
     );
   };
 
-  // Generate complete 4-tier elevation slots (Ярусы 1, 2, 3, 4) for visual rack shelf inspector
+  // Generate complete 4-tier elevation slots for the visual rack shelf inspector
   const rackElevationSlots = useMemo(() => {
     if (!selectedRack) return [];
 
@@ -651,14 +760,6 @@ function VirtualWarehouseMapPage() {
 
       return {
         tierNumber: tierNum,
-        label:
-          tierNum === 4
-            ? 'Ярус 4 (High-bay / Верхний высотный)'
-            : tierNum === 3
-            ? 'Ярус 3 (Буферный резерв)'
-            : tierNum === 2
-            ? 'Ярус 2 (Средний ярус)'
-            : 'Ярус 1 (Комплектация / Ручной отбор)',
         bins: slotBins,
       };
     });
@@ -676,91 +777,88 @@ function VirtualWarehouseMapPage() {
   }, [isWavePickingMode, waveStops]);
 
   const occupancyPercent = Math.round((facility.currentOccupancy / facility.totalCapacity) * 100);
+  const pickedCount = waveStops.filter((s) => s.isPicked).length;
+  const waveProgressPct = waveStops.length > 0 ? Math.round((pickedCount / waveStops.length) * 100) : 0;
+  const dockZones = facility.zones.filter((z) => z.type.includes('DOCK'));
+  const isRackDragging = (rackId: string) => draggingEntity?.type === 'RACK' && draggingEntity.id === rackId;
 
   return (
-    <div className="space-y-4 p-4 lg:p-6 max-w-7xl mx-auto">
-      {/* Header & Warehouse Selector */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <Warehouse className="h-6 w-6 text-emerald-600" />
-              Интерактивная карта распределительного центра (WMS Digital Twin)
-            </h1>
-          </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            2D-планировка стеллажных рядов, навигация комплектовщика, локатор ячеек и телеметрия техники в реальном времени.
-          </p>
-        </div>
+    <div className="space-y-6 max-w-7xl mx-auto min-w-0">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <Warehouse className="h-5 w-5 text-primary" aria-hidden="true" />
+            {t(`${M}.title`)}
+          </span>
+        }
+        subtitle={t(`${M}.subtitle`)}
+        actions={
+          <>
+            <select
+              value={selectedFacilityId}
+              onChange={(e) => {
+                setSelectedFacilityId(e.target.value);
+                setSelectedRack(null);
+                setSelectedBin(null);
+                setActiveRouteTarget(null);
+                setIsWavePickingMode(false);
+              }}
+              aria-label={t(`${M}.facilityLabel`)}
+              className="h-9 rounded-md border border-input bg-background px-3 text-xs font-semibold text-foreground shadow-xs max-w-full"
+            >
+              {facilities.map((w) => (
+                <option key={w.id} value={w.id}>
+                  {w.code}: {w.name} ({w.totalCapacity.toLocaleString()} {t(`${M}.units.palletsShort`)})
+                </option>
+              ))}
+            </select>
 
-        {/* Warehouse Selector & Edit Mode Toggle */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <select
-            value={selectedFacilityId}
-            onChange={(e) => {
-              setSelectedFacilityId(e.target.value);
-              setSelectedRack(null);
-              setSelectedBin(null);
-              setActiveRouteTarget(null);
-              setIsWavePickingMode(false);
-            }}
-            className="p-2 border rounded-md text-xs font-bold bg-white dark:bg-slate-900 shadow-xs text-slate-800 dark:text-slate-200"
-          >
-            {facilities.map((w) => (
-              <option key={w.id} value={w.id}>
-                {w.code}: {w.name} ({w.totalCapacity.toLocaleString()} пал.)
-              </option>
-            ))}
-          </select>
+            <Button
+              size="sm"
+              variant={isWavePickingMode ? 'default' : 'outline'}
+              onClick={() => {
+                setIsWavePickingMode(!isWavePickingMode);
+                setActiveRouteTarget(null);
+                if (!isWavePickingMode) {
+                  toast.info(t(`${M}.toast.waveEnabled`));
+                }
+              }}
+              className={`text-xs gap-1.5 font-semibold ${
+                isWavePickingMode ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'border-purple-300 text-purple-700'
+              }`}
+            >
+              <ListOrdered className="h-3.5 w-3.5" aria-hidden="true" />
+              {isWavePickingMode ? t(`${M}.actions.singleMode`) : t(`${M}.actions.waveMode`)}
+            </Button>
 
-          {/* Wave Picking Toggle */}
-          <Button
-            size="sm"
-            variant={isWavePickingMode ? 'default' : 'outline'}
-            onClick={() => {
-              setIsWavePickingMode(!isWavePickingMode);
-              setActiveRouteTarget(null);
-              if (!isWavePickingMode) {
-                toast.info('Включен режим волнового сбора заказа (Wave Picking)!');
-              }
-            }}
-            className={`text-xs gap-1.5 font-semibold ${
-              isWavePickingMode
-                ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                : 'border-purple-300 text-purple-700'
-            }`}
-          >
-            <ListOrdered className="h-3.5 w-3.5" />
-            {isWavePickingMode ? 'Одиночный поиск' : 'Маршрут заказа (Wave Picking)'}
-          </Button>
-
-          {/* Toggle Interactive Layout Editor */}
-          <Button
-            size="sm"
-            variant={isEditMode ? 'default' : 'outline'}
-            onClick={() => {
-              setIsEditMode(!isEditMode);
-              if (!isEditMode) {
-                toast.info('Режим конструктора: перетаскивайте стеллажи и зоны склада мышью.');
-              }
-            }}
-            className={`text-xs gap-1.5 font-semibold ${
-              isEditMode ? 'bg-amber-600 hover:bg-amber-700 text-white animate-pulse' : 'border-amber-300 text-amber-700'
-            }`}
-          >
-            <Edit3 className="h-3.5 w-3.5" />
-            {isEditMode ? 'Выйти из конструктора' : 'Редактировать планировку'}
-          </Button>
-        </div>
-      </div>
+            <Button
+              size="sm"
+              variant={isEditMode ? 'default' : 'outline'}
+              onClick={() => {
+                setIsEditMode(!isEditMode);
+                if (!isEditMode) {
+                  toast.info(t(`${M}.toast.editEnabled`));
+                }
+              }}
+              className={`text-xs gap-1.5 font-semibold ${
+                isEditMode ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'border-amber-300 text-amber-700'
+              }`}
+            >
+              <Edit3 className="h-3.5 w-3.5" aria-hidden="true" />
+              {isEditMode ? t(`${M}.actions.exitEditor`) : t(`${M}.actions.editLayout`)}
+            </Button>
+          </>
+        }
+      />
 
       {/* Editor Banner if Active */}
       {isEditMode && (
-        <div className="p-3 bg-amber-500/15 border border-amber-300 dark:border-amber-800 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-amber-900 dark:text-amber-200">
+        <div className="p-3 bg-amber-500/10 border border-amber-500/40 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2">
-            <Move className="h-4 w-4 text-amber-600 animate-bounce shrink-0" />
-            <span>
-              <strong>Конструктор планировки склада:</strong> Перетаскивайте стеллажи и зоны приемки/отгрузки мышью.
+            <Move className="h-4 w-4 text-amber-600 shrink-0" aria-hidden="true" />
+            <span className="text-foreground">
+              <strong className="text-amber-700 dark:text-amber-400">{t(`${M}.editor.bannerTitle`)}</strong>{' '}
+              {t(`${M}.editor.bannerHint`)}
             </span>
           </div>
 
@@ -769,9 +867,9 @@ function VirtualWarehouseMapPage() {
               size="sm"
               variant="outline"
               onClick={handleAddNewRack}
-              className="text-2xs h-7 gap-1 bg-white dark:bg-slate-900 border-amber-300"
+              className="text-xs h-7 gap-1"
             >
-              <Plus className="h-3 w-3" /> + Стеллаж
+              <Plus className="h-3 w-3" aria-hidden="true" /> {t(`${M}.editor.addRack`)}
             </Button>
 
             <Button
@@ -780,177 +878,121 @@ function VirtualWarehouseMapPage() {
               onClick={() => {
                 setEditingZoneData({
                   id: `zone-${Date.now()}`,
-                  name: 'Outbound Dock 6 (Новая рампа)',
+                  name: t(`${M}.editor.newZoneName`),
                   type: 'OUTBOUND_DOCK',
                   x: 360,
                   y: 40,
                   width: 130,
                   height: 70,
-                  status: 'Готова к эксплуатации',
+                  status: t(`${M}.editor.newZoneStatus`),
                   activeWorkers: 1,
                 });
                 setIsAddingZoneOpen(true);
               }}
-              className="text-2xs h-7 gap-1 bg-white dark:bg-slate-900 border-amber-300 text-blue-600"
+              className="text-xs h-7 gap-1"
             >
-              <Plus className="h-3 w-3" /> + Зона склада
+              <Plus className="h-3 w-3" aria-hidden="true" /> {t(`${M}.editor.addZone`)}
             </Button>
 
             <Button
               size="sm"
               variant="outline"
               onClick={handleResetLayoutToDefault}
-              className="text-2xs h-7 gap-1 text-rose-600 border-rose-300 hover:bg-rose-50"
+              className="text-xs h-7 gap-1 text-rose-600 border-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10"
             >
-              <RotateCcw className="h-3 w-3" /> Сбросить к исходной
+              <RotateCcw className="h-3 w-3" aria-hidden="true" /> {t(`${M}.editor.resetLayout`)}
             </Button>
           </div>
         </div>
       )}
 
-      {/* Wave Picking Banner if Active */}
-      {isWavePickingMode && (
-        <div className="p-3 bg-purple-500/15 border border-purple-300 dark:border-purple-800 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-3">
-            <ListOrdered className="h-5 w-5 text-purple-600 shrink-0" />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-900 dark:text-slate-100">
-                  Маршрут волнового сбора заказа:
-                </span>
-                <select
-                  value={selectedWaveOrder}
-                  onChange={(e) => setSelectedWaveOrder(e.target.value)}
-                  className="p-1 border rounded text-xs font-bold bg-white dark:bg-slate-900"
-                >
-                  <option value="ORD-2026-0891">ORD-2026-0891 (Baltic Retail - 3 позиции)</option>
-                  <option value="ORD-2026-0892">ORD-2026-0892 (Pomerania Foods - 2 позиции)</option>
-                </select>
-              </div>
-              <div className="text-2xs text-muted-foreground mt-0.5">
-                Оптимальный замкнутый контур обхода ячеек без встречных потоков (TSP Wave Picking).
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="bg-purple-100 text-purple-800 text-2xs font-mono">
-              Общий путь: {totalWaveDistance} м • ~{Math.round(totalWaveDistance / 1.1)} сек • Экономия: 38%
-            </Badge>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-7 text-2xs"
-              onClick={() => setIsWavePickingMode(false)}
-            >
-              Закрыть <X className="h-3 w-3 ml-1" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Top Metrics Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-        <Card className="border-slate-200 dark:border-slate-800 shadow-xs">
-          <CardContent className="p-3">
-            <span className="text-2xs text-muted-foreground block">Общая вместимость:</span>
-            <div className="flex items-center justify-between mt-1">
-              <span className="font-mono font-bold text-base text-slate-900 dark:text-slate-100">
-                {facility.totalCapacity.toLocaleString()} <span className="text-2xs font-normal">палет</span>
-              </span>
-              <Box className="h-4 w-4 text-emerald-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 shadow-xs">
-          <CardContent className="p-3">
-            <span className="text-2xs text-muted-foreground block">Заполненность склада:</span>
-            <div className="flex items-center justify-between mt-1">
-              <span className="font-mono font-bold text-base text-emerald-600">
-                {occupancyPercent}% <span className="text-2xs font-normal">({facility.currentOccupancy.toLocaleString()} пал.)</span>
-              </span>
-              <TrendingUp className="h-4 w-4 text-emerald-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 shadow-xs">
-          <CardContent className="p-3">
-            <span className="text-2xs text-muted-foreground block">Техника & Комплектовщики:</span>
-            <div className="flex items-center justify-between mt-1">
-              <span className="font-mono font-bold text-base text-slate-900 dark:text-slate-100">
-                {facility.equipment.length} ед. <span className="text-2xs text-emerald-600 font-normal">• Онлайн</span>
-              </span>
-              <Zap className="h-4 w-4 text-amber-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 shadow-xs">
-          <CardContent className="p-3">
-            <span className="text-2xs text-muted-foreground block">Статус грузовых рамп (Docks):</span>
-            <div className="flex items-center justify-between mt-1">
-              <span className="font-mono font-bold text-base text-slate-900 dark:text-slate-100">
-                {facility.zones.filter((z) => z.type.includes('DOCK')).length} рамп
-              </span>
-              <Truck className="h-4 w-4 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
+      {/* Facility Metrics */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <StatCell
+          icon={<Box className="h-4 w-4 text-muted-foreground" />}
+          label={t(`${M}.stats.capacity`)}
+          value={facility.totalCapacity.toLocaleString()}
+          sublabel={t(`${M}.stats.capacityUnit`)}
+        />
+        <StatCell
+          icon={<TrendingUp className="h-4 w-4 text-emerald-600" />}
+          label={t(`${M}.stats.occupancy`)}
+          value={`${occupancyPercent}%`}
+          sublabel={t(`${M}.stats.occupancyPallets`, { count: facility.currentOccupancy.toLocaleString() })}
+          tone="success"
+        />
+        <StatCell
+          icon={<Zap className="h-4 w-4 text-amber-500" />}
+          label={t(`${M}.stats.equipment`)}
+          value={facility.equipment.length}
+          sublabel={t(`${M}.stats.equipmentOnline`)}
+          tone="warning"
+        />
+        <StatCell
+          icon={<Truck className="h-4 w-4 text-sky-600" />}
+          label={t(`${M}.stats.docks`)}
+          value={dockZones.length}
+          sublabel={t(`${M}.stats.docksSplit`, {
+            in: facility.zones.filter((z) => z.type === 'INBOUND_DOCK').length,
+            out: facility.zones.filter((z) => z.type === 'OUTBOUND_DOCK').length,
+          })}
+          tone="info"
+        />
       </div>
 
       {/* Control Bar: Search & Heatmap Layers */}
-      <div className="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-lg border flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs">
+      <div className="bg-card p-3 rounded-lg border border-border shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs">
         {/* Search */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="h-4 w-4 absolute left-2.5 top-2.5 text-muted-foreground" />
+        <div className="relative flex-1 max-w-md min-w-0">
+          <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Поиск по артикулу (SKU-PAL-01), названию или ячейке (A-04-108)..."
-            className="pl-8 text-xs bg-white dark:bg-slate-950 font-medium"
+            placeholder={t(`${M}.search.placeholder`)}
+            aria-label={t(`${M}.search.label`)}
+            className="pl-8 text-xs bg-background font-medium"
           />
           {searchQuery && (
             <button
+              type="button"
               onClick={() => {
                 setSearchQuery('');
                 clearRoute();
               }}
-              className="absolute right-2.5 top-2.5 text-muted-foreground hover:text-slate-900"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label={t(`${M}.search.clear`)}
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           )}
 
           {/* Autocomplete Dropdown */}
           {searchResults.length > 0 && searchQuery && (
-            <div className="absolute left-0 right-0 top-10 mt-1 bg-white dark:bg-slate-950 border rounded-md shadow-lg z-30 max-h-56 overflow-y-auto divide-y text-xs">
+            <div className="absolute left-0 right-0 top-10 mt-1 bg-popover border border-border rounded-md shadow-lg z-30 max-h-56 overflow-y-auto divide-y divide-border text-xs">
               {searchResults.slice(0, 5).map((res, i) => (
                 <div
                   key={i}
-                  className="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer flex items-center justify-between"
+                  className="p-2 hover:bg-muted cursor-pointer flex items-center justify-between"
                   onClick={() => {
                     buildRouteToRack(res.rack, res.bin);
                     setSearchQuery('');
                   }}
                 >
-                  <div>
-                    <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                  <div className="min-w-0">
+                    <div className="font-bold text-foreground flex items-center gap-1.5">
                       <span>{res.bin ? res.bin.code : res.rack.code}</span>
                       {res.bin?.sku && (
-                        <Badge variant="outline" className="text-3xs font-mono">
+                        <span className="text-[10px] font-mono font-semibold border border-border rounded px-1 py-0 text-muted-foreground">
                           {res.bin.sku}
-                        </Badge>
+                        </span>
                       )}
                     </div>
-                    <div className="text-3xs text-muted-foreground">
-                      {res.bin?.productName || `Ряд ${res.rack.aisle} • Стеллаж ${res.rack.rackNumber}`}
+                    <div className="text-[10px] text-muted-foreground">
+                      {res.bin?.productName ||
+                        t(`${M}.search.rackFallback`, { aisle: res.rack.aisle, number: res.rack.rackNumber })}
                     </div>
                   </div>
-                  <Button size="sm" variant="ghost" className="h-6 text-2xs gap-1 text-emerald-600">
-                    <Navigation className="h-3 w-3" /> Маршрут
-                  </Button>
+                  <Navigation className="h-3 w-3 text-emerald-600 shrink-0" aria-hidden="true" />
                 </div>
               ))}
             </div>
@@ -958,104 +1000,59 @@ function VirtualWarehouseMapPage() {
         </div>
 
         {/* Heatmap Layer Selector */}
-        <div className="flex items-center gap-1.5 overflow-x-auto">
-          <span className="text-2xs text-muted-foreground font-semibold flex items-center gap-1 mr-1">
-            <Layers className="h-3.5 w-3.5" /> Слой карты:
+        <div
+          className="flex items-center gap-1.5 overflow-x-auto"
+          role="group"
+          aria-label={t(`${M}.layers.label`)}
+        >
+          <span className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1 mr-1">
+            <Layers className="h-3.5 w-3.5" aria-hidden="true" /> {t(`${M}.layers.label`)}
           </span>
-          <Button
-            size="sm"
-            variant={heatmapMode === 'OCCUPANCY' ? 'default' : 'outline'}
-            onClick={() => setHeatmapMode('OCCUPANCY')}
-            className="text-2xs h-7 gap-1"
-          >
-            Заполненность (% палет)
-          </Button>
-          <Button
-            size="sm"
-            variant={heatmapMode === 'ABC_VELOCITY' ? 'default' : 'outline'}
-            onClick={() => setHeatmapMode('ABC_VELOCITY')}
-            className={`text-2xs h-7 gap-1 ${
-              heatmapMode === 'ABC_VELOCITY' ? 'bg-purple-600 hover:bg-purple-700 text-white' : ''
-            }`}
-          >
-            ABC-Скорость отбора
-          </Button>
-          <Button
-            size="sm"
-            variant={heatmapMode === 'COLD_CHAIN' ? 'default' : 'outline'}
-            onClick={() => setHeatmapMode('COLD_CHAIN')}
-            className={`text-2xs h-7 gap-1 ${
-              heatmapMode === 'COLD_CHAIN' ? 'bg-cyan-600 hover:bg-cyan-700 text-white' : ''
-            }`}
-          >
-            <Thermometer className="h-3 w-3" /> Холод (+2..+6°C)
-          </Button>
-          <Button
-            size="sm"
-            variant={heatmapMode === 'HAZARDOUS' ? 'default' : 'outline'}
-            onClick={() => setHeatmapMode('HAZARDOUS')}
-            className={`text-2xs h-7 gap-1 ${
-              heatmapMode === 'HAZARDOUS' ? 'bg-amber-600 hover:bg-amber-700 text-white' : ''
-            }`}
-          >
-            <ShieldAlert className="h-3 w-3" /> Опасные ADR
-          </Button>
-        </div>
-
-        {/* Zoom controls */}
-        <div className="flex items-center gap-1">
-          <Button
-            size="icon"
-            variant="outline"
-            className="h-7 w-7"
-            onClick={() => setZoomLevel((z) => Math.min(1.4, z + 0.1))}
-            title="Увеличить масштаб"
-          >
-            <Plus className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="icon"
-            variant="outline"
-            className="h-7 w-7"
-            onClick={() => setZoomLevel((z) => Math.max(0.7, z - 0.1))}
-            title="Уменьшить масштаб"
-          >
-            <Minus className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="icon"
-            variant="outline"
-            className="h-7 w-7"
-            onClick={() => setZoomLevel(1)}
-            title="Сбросить масштаб 100%"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-          </Button>
+          {HEATMAP_LAYERS.map((layer) => {
+            const isActive = heatmapMode === layer.id;
+            return (
+              <Button
+                key={layer.id}
+                size="sm"
+                variant={isActive ? 'default' : 'outline'}
+                onClick={() => setHeatmapMode(layer.id)}
+                aria-pressed={isActive}
+                className={`text-xs h-7 shrink-0 ${isActive ? layer.activeClass ?? '' : ''}`}
+              >
+                {t(layer.labelKey)}
+              </Button>
+            );
+          })}
         </div>
       </div>
 
       {/* Main Floorplan & Inspector Container */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* SVG Interactive Floorplan Canvas */}
-        <div className="lg:col-span-3 border rounded-xl bg-slate-900 text-white shadow-md relative overflow-hidden flex flex-col">
+        <div className="lg:col-span-3 border border-border rounded-xl bg-slate-900 text-white shadow-sm overflow-hidden flex flex-col">
           {/* Active Single Route Banner */}
           {activeRouteTarget && !isWavePickingMode && (
             <div className="bg-emerald-600/90 text-white px-4 py-2 text-xs flex items-center justify-between backdrop-blur-xs z-10">
-              <div className="flex items-center gap-2">
-                <Navigation className="h-4 w-4 animate-pulse" />
+              <div className="flex items-center gap-2 flex-wrap">
+                <Navigation className="h-4 w-4 animate-pulse" aria-hidden="true" />
                 <span>
-                  Построен маршрут к стеллажу <strong>{activeRouteTarget.rack.code}</strong>{' '}
-                  {activeRouteTarget.bin && `(ячейка ${activeRouteTarget.bin.code})`}
+                  {t(`${M}.route.bannerRack`, { rack: activeRouteTarget.rack.code })}{' '}
+                  {activeRouteTarget.bin &&
+                    t(`${M}.route.bannerBin`, { bin: activeRouteTarget.bin.code })}
                 </span>
-                <Badge variant="secondary" className="bg-white/20 text-white text-3xs font-mono">
-                  Дистанция: {activeRouteTarget.distanceMeters} м • ~{activeRouteTarget.estimatedSeconds} сек
-                </Badge>
+                <span className="bg-white/20 rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold">
+                  {t(`${M}.route.meta`, {
+                    m: activeRouteTarget.distanceMeters,
+                    s: activeRouteTarget.estimatedSeconds,
+                  })}
+                </span>
               </div>
               <button
+                type="button"
                 onClick={clearRoute}
-                className="text-white/80 hover:text-white text-2xs underline flex items-center gap-1"
+                className="text-white/80 hover:text-white text-xs underline flex items-center gap-1"
               >
-                Сбросить маршрут <X className="h-3 w-3" />
+                {t(`${M}.route.reset`)} <X className="h-3 w-3" aria-hidden="true" />
               </button>
             </div>
           )}
@@ -1069,32 +1066,34 @@ function VirtualWarehouseMapPage() {
                 variant="ghost"
                 className="h-7 w-7 text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg"
                 onClick={() => setZoomLevel((z) => Math.min(1.5, Number((z + 0.1).toFixed(1))))}
-                title="Приблизить (+)"
+                title={t(`${M}.zoom.in`)}
+                aria-label={t(`${M}.zoom.in`)}
               >
-                <Plus className="h-3.5 w-3.5" />
+                <Plus className="h-3.5 w-3.5" aria-hidden="true" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
                 className="h-7 w-7 text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg"
                 onClick={() => setZoomLevel((z) => Math.max(0.6, Number((z - 0.1).toFixed(1))))}
-                title="Отдалить (-)"
+                title={t(`${M}.zoom.out`)}
+                aria-label={t(`${M}.zoom.out`)}
               >
-                <Minus className="h-3.5 w-3.5" />
+                <Minus className="h-3.5 w-3.5" aria-hidden="true" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg text-3xs font-mono font-bold"
+                className="h-7 w-7 text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg text-[10px] font-mono font-bold"
                 onClick={() => setZoomLevel(1)}
-                title="Сбросить масштаб (100%)"
+                title={t(`${M}.zoom.reset`)}
+                aria-label={t(`${M}.zoom.reset`)}
               >
                 {Math.round(zoomLevel * 100)}%
               </Button>
             </div>
 
             <svg
-              ref={svgRef}
               viewBox="0 0 1000 640"
               onMouseMove={handleSvgMouseMove}
               onMouseUp={handleSvgMouseUp}
@@ -1102,6 +1101,8 @@ function VirtualWarehouseMapPage() {
                 isEditMode ? 'cursor-crosshair' : ''
               }`}
               style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}
+              role="img"
+              aria-label={t(`${M}.svg.canvasLabel`)}
             >
               <defs>
                 <pattern id="floorGrid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -1128,10 +1129,6 @@ function VirtualWarehouseMapPage() {
                   <feGaussianBlur stdDeviation="3" result="blur" />
                   <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
-
-                <filter id="rackShadow" x="-10%" y="-10%" width="120%" height="130%">
-                  <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodColor="#000000" floodOpacity="0.5" />
-                </filter>
               </defs>
 
               <rect width="1000" height="640" fill="#0f172a" />
@@ -1151,7 +1148,7 @@ function VirtualWarehouseMapPage() {
               {/* Safety pedestrian corridors */}
               <rect x="30" y="440" width="940" height="35" fill="url(#walkwayPattern)" rx="4" />
               <text x="500" y="462" textAnchor="middle" fill="#6ee7b7" fontSize="10" fontWeight="600" opacity="0.8">
-                ГЛАВНЫЙ ПЕШЕХОДНЫЙ КОРИДОР БЕЗОПАСНОСТИ WMS (LANE A ➔ D)
+                {t(`${M}.svg.corridor`)}
               </text>
 
               <rect x="560" y="120" width="30" height="310" fill="url(#walkwayPattern)" rx="2" opacity="0.7" />
@@ -1189,7 +1186,7 @@ function VirtualWarehouseMapPage() {
                       if (isEditMode) {
                         setEditingZoneData(zone);
                       } else {
-                        toast.info(`${zone.name}: ${zone.status}`);
+                        toast.info(t(`${M}.toast.zoneInfo`, { name: zone.name, status: zone.status }));
                       }
                     }}
                   >
@@ -1243,23 +1240,23 @@ function VirtualWarehouseMapPage() {
 
               {/* ---------------- RACKS & AISLES ---------------- */}
               <text x="35" y="168" fill="#94a3b8" fontSize="14" fontWeight="800">
-                РЯД A
+                {t(`${M}.svg.aisle`, { letter: 'A' })}
               </text>
               <text x="35" y="258" fill="#94a3b8" fontSize="14" fontWeight="800">
-                РЯД B
+                {t(`${M}.svg.aisle`, { letter: 'B' })}
               </text>
               <text x="35" y="348" fill="#94a3b8" fontSize="14" fontWeight="800">
-                РЯД C
+                {t(`${M}.svg.aisle`, { letter: 'C' })}
               </text>
 
               <text x="965" y="168" textAnchor="end" fill="#38bdf8" fontSize="13" fontWeight="800">
-                РЯД D (ХОЛОД)
+                {t(`${M}.svg.aisleCold`, { letter: 'D' })}
               </text>
               <text x="965" y="278" textAnchor="end" fill="#fb923c" fontSize="13" fontWeight="800">
-                РЯД E (ADR)
+                {t(`${M}.svg.aisleAdr`, { letter: 'E' })}
               </text>
               <text x="965" y="378" textAnchor="end" fill="#94a3b8" fontSize="13" fontWeight="800">
-                РЯД F (БУФЕР)
+                {t(`${M}.svg.aisleBuffer`, { letter: 'F' })}
               </text>
 
               {/* Racks with Drag and Drop Support in Edit Mode */}
@@ -1268,7 +1265,6 @@ function VirtualWarehouseMapPage() {
                 const isSingleRouteTarget = activeRouteTarget?.rack.id === rack.id;
                 const isWaveStop = waveStops.some((s) => s.rack.id === rack.id);
                 const waveStopIndex = waveStops.findIndex((s) => s.rack.id === rack.id);
-                const isDragging = draggingEntity?.id === rack.id;
                 const rackColor = getRackColor(rack, isSelected);
 
                 return (
@@ -1337,10 +1333,10 @@ function VirtualWarehouseMapPage() {
                       width={rack.width}
                       height={rack.height}
                       fill={rackColor}
-                      stroke={isSelected ? '#60a5fa' : isDragging ? '#f59e0b' : '#0f172a'}
-                      strokeWidth={isSelected || isDragging ? '3' : '1.5'}
+                      stroke={isSelected ? '#60a5fa' : isRackDragging(rack.id) ? '#f59e0b' : '#0f172a'}
+                      strokeWidth={isSelected || isRackDragging(rack.id) ? '3' : '1.5'}
                       rx="3"
-                      opacity={isDragging ? 0.75 : 0.9}
+                      opacity={isRackDragging(rack.id) ? 0.75 : 0.9}
                     />
 
                     {/* Rack bay divisions */}
@@ -1383,7 +1379,7 @@ function VirtualWarehouseMapPage() {
                       fontWeight="600"
                       opacity="0.9"
                     >
-                      {rack.occupied}/{rack.capacity} пал.
+                      {rack.occupied}/{rack.capacity} {t(`${M}.units.palletsShort`)}
                     </text>
 
                     {/* Wave Stop Pin Badge */}
@@ -1436,14 +1432,14 @@ function VirtualWarehouseMapPage() {
                     strokeWidth="2.5"
                   />
                   <text
-                    cx={activeRouteTarget.rack.x + activeRouteTarget.rack.width / 2}
-                    cy={activeRouteTarget.rack.y + activeRouteTarget.rack.height + 25}
+                    x={activeRouteTarget.rack.x + activeRouteTarget.rack.width / 2}
+                    y={activeRouteTarget.rack.y + activeRouteTarget.rack.height + 25}
                     textAnchor="middle"
                     fill="#38bdf8"
                     fontSize="9"
                     fontWeight="800"
                   >
-                    CEL (TARGET)
+                    {t(`${M}.svg.target`)}
                   </text>
                 </g>
               )}
@@ -1473,7 +1469,7 @@ function VirtualWarehouseMapPage() {
                   {/* Start / Finish Pack Station Marker */}
                   <circle cx="180" cy="520" r="9" fill="#10b981" stroke="#ffffff" strokeWidth="2.5" />
                   <text x="180" y="542" textAnchor="middle" fill="#10b981" fontSize="9" fontWeight="800">
-                    STACJA PAKOWANIA (START / FINISH)
+                    {t(`${M}.svg.packStation`)}
                   </text>
                 </g>
               )}
@@ -1483,7 +1479,7 @@ function VirtualWarehouseMapPage() {
                 <g
                   key={eq.id}
                   className="cursor-pointer"
-                  onClick={() => toast.info(`${eq.name}: ${eq.currentTask}`)}
+                  onClick={() => toast.info(t(`${M}.toast.equipmentInfo`, { name: eq.name, task: eq.currentTask }))}
                 >
                   <circle
                     cx={eq.x}
@@ -1502,7 +1498,7 @@ function VirtualWarehouseMapPage() {
                     fontSize="8"
                     fontWeight="800"
                   >
-                    WÓZEK
+                    {t(EQ_TYPE_LABEL_KEY[eq.type])}
                   </text>
                   <text
                     x={eq.x}
@@ -1518,207 +1514,88 @@ function VirtualWarehouseMapPage() {
               ))}
             </svg>
           </div>
+        </div>
 
-          {/* Map Footer Legend */}
-          <div className="bg-slate-950/80 px-4 py-2 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-2xs text-slate-400">
-            <div className="flex items-center gap-4">
-              <span className="font-semibold text-slate-300">Легенда карты:</span>
-              {heatmapMode === 'OCCUPANCY' && (
-                <>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> &lt;60% (Свободно)
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" /> 60–85% (Оптимально)
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" /> &gt;85% (Перегруз)
-                  </span>
-                </>
-              )}
-
-              {heatmapMode === 'ABC_VELOCITY' && (
-                <>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block" /> Категория A (Быстрый отбор)
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block" /> Категория B (Средний)
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-slate-500 inline-block" /> Категория C (Буфер)
-                  </span>
-                </>
-              )}
-
-              {heatmapMode === 'COLD_CHAIN' && (
-                <span className="flex items-center gap-1.5 text-cyan-400">
-                  <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block" /> Холодильный контур (+2..+6°C)
+        {/* Map Legend */}
+        <div className="lg:col-span-3 bg-card px-4 py-2 border border-border rounded-lg shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="font-semibold text-foreground">{t(`${M}.legend.title`)}</span>
+            {heatmapMode === 'OCCUPANCY' && (
+              <>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> {t(`${M}.legend.occFree`)}
                 </span>
-              )}
-
-              {heatmapMode === 'HAZARDOUS' && (
-                <span className="flex items-center gap-1.5 text-orange-400">
-                  <span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block" /> Зона опасных грузов (ADR)
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" /> {t(`${M}.legend.occOptimal`)}
                 </span>
-              )}
-            </div>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" /> {t(`${M}.legend.occOver`)}
+                </span>
+              </>
+            )}
 
-            <div className="flex items-center gap-2">
-              <span className="text-slate-400">
-                {isEditMode ? 'Зажмите и перетаскивайте стеллажи/зоны мышью' : 'Кликните на стеллаж для просмотра ярусов'}
+            {heatmapMode === 'ABC_VELOCITY' && (
+              <>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block" /> {t(`${M}.legend.abcA`)}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block" /> {t(`${M}.legend.abcB`)}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-500 inline-block" /> {t(`${M}.legend.abcC`)}
+                </span>
+              </>
+            )}
+
+            {heatmapMode === 'COLD_CHAIN' && (
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block" /> {t(`${M}.legend.cold`)}
               </span>
-            </div>
+            )}
+
+            {heatmapMode === 'HAZARDOUS' && (
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block" /> {t(`${M}.legend.hazardous`)}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span>{isEditMode ? t(`${M}.legend.hintEdit`) : t(`${M}.legend.hintExplore`)}</span>
           </div>
         </div>
 
-        {/* Right Sidebar: Wave Picking Checklist OR Rack Shelf Elevation Inspector */}
+        {/* Right Sidebar: Rack Shelf Elevation Inspector */}
         <div className="lg:col-span-1 space-y-4">
-          {/* WAVE PICKING CHECKLIST PANEL */}
-          {isWavePickingMode ? (
-            <Card className="border-purple-300 dark:border-purple-800 shadow-sm">
-              <CardHeader className="py-3 px-4 border-b bg-purple-50/50 dark:bg-purple-950/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ListOrdered className="h-4 w-4 text-purple-600" />
-                    <CardTitle className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                      Лист отбора Wave Picking
-                    </CardTitle>
-                  </div>
-                  <Badge className="bg-purple-600 text-white text-3xs">{selectedWaveOrder}</Badge>
-                </div>
-              </CardHeader>
-
-              <CardContent className="p-4 space-y-3 text-xs">
-                {/* Wave Progress Bar */}
-                {(() => {
-                  const pickedCount = waveStops.filter((s) => s.isPicked).length;
-                  const pct = waveStops.length > 0 ? Math.round((pickedCount / waveStops.length) * 100) : 0;
-                  return (
-                    <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg space-y-1.5 border">
-                      <div className="flex items-center justify-between text-2xs font-semibold">
-                        <span>Прогресс сбора: {pickedCount} из {waveStops.length} ячеек</span>
-                        <span className="font-mono text-purple-600 dark:text-purple-400 font-bold">{pct}%</span>
-                      </div>
-                      <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-purple-600 to-emerald-500 transition-all duration-300"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      <div className="flex justify-between text-3xs text-muted-foreground pt-0.5">
-                        <span>Длина коридора: ~{totalWaveDistance} м</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-medium">Экономия: ~38% времени</span>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* Checklist stops */}
-                <div className="space-y-2">
-                  {waveStops.map((stop, idx) => (
-                    <div
-                      key={stop.stopNumber}
-                      onClick={() => {
-                        setSelectedRack(stop.rack);
-                        if (stop.bin) setSelectedBin(stop.bin);
-                      }}
-                      className={`p-2.5 rounded-lg border cursor-pointer transition-colors ${
-                        stop.isPicked
-                          ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-300'
-                          : 'bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 hover:border-purple-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const updated = [...waveStops];
-                              updated[idx] = { ...stop, isPicked: !stop.isPicked };
-                              setWaveStops(updated);
-                              if (!stop.isPicked) {
-                                toast.success(`Позиция ${stop.sku} отобрана в тележку!`);
-                              }
-                            }}
-                          >
-                            {stop.isPicked ? (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                            ) : (
-                              <Square className="h-4 w-4 text-slate-400" />
-                            )}
-                          </button>
-                          <span className="font-mono font-bold text-xs text-slate-900 dark:text-slate-100">
-                            Точка #{stop.stopNumber}: {stop.bin ? stop.bin.code : stop.rack.code}
-                          </span>
-                        </div>
-                        <Badge variant="outline" className="text-3xs font-mono">
-                          {stop.qty} шт
-                        </Badge>
-                      </div>
-
-                      <div className="mt-1.5 pl-6 text-2xs space-y-0.5">
-                        <div className="font-medium text-slate-800 dark:text-slate-200 truncate">
-                          {stop.name}
-                        </div>
-                        <div className="text-3xs text-muted-foreground font-mono">
-                          Артикул: {stop.sku} • Стеллаж: {stop.rack.code}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-2 border-t flex flex-col gap-2">
-                  <Button
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs gap-1.5 font-semibold"
-                    onClick={() => {
-                      const allDone = waveStops.every((s) => s.isPicked);
-                      if (allDone) {
-                        toast.success(`Все позиции заказа ${selectedWaveOrder} успешно скомплектованы на Pack Station!`);
-                        setIsWavePickingMode(false);
-                      } else {
-                        setWaveStops(waveStops.map((s) => ({ ...s, isPicked: true })));
-                        toast.success('Все позиции автоматически отмечены как отобранные!');
-                      }
-                    }}
-                  >
-                    <CheckCircle2 className="h-4 w-4" /> Завершить комплектацию на стол упаковки
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ) : selectedRack ? (
-            /* RACK SHELF ELEVATION INSPECTOR (ЯРУСЫ 1, 2, 3, 4) */
-            <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-              <CardHeader className="py-3 px-4 border-b bg-slate-50 dark:bg-slate-900">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Box className="h-4 w-4 text-emerald-600" />
-                    <CardTitle className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                      Стеллаж {selectedRack.code}
-                    </CardTitle>
-                  </div>
+          {selectedRack ? (
+            <Card className="border-border shadow-xs bg-card">
+              <CardHeader className="py-3 px-4 border-b border-border">
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle className="text-sm font-bold flex items-center gap-2">
+                    <Box className="h-4 w-4 text-primary" aria-hidden="true" />
+                    {t(`${M}.inspector.title`, { code: selectedRack.code })}
+                  </CardTitle>
                   <div className="flex items-center gap-1">
                     <Button
-                      size="icon"
+                      size="icon-xs"
                       variant="ghost"
-                      className="h-6 w-6 text-slate-500 hover:text-slate-900"
                       onClick={() => setEditingRackData(selectedRack)}
-                      title="Редактировать параметры стеллажа"
+                      title={t(`${M}.inspector.editRack`)}
+                      aria-label={t(`${M}.inspector.editRack`)}
                     >
-                      <Edit3 className="h-3 w-3" />
+                      <Edit3 className="h-3 w-3" aria-hidden="true" />
                     </Button>
                     {isEditMode && (
                       <Button
-                        size="icon"
+                        size="icon-xs"
                         variant="ghost"
-                        className="h-6 w-6 text-rose-500 hover:text-rose-700 hover:bg-rose-50"
+                        className="text-rose-500 hover:text-rose-700"
                         onClick={() => handleDeleteRack(selectedRack.id)}
-                        title="Удалить этот стеллаж"
+                        title={t(`${M}.inspector.deleteRack`)}
+                        aria-label={t(`${M}.inspector.deleteRack`)}
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Trash2 className="h-3 w-3" aria-hidden="true" />
                       </Button>
                     )}
                   </div>
@@ -1727,15 +1604,18 @@ function VirtualWarehouseMapPage() {
 
               <CardContent className="p-4 space-y-4 text-xs">
                 {/* Rack KPI Stats */}
-                <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg space-y-2 border">
-                  <div className="flex items-center justify-between text-2xs">
-                    <span className="text-muted-foreground">Заполненность стеллажа:</span>
-                    <span className="font-mono font-bold text-slate-900 dark:text-slate-100">
-                      {selectedRack.occupied} / {selectedRack.capacity} пал. (
-                      {Math.round((selectedRack.occupied / selectedRack.capacity) * 100)}%)
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">{t(`${M}.inspector.occupancy`)}</span>
+                    <span className="font-mono font-bold text-foreground">
+                      {t(`${M}.inspector.occupancyValue`, {
+                        occupied: selectedRack.occupied,
+                        capacity: selectedRack.capacity,
+                        pct: Math.round((selectedRack.occupied / selectedRack.capacity) * 100),
+                      })}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full ${
                         selectedRack.occupied / selectedRack.capacity > 0.85
@@ -1748,57 +1628,83 @@ function VirtualWarehouseMapPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 pt-1 text-3xs text-muted-foreground font-mono">
-                    <div>Ряд / Секция: <strong>Ряд {selectedRack.aisle} • #{selectedRack.rackNumber}</strong></div>
-                    <div>Температура: <strong>{selectedRack.temperature}</strong></div>
+                  <div className="grid grid-cols-1 gap-1 pt-1 text-[10px] text-muted-foreground font-mono">
+                    <div>
+                      {t(`${M}.inspector.aisleSection`)}:{' '}
+                      <strong className="text-foreground">
+                        {t(`${M}.inspector.aisleValue`, {
+                          aisle: selectedRack.aisle,
+                          number: selectedRack.rackNumber,
+                        })}
+                      </strong>
+                    </div>
+                    <div>
+                      {t(`${M}.inspector.temperature`)}: <strong className="text-foreground">{selectedRack.temperature}</strong>
+                    </div>
                   </div>
                 </div>
 
-                {/* ---------------- VERTICAL RACK ELEVATION (ЯРУСЫ 1-4) ---------------- */}
+                {/* ---------------- VERTICAL RACK ELEVATION (TIERS 1-4) ---------------- */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-2xs text-slate-800 dark:text-slate-200 flex items-center gap-1">
-                      <Building className="h-3.5 w-3.5 text-blue-600" /> Вертикальный срез полок (Ярусы):
+                    <span className="font-bold text-xs text-foreground flex items-center gap-1">
+                      <Building className="h-3.5 w-3.5 text-sky-600" aria-hidden="true" />{' '}
+                      {t(`${M}.inspector.elevationTitle`)}
                     </span>
-                    <span className="text-3xs text-muted-foreground">4 яруса x 3 позиции</span>
+                    <span className="text-[10px] text-muted-foreground">{t(`${M}.inspector.elevationHint`)}</span>
                   </div>
 
-                  <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-950 border space-y-2">
+                  <div className="p-2 rounded-lg bg-muted/30 border border-border space-y-2">
                     {rackElevationSlots.map((tier) => (
                       <div key={tier.tierNumber} className="space-y-1">
-                        <div className="text-3xs font-semibold text-slate-500 dark:text-slate-400">
-                          {tier.label}
+                        <div className="text-[10px] font-semibold text-muted-foreground">
+                          {t(TIER_LABEL_KEY[tier.tierNumber]!)}
                         </div>
                         {/* 3 Pallet bins per shelf */}
                         <div className="grid grid-cols-3 gap-1.5">
                           {tier.bins.map((bin) => {
                             const isBinSelected = selectedBin?.code === bin.code;
-                            const isOccupied = bin.status === 'OCCUPIED';
+                            const toneClass =
+                              bin.status === 'OCCUPIED'
+                                ? 'bg-emerald-50/70 dark:bg-emerald-500/10 border-emerald-300 dark:border-emerald-500/40'
+                                : bin.status === 'RESERVED'
+                                ? 'bg-amber-50/70 dark:bg-amber-500/10 border-amber-300 dark:border-amber-500/40'
+                                : bin.status === 'MAINTENANCE'
+                                ? 'bg-rose-50/70 dark:bg-rose-500/10 border-rose-300 dark:border-rose-500/40'
+                                : 'bg-card border-dashed border-border hover:bg-muted/50';
                             return (
-                              <div
+                              <button
                                 key={bin.code}
+                                type="button"
                                 onClick={() => {
                                   setSelectedBin(bin);
                                 }}
-                                className={`p-1.5 rounded border text-center cursor-pointer transition-all ${
-                                  isBinSelected
-                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 shadow-xs ring-1 ring-blue-500'
-                                    : isOccupied
-                                    ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300'
-                                    : 'bg-white dark:bg-slate-900 border-dashed border-slate-300 dark:border-slate-800 hover:bg-slate-50'
+                                className={`p-1.5 rounded border text-center cursor-pointer transition-colors ${
+                                  isBinSelected ? 'border-primary bg-primary/10 ring-1 ring-primary' : toneClass
                                 }`}
-                                title={`${bin.code} • ${isOccupied ? bin.productName : 'Свободно'}`}
+                                title={`${bin.code} • ${bin.sku ? bin.productName : t(`${M}.inspector.binFree`)}`}
+                                aria-label={`${bin.code} • ${bin.sku ? bin.productName : t(`${M}.inspector.binFree`)}`}
                               >
-                                <div className="font-mono text-3xs font-bold truncate">
+                                <div className="font-mono text-[10px] font-bold truncate text-foreground">
                                   {bin.code.split('-').slice(-2).join('-')}
                                 </div>
-                                <div className="text-2xs mt-0.5 flex justify-center py-0.5">
-                                  <span className={`inline-block w-2.5 h-2.5 rounded-xs ${isOccupied ? 'bg-emerald-500' : 'bg-muted-foreground/30'}`} />
+                                <div className="text-[10px] mt-0.5 flex justify-center py-0.5">
+                                  <span
+                                    className={`inline-block w-2.5 h-2.5 rounded-xs ${
+                                      bin.status === 'OCCUPIED'
+                                        ? 'bg-emerald-500'
+                                        : bin.status === 'RESERVED'
+                                        ? 'bg-amber-500'
+                                        : bin.status === 'MAINTENANCE'
+                                        ? 'bg-rose-500'
+                                        : 'bg-muted-foreground/30'
+                                    }`}
+                                  />
                                 </div>
-                                <div className="text-3xs text-muted-foreground truncate">
-                                  {isOccupied ? `${bin.quantity} шт` : 'Своб.'}
+                                <div className="text-[10px] text-muted-foreground truncate">
+                                  {bin.sku ? t(`${M}.inspector.binQty`, { count: bin.quantity ?? 0 }) : t(`${M}.inspector.binFreeShort`)}
                                 </div>
-                              </div>
+                              </button>
                             );
                           })}
                         </div>
@@ -1809,77 +1715,68 @@ function VirtualWarehouseMapPage() {
 
                 {/* Selected Bin Action Card */}
                 {selectedBin && (
-                  <div className="p-3 rounded-lg border bg-blue-50/30 dark:bg-blue-950/20 border-blue-200 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold text-xs text-blue-900 dark:text-blue-200">
-                        Ячейка {selectedBin.code} (Ярус {selectedBin.tier})
+                  <div className="p-3 rounded-lg border border-primary/30 bg-primary/5 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono font-bold text-xs text-foreground">
+                        {t(`${M}.inspector.binTitle`, { code: selectedBin.code, tier: selectedBin.tier })}
                       </span>
-                      <Badge
-                        className={
-                          selectedBin.status === 'OCCUPIED'
-                            ? 'bg-emerald-600 text-white text-3xs'
-                            : 'bg-slate-200 text-slate-700 text-3xs'
-                        }
-                      >
-                        {selectedBin.status === 'OCCUPIED' ? 'Занята' : 'Свободна'}
-                      </Badge>
+                      <StatusBadge tone={BIN_TONE[selectedBin.status]} label={t(BIN_LABEL_KEY[selectedBin.status])} size="sm" />
                     </div>
 
                     {selectedBin.sku ? (
-                      <div className="space-y-1 text-2xs">
-                        <div className="font-medium text-slate-900 dark:text-slate-100">
-                          {selectedBin.productName}
-                        </div>
-                        <div className="font-mono text-3xs text-muted-foreground">
-                          Артикул: {selectedBin.sku} • Кол-во: <strong>{selectedBin.quantity} шт.</strong>
+                      <div className="space-y-1 text-xs">
+                        <div className="font-medium text-foreground">{selectedBin.productName}</div>
+                        <div className="font-mono text-[10px] text-muted-foreground">
+                          {t(`${M}.inspector.binSku`, { sku: selectedBin.sku, count: selectedBin.quantity ?? 0 })}
                         </div>
                         {selectedBin.batchLot && (
-                          <div className="text-3xs text-slate-500">
-                            Партия: <span className="font-mono">{selectedBin.batchLot}</span>
+                          <div className="text-[10px] text-muted-foreground">
+                            {t(`${M}.inspector.binBatch`, { lot: selectedBin.batchLot })}
                           </div>
                         )}
 
-                        <div className="flex items-center gap-1.5 pt-1.5 border-t">
+                        <div className="flex items-center gap-1.5 pt-1.5 border-t border-border">
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-6 text-3xs px-2 gap-1 text-blue-600 border-blue-200 flex-1"
+                            className="h-6 text-[10px] px-2 gap-1 flex-1"
                             onClick={() => {
                               setRelocatingBinData({ fromRackId: selectedRack.id, fromBin: selectedBin });
                               setRelocateQty(selectedBin.quantity || 10);
                             }}
                           >
-                            <ArrowLeftRight className="h-3 w-3" /> Переместить
+                            <ArrowLeftRight className="h-3 w-3" aria-hidden="true" /> {t(`${M}.inspector.relocate`)}
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-6 text-3xs px-2 gap-1 flex-1"
+                            className="h-6 text-[10px] px-2 gap-1 flex-1"
                             onClick={() => setEditingBinData({ rackId: selectedRack.id, bin: selectedBin })}
                           >
-                            <Edit3 className="h-3 w-3" /> Изменить
+                            <Edit3 className="h-3 w-3" aria-hidden="true" /> {t('common.edit')}
                           </Button>
                           <Button
-                            size="icon"
+                            size="icon-xs"
                             variant="ghost"
                             className="h-6 w-6 text-rose-500 hover:text-rose-700"
                             onClick={() => handleClearBin(selectedRack.id, selectedBin.id)}
-                            title="Очистить ячейку"
+                            title={t(`${M}.inspector.clearBin`)}
+                            aria-label={t(`${M}.inspector.clearBin`)}
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="h-3 w-3" aria-hidden="true" />
                           </Button>
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between text-2xs">
-                        <span className="text-muted-foreground">Ячейка свободна для размещения</span>
+                      <div className="flex items-center justify-between gap-2 text-xs">
+                        <span className="text-muted-foreground">{t(`${M}.inspector.binFreeHint`)}</span>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-6 text-3xs px-2 gap-1 bg-white dark:bg-slate-900"
+                          className="h-6 text-[10px] px-2 gap-1"
                           onClick={() => setEditingBinData({ rackId: selectedRack.id, bin: selectedBin })}
                         >
-                          <Plus className="h-3 w-3" /> Разместить товар
+                          <Plus className="h-3 w-3" aria-hidden="true" /> {t(`${M}.inspector.placeProduct`)}
                         </Button>
                       </div>
                     )}
@@ -1888,71 +1785,271 @@ function VirtualWarehouseMapPage() {
 
                 {/* Build Route Button */}
                 <Button
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5 font-semibold"
+                  className="w-full text-xs gap-1.5 font-semibold"
                   onClick={() => buildRouteToRack(selectedRack, selectedBin || undefined)}
                 >
-                  <Navigation className="h-3.5 w-3.5" /> Маршрут к этой ячейке
+                  <Navigation className="h-3.5 w-3.5" aria-hidden="true" /> {t(`${M}.inspector.buildRoute`)}
                 </Button>
               </CardContent>
             </Card>
           ) : (
-            <Card className="p-6 text-center border-dashed border-slate-300 dark:border-slate-800">
-              <Box className="h-10 w-10 text-muted-foreground mx-auto mb-2 opacity-40" />
-              <h3 className="font-bold text-xs text-slate-800 dark:text-slate-200">
-                Стеллаж не выбран
-              </h3>
-              <p className="text-2xs text-muted-foreground mt-1">
-                Кликните на любой стеллаж на карте склада, чтобы открыть вертикальный срез ярусов и палет.
-              </p>
+            <Card className="p-6 text-center border-dashed border-border bg-card">
+              <Box className="h-10 w-10 text-muted-foreground/40 mx-auto mb-2" aria-hidden="true" />
+              <h3 className="font-bold text-xs text-foreground">{t(`${M}.inspector.emptyTitle`)}</h3>
+              <p className="text-xs text-muted-foreground mt-1">{t(`${M}.inspector.emptyHint`)}</p>
             </Card>
           )}
-
-          {/* Quick Info Card: Fleet & Pickers */}
-          <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-            <CardHeader className="py-2.5 px-4 border-b bg-slate-50 dark:bg-slate-900">
-              <CardTitle className="text-xs font-bold flex items-center gap-1.5">
-                <Truck className="h-3.5 w-3.5 text-blue-600" /> Складская техника онлайн ({facility.equipment.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 space-y-2 text-2xs">
-              {facility.equipment.map((eq) => (
-                <div
-                  key={eq.id}
-                  className="p-2 rounded border bg-white dark:bg-slate-950 flex flex-col gap-1"
-                >
-                  <div className="flex items-center justify-between font-semibold">
-                    <span className="text-slate-900 dark:text-slate-100">{eq.name.split('(')[0]}</span>
-                    <span className="font-mono text-emerald-600 flex items-center gap-1">
-                      <BatteryCharging className="h-3 w-3" />
-                      {eq.batteryPercent}%
-                    </span>
-                  </div>
-                  <div className="text-3xs text-muted-foreground">
-                    Оператор: <strong>{eq.operator}</strong>
-                  </div>
-                  <div className="text-3xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 p-1 rounded">
-                    {eq.currentTask}
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
         </div>
       </div>
 
+      {/* WAVE PICKING PANEL (full-width pick list table) */}
+      {isWavePickingMode && (
+        <Card className="border-border shadow-xs overflow-hidden bg-card">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 py-3 px-4 border-b border-border">
+            <div className="flex items-center gap-3 min-w-0">
+              <ListOrdered className="h-4 w-4 text-purple-600 shrink-0" aria-hidden="true" />
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-bold text-foreground">{t(`${M}.wave.panelTitle`)}</span>
+                  <select
+                    value={selectedWaveOrder}
+                    onChange={(e) => setSelectedWaveOrder(e.target.value)}
+                    aria-label={t(`${M}.wave.orderLabel`)}
+                    className="h-7 px-2 border border-input rounded bg-background text-xs font-bold text-foreground"
+                  >
+                    {WAVE_ORDERS.map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {t(o.labelKey)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">{t(`${M}.wave.routeHint`)}</div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30 rounded px-2 py-0.5 text-[10px] font-mono font-semibold">
+                {t(`${M}.wave.totalMeta`, {
+                  m: totalWaveDistance,
+                  s: Math.round(totalWaveDistance / 1.1),
+                })}
+              </span>
+              <Button
+                className="bg-purple-600 hover:bg-purple-700 text-white text-xs gap-1.5 font-semibold"
+                size="sm"
+                onClick={() => {
+                  const allDone = waveStops.every((s) => s.isPicked);
+                  if (allDone) {
+                    toast.success(t(`${M}.toast.orderCompleted`, { order: selectedWaveOrder }));
+                    setIsWavePickingMode(false);
+                  } else {
+                    setWaveStops(waveStops.map((s) => ({ ...s, isPicked: true })));
+                    toast.success(t(`${M}.toast.allPicked`));
+                  }
+                }}
+              >
+                <CheckCircle2 className="h-4 w-4" aria-hidden="true" /> {t(`${M}.wave.finish`)}
+              </Button>
+            </div>
+          </div>
+
+          {/* Wave Progress Bar */}
+          <div className="px-4 py-2.5 bg-muted/40 border-b border-border space-y-1.5">
+            <div className="flex items-center justify-between text-xs font-semibold">
+              <span className="text-foreground">
+                {t(`${M}.wave.progress`, { picked: pickedCount, total: waveStops.length })}
+              </span>
+              <span className="font-mono text-purple-600 dark:text-purple-400 font-bold">{waveProgressPct}%</span>
+            </div>
+            <div
+              className="w-full bg-muted h-2 rounded-full overflow-hidden border border-border"
+              role="progressbar"
+              aria-valuenow={waveProgressPct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={t(`${M}.wave.progress`, { picked: pickedCount, total: waveStops.length })}
+            >
+              <div
+                className="h-full rounded-full bg-emerald-500 transition-all duration-300"
+                style={{ width: `${waveProgressPct}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-[10px] text-muted-foreground pt-0.5">
+              <span>{t(`${M}.wave.corridorLength`, { m: totalWaveDistance })}</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium">{t(`${M}.wave.savingHint`)}</span>
+            </div>
+          </div>
+
+          <CardContent className="p-0 overflow-x-auto">
+            <table className="w-full text-left text-sm min-w-[760px]">
+              <caption className="sr-only">{t(`${M}.wave.panelTitle`)}</caption>
+              <thead className="bg-muted/40 border-b border-border text-muted-foreground whitespace-nowrap uppercase tracking-wider text-[11px] font-semibold">
+                <tr>
+                  <th className="py-3 px-3 w-10">{t(`${M}.wave.tablePick`)}</th>
+                  <th className="py-3 px-3">{t(`${M}.wave.tableStop`)}</th>
+                  <th className="py-3 px-4">{t(`${M}.wave.tableBin`)}</th>
+                  <th className="py-3 px-4">{t(`${M}.wave.tableProduct`)}</th>
+                  <th className="py-3 px-4">{t(`${M}.wave.tableRack`)}</th>
+                  <th className="py-3 px-4 text-right">{t(`${M}.wave.tableQty`)}</th>
+                  <th className="py-3 px-4">{t(`${M}.wave.tableStatus`)}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border whitespace-nowrap">
+                {waveStops.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-10 text-center text-sm text-muted-foreground">
+                      <ListOrdered className="h-10 w-10 mx-auto text-muted-foreground/40 mb-2" aria-hidden="true" />
+                      <p className="font-semibold text-foreground">{t(`${M}.wave.emptyTitle`)}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{t(`${M}.wave.emptyHint`)}</p>
+                    </td>
+                  </tr>
+                ) : (
+                  waveStops.map((stop, idx) => (
+                    <tr
+                      key={stop.stopNumber}
+                      className={`cursor-pointer transition-colors ${
+                        stop.isPicked ? 'bg-emerald-500/5' : 'hover:bg-muted/40'
+                      }`}
+                      onClick={() => {
+                        setSelectedRack(stop.rack);
+                        if (stop.bin) setSelectedBin(stop.bin);
+                      }}
+                    >
+                      <td className="py-3 px-3">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const updated = [...waveStops];
+                            updated[idx] = { ...stop, isPicked: !stop.isPicked };
+                            setWaveStops(updated);
+                            if (!stop.isPicked) {
+                              toast.success(t(`${M}.toast.stopPicked`, { sku: stop.sku }));
+                            }
+                          }}
+                          aria-label={t(`${M}.wave.pickAria`, { stop: stop.stopNumber })}
+                          className="align-middle cursor-pointer"
+                        >
+                          {stop.isPicked ? (
+                            <CheckCircle2 className="h-4 w-4 text-emerald-600" aria-hidden="true" />
+                          ) : (
+                            <Square className="h-4 w-4 text-muted-foreground/50" aria-hidden="true" />
+                          )}
+                        </button>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-bold text-foreground">#{stop.stopNumber}</td>
+                      <td className="py-3 px-4 font-mono font-bold text-foreground">
+                        {stop.bin ? stop.bin.code : stop.rack.code}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-foreground whitespace-normal">{stop.name}</div>
+                        <div className="text-[10px] text-muted-foreground font-mono">{stop.sku}</div>
+                      </td>
+                      <td className="py-3 px-4 font-mono text-xs text-muted-foreground">{stop.rack.code}</td>
+                      <td className="py-3 px-4 text-right font-mono font-semibold tabular-nums">
+                        {t(`${M}.inspector.binQty`, { count: stop.qty })}
+                      </td>
+                      <td className="py-3 px-4">
+                        <StatusBadge
+                          tone={stop.isPicked ? 'success' : 'warning'}
+                          label={stop.isPicked ? t(`${M}.wave.statusPicked`) : t(`${M}.wave.statusPending`)}
+                          size="sm"
+                        />
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* WAREHOUSE EQUIPMENT TABLE */}
+      <Card className="border-border shadow-xs overflow-hidden bg-card">
+        <div className="flex items-center justify-between gap-2 py-3 px-4 border-b border-border">
+          <CardTitle className="text-sm font-bold flex items-center gap-2">
+            <Truck className="h-4 w-4 text-sky-600" aria-hidden="true" />
+            {t(`${M}.equipment.title`, { count: facility.equipment.length })}
+          </CardTitle>
+        </div>
+        <CardContent className="p-0 overflow-x-auto">
+          <table className="w-full text-left text-sm min-w-[760px]">
+            <caption className="sr-only">{t(`${M}.equipment.title`, { count: facility.equipment.length })}</caption>
+            <thead className="bg-muted/40 border-b border-border text-muted-foreground whitespace-nowrap uppercase tracking-wider text-[11px] font-semibold">
+              <tr>
+                <th className="py-3 px-4">{t(`${M}.equipment.unit`)}</th>
+                <th className="py-3 px-4">{t(`${M}.equipment.operator`)}</th>
+                <th className="py-3 px-4">{t(`${M}.equipment.task`)}</th>
+                <th className="py-3 px-4 min-w-[180px]">{t(`${M}.equipment.battery`)}</th>
+                <th className="py-3 px-4">{t(`${M}.equipment.status`)}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {facility.equipment.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-10 text-center text-sm text-muted-foreground">
+                    <Truck className="h-10 w-10 mx-auto text-muted-foreground/40 mb-2" aria-hidden="true" />
+                    <p className="font-semibold text-foreground">{t(`${M}.equipment.emptyTitle`)}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t(`${M}.equipment.emptyHint`)}</p>
+                  </td>
+                </tr>
+              ) : (
+                facility.equipment.map((eq) => {
+                  const batteryTone =
+                    eq.batteryPercent > 50 ? 'bg-emerald-500' : eq.batteryPercent > 25 ? 'bg-amber-500' : 'bg-rose-500';
+                  return (
+                    <tr key={eq.id} className="hover:bg-muted/40 transition-colors">
+                      <td className="py-3 px-4 font-semibold text-foreground whitespace-nowrap">
+                        {eq.name.split('(')[0]}
+                      </td>
+                      <td className="py-3 px-4 text-xs text-foreground font-medium whitespace-nowrap">{eq.operator}</td>
+                      <td className="py-3 px-4 text-xs text-muted-foreground whitespace-normal">{eq.currentTask}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          <BatteryCharging className="h-3.5 w-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
+                          <div
+                            className="flex-1 min-w-[80px] h-1.5 bg-muted rounded-full overflow-hidden border border-border"
+                            role="progressbar"
+                            aria-valuenow={eq.batteryPercent}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-label={t(`${M}.equipment.batteryAria`, { pct: eq.batteryPercent })}
+                          >
+                            <div className={`h-full ${batteryTone}`} style={{ width: `${eq.batteryPercent}%` }} />
+                          </div>
+                          <span className="font-mono font-semibold tabular-nums text-xs">{eq.batteryPercent}%</span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <StatusBadge tone={EQ_TONE[eq.status]} label={t(EQ_LABEL_KEY[eq.status])} size="sm" />
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+
       {/* ------------------------------------------------------------- */}
-      {/* MODAL 1: Edit Bin Inventory Content ("Что лежит в ячейке") */}
+      {/* MODAL 1: Edit Bin Inventory Content */}
       {/* ------------------------------------------------------------- */}
       {editingBinData && (
         <Dialog open={!!editingBinData} onOpenChange={(open) => !open && setEditingBinData(null)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="text-base font-bold flex items-center gap-2">
-                <Box className="h-5 w-5 text-emerald-600" />
-                Назначение товара в ячейку {editingBinData.bin.code}
+                <Box className="h-5 w-5 text-primary" aria-hidden="true" />
+                {t(`${M}.binDialog.title`, { code: editingBinData.bin.code })}
               </DialogTitle>
               <DialogDescription className="text-xs">
-                Укажите или измените номенклатуру (Ярус {editingBinData.bin.tier}, Позиция {editingBinData.bin.position}).
+                {t(`${M}.binDialog.desc`, {
+                  tier: editingBinData.bin.tier,
+                  position: editingBinData.bin.position,
+                })}
               </DialogDescription>
             </DialogHeader>
 
@@ -1978,22 +2075,22 @@ function VirtualWarehouseMapPage() {
               className="space-y-3 text-xs"
             >
               <div className="space-y-1">
-                <Label className="text-xs">Артикул SKU:</Label>
+                <Label className="text-xs">{t(`${M}.field.sku`)}</Label>
                 <Input
                   name="sku"
                   defaultValue={editingBinData.bin.sku || 'SKU-PAL-01'}
-                  placeholder="np. SKU-PAL-01"
+                  placeholder={t(`${M}.field.skuPlaceholder`)}
                   className="font-mono text-xs"
                   required
                 />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Наименование товара:</Label>
+                <Label className="text-xs">{t(`${M}.field.product`)}</Label>
                 <Input
                   name="productName"
                   defaultValue={editingBinData.bin.productName || 'EPAL Euro-Pallet Standard'}
-                  placeholder="np. EPAL Euro-Pallet Standard"
+                  placeholder={t(`${M}.field.productPlaceholder`)}
                   className="text-xs font-semibold"
                   required
                 />
@@ -2001,17 +2098,17 @@ function VirtualWarehouseMapPage() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Категория:</Label>
+                  <Label className="text-xs">{t(`${M}.field.category`)}</Label>
                   <Input
                     name="category"
-                    defaultValue={editingBinData.bin.category || 'Деревянная тара'}
-                    placeholder="Категория"
+                    defaultValue={editingBinData.bin.category || t(`${M}.binDialog.defaultCategory`)}
+                    placeholder={t(`${M}.field.category`)}
                     className="text-xs"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs">Количество (шт):</Label>
+                  <Label className="text-xs">{t(`${M}.field.qty`)}</Label>
                   <Input
                     type="number"
                     name="quantity"
@@ -2025,7 +2122,7 @@ function VirtualWarehouseMapPage() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Номер партии (Batch/LOT):</Label>
+                  <Label className="text-xs">{t(`${M}.field.batch`)}</Label>
                   <Input
                     name="batchLot"
                     defaultValue={editingBinData.bin.batchLot || 'LOT-2026-901'}
@@ -2034,7 +2131,7 @@ function VirtualWarehouseMapPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs">Срок годности / поверки:</Label>
+                  <Label className="text-xs">{t(`${M}.field.expiry`)}</Label>
                   <Input
                     name="expiryDate"
                     defaultValue={editingBinData.bin.expiryDate || '2030-12-31'}
@@ -2043,12 +2140,12 @@ function VirtualWarehouseMapPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t">
+              <div className="flex justify-end gap-2 pt-3 border-t border-border">
                 <Button type="button" variant="outline" size="sm" onClick={() => setEditingBinData(null)}>
-                  Отмена
+                  {t('common.cancel')}
                 </Button>
-                <Button type="submit" size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
-                  <Save className="h-3.5 w-3.5 mr-1" /> Сохранить в ячейку
+                <Button type="submit" size="sm" className="font-semibold">
+                  <Save className="h-3.5 w-3.5 mr-1" aria-hidden="true" /> {t(`${M}.binDialog.save`)}
                 </Button>
               </div>
             </form>
@@ -2064,60 +2161,64 @@ function VirtualWarehouseMapPage() {
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="text-base font-bold flex items-center gap-2">
-                <ArrowLeftRight className="h-5 w-5 text-blue-600" />
-                Перемещение товара в другую ячейку склада
+                <ArrowLeftRight className="h-5 w-5 text-sky-600" aria-hidden="true" />
+                {t(`${M}.relocateDialog.title`)}
               </DialogTitle>
               <DialogDescription className="text-xs">
-                Исходная ячейка: <strong>{relocatingBinData.fromBin.code}</strong> • Товар:{' '}
-                <strong>{relocatingBinData.fromBin.productName}</strong>
+                {t(`${M}.relocateDialog.desc`, {
+                  bin: relocatingBinData.fromBin.code,
+                  product: relocatingBinData.fromBin.productName,
+                })}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-3 text-xs py-2">
               <div className="space-y-1">
-                <Label className="text-xs font-semibold">Выберите целевую ячейку назначения:</Label>
+                <Label className="text-xs font-semibold">{t(`${M}.relocateDialog.targetLabel`)}</Label>
                 <select
                   value={targetBinCode}
                   onChange={(e) => setTargetBinCode(e.target.value)}
-                  className="w-full p-2 border rounded-md text-xs bg-white dark:bg-slate-900 font-mono font-bold"
+                  className="w-full h-9 px-2 border border-input rounded-md text-xs bg-background font-mono font-bold text-foreground"
                 >
-                  <option value="">-- Выберите свободную или совместимую ячейку --</option>
+                  <option value="">{t(`${M}.relocateDialog.targetPlaceholder`)}</option>
                   {allAvailableBins
                     .filter((e) => e.bin.code !== relocatingBinData.fromBin.code)
                     .map((entry) => (
                       <option key={entry.bin.id} value={entry.bin.code}>
-                        {entry.bin.code} [{entry.rackCode}] — {entry.bin.status === 'FREE' ? 'Свободна' : `Занята (${entry.bin.sku || ''})`}
+                        {entry.bin.status === 'FREE'
+                          ? t(`${M}.relocateDialog.optionFree`, { code: entry.bin.code, rack: entry.rackCode })
+                          : t(`${M}.relocateDialog.optionOccupied`, {
+                              code: entry.bin.code,
+                              rack: entry.rackCode,
+                              sku: entry.bin.sku || '',
+                            })}
                       </option>
                     ))}
                 </select>
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs font-semibold">Количество перемещаемых единиц (шт):</Label>
+                <Label className="text-xs font-semibold">{t(`${M}.relocateDialog.qtyLabel`)}</Label>
                 <Input
                   type="number"
                   min={1}
                   max={relocatingBinData.fromBin.quantity || 1}
                   value={relocateQty}
                   onChange={(e) => setRelocateQty(Number(e.target.value))}
-                  className="font-mono text-base font-bold text-blue-600"
+                  className="font-mono text-base font-bold"
                 />
-                <span className="text-3xs text-muted-foreground">
-                  Доступно в исходной ячейке: {relocatingBinData.fromBin.quantity} шт.
+                <span className="text-[10px] text-muted-foreground">
+                  {t(`${M}.relocateDialog.availableHint`, { count: relocatingBinData.fromBin.quantity ?? 0 })}
                 </span>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t">
+            <div className="flex justify-end gap-2 pt-3 border-t border-border">
               <Button variant="outline" size="sm" onClick={() => setRelocatingBinData(null)}>
-                Отмена
+                {t('common.cancel')}
               </Button>
-              <Button
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                onClick={handleExecuteRelocation}
-              >
-                Подтвердить перемещение
+              <Button size="sm" className="font-semibold" onClick={handleExecuteRelocation}>
+                {t(`${M}.relocateDialog.confirm`)}
               </Button>
             </div>
           </DialogContent>
@@ -2125,19 +2226,17 @@ function VirtualWarehouseMapPage() {
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* MODAL 3: Edit Rack Settings ("Параметры стеллажа") */}
+      {/* MODAL 3: Edit Rack Settings */}
       {/* ------------------------------------------------------------- */}
       {editingRackData && (
         <Dialog open={!!editingRackData} onOpenChange={(open) => !open && setEditingRackData(null)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="text-base font-bold flex items-center gap-2">
-                <Edit3 className="h-5 w-5 text-amber-600" />
-                Параметры стеллажа {editingRackData.code}
+                <Edit3 className="h-5 w-5 text-amber-600" aria-hidden="true" />
+                {t(`${M}.rackDialog.title`, { code: editingRackData.code })}
               </DialogTitle>
-              <DialogDescription className="text-xs">
-                Настройка идентификатора, вместимости палет и температурного режима стеллажа.
-              </DialogDescription>
+              <DialogDescription className="text-xs">{t(`${M}.rackDialog.desc`)}</DialogDescription>
             </DialogHeader>
 
             <form
@@ -2159,7 +2258,7 @@ function VirtualWarehouseMapPage() {
             >
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Код стеллажа:</Label>
+                  <Label className="text-xs">{t(`${M}.rackDialog.code`)}</Label>
                   <Input
                     name="code"
                     defaultValue={editingRackData.code}
@@ -2169,7 +2268,7 @@ function VirtualWarehouseMapPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs">Ряд (Aisle):</Label>
+                  <Label className="text-xs">{t(`${M}.rackDialog.aisle`)}</Label>
                   <Input
                     name="aisle"
                     defaultValue={editingRackData.aisle}
@@ -2181,7 +2280,7 @@ function VirtualWarehouseMapPage() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Вместимость (палет):</Label>
+                  <Label className="text-xs">{t(`${M}.rackDialog.capacity`)}</Label>
                   <Input
                     type="number"
                     name="capacity"
@@ -2192,48 +2291,45 @@ function VirtualWarehouseMapPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs">Группа ABC:</Label>
+                  <Label className="text-xs">{t(`${M}.rackDialog.abc`)}</Label>
                   <select
                     name="abcCategory"
                     defaultValue={editingRackData.abcCategory}
-                    className="w-full p-2 border rounded text-xs bg-white dark:bg-slate-900 font-semibold"
+                    className="w-full h-9 px-2 border border-input rounded text-xs bg-background font-semibold text-foreground"
                   >
-                    <option value="A">Категория A (Быстрая)</option>
-                    <option value="B">Категория B (Средняя)</option>
-                    <option value="C">Категория C (Буфер)</option>
+                    <option value="A">{t(`${M}.abcOption.a`)}</option>
+                    <option value="B">{t(`${M}.abcOption.b`)}</option>
+                    <option value="C">{t(`${M}.abcOption.c`)}</option>
                   </select>
                 </div>
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Тип складской зоны:</Label>
+                <Label className="text-xs">{t(`${M}.rackDialog.zoneType`)}</Label>
                 <select
                   name="zoneType"
                   defaultValue={editingRackData.zoneType}
-                  className="w-full p-2 border rounded text-xs bg-white dark:bg-slate-900 font-semibold"
+                  className="w-full h-9 px-2 border border-input rounded text-xs bg-background font-semibold text-foreground"
                 >
-                  <option value="PALLET_RACKS">Высотные палетные стеллажи (Pallet Racks)</option>
-                  <option value="MEZZANINE">Зона мезонина и штучного отбора (Mezzanine)</option>
-                  <option value="COLD_CHAIN">Холодильный контур (+2..+6°C Cold Chain)</option>
-                  <option value="HAZARDOUS">Зона опасных грузов (Hazardous ADR)</option>
+                  {(Object.keys(RACK_ZONE_TYPE_LABEL_KEY) as WarehouseRack['zoneType'][]).map((zt) => (
+                    <option key={zt} value={zt}>
+                      {t(RACK_ZONE_TYPE_LABEL_KEY[zt])}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Температурный режим:</Label>
-                <Input
-                  name="temperature"
-                  defaultValue={editingRackData.temperature}
-                  className="text-xs"
-                />
+                <Label className="text-xs">{t(`${M}.rackDialog.temperature`)}</Label>
+                <Input name="temperature" defaultValue={editingRackData.temperature} className="text-xs" />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t">
+              <div className="flex justify-end gap-2 pt-3 border-t border-border">
                 <Button type="button" variant="outline" size="sm" onClick={() => setEditingRackData(null)}>
-                  Отмена
+                  {t('common.cancel')}
                 </Button>
-                <Button type="submit" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white font-semibold">
-                  <Save className="h-3.5 w-3.5 mr-1" /> Сохранить стеллаж
+                <Button type="submit" size="sm" className="font-semibold">
+                  <Save className="h-3.5 w-3.5 mr-1" aria-hidden="true" /> {t(`${M}.rackDialog.save`)}
                 </Button>
               </div>
             </form>
@@ -2242,7 +2338,7 @@ function VirtualWarehouseMapPage() {
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* MODAL 4: Edit or Add Zone ("Редактирование зон склада") */}
+      {/* MODAL 4: Edit or Add Zone */}
       {/* ------------------------------------------------------------- */}
       {(editingZoneData || isAddingZoneOpen) && (
         <Dialog
@@ -2257,12 +2353,12 @@ function VirtualWarehouseMapPage() {
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="text-base font-bold flex items-center gap-2">
-                <Warehouse className="h-5 w-5 text-blue-600" />
-                {editingZoneData ? `Настройка зоны: ${editingZoneData.name}` : 'Добавление новой зоны склада'}
+                <Warehouse className="h-5 w-5 text-sky-600" aria-hidden="true" />
+                {editingZoneData
+                  ? t(`${M}.zoneDialog.editTitle`, { name: editingZoneData.name })
+                  : t(`${M}.zoneDialog.addTitle`)}
               </DialogTitle>
-              <DialogDescription className="text-xs">
-                Задайте параметры, размеры и статус функциональной зоны склада.
-              </DialogDescription>
+              <DialogDescription className="text-xs">{t(`${M}.zoneDialog.desc`)}</DialogDescription>
             </DialogHeader>
 
             <form
@@ -2285,33 +2381,33 @@ function VirtualWarehouseMapPage() {
               className="space-y-3 text-xs"
             >
               <div className="space-y-1">
-                <Label className="text-xs">Название зоны:</Label>
+                <Label className="text-xs">{t(`${M}.zoneDialog.name`)}</Label>
                 <Input
                   name="name"
-                  defaultValue={editingZoneData?.name || 'Рампа 7: Скоропортящиеся грузы'}
+                  defaultValue={editingZoneData?.name || t(`${M}.zoneDialog.defaultName`)}
                   className="font-bold text-xs"
                   required
                 />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Тип функциональной зоны:</Label>
+                <Label className="text-xs">{t(`${M}.zoneDialog.type`)}</Label>
                 <select
                   name="type"
                   defaultValue={editingZoneData?.type || 'INBOUND_DOCK'}
-                  className="w-full p-2 border rounded text-xs bg-white dark:bg-slate-900 font-semibold"
+                  className="w-full h-9 px-2 border border-input rounded text-xs bg-background font-semibold text-foreground"
                 >
-                  <option value="INBOUND_DOCK">Рампа приемки (Inbound Dock)</option>
-                  <option value="OUTBOUND_DOCK">Рампа отгрузки (Outbound Dock)</option>
-                  <option value="PACK_STATION">Стол комплектации и упаковки (Pack Station)</option>
-                  <option value="QUARANTINE">Зона карантина и рекламаций (Quarantine RMA)</option>
-                  <option value="CHARGING">Зарядная станция техники (Charging)</option>
+                  {(Object.keys(SPECIAL_ZONE_TYPE_LABEL_KEY) as WarehouseSpecialZone['type'][]).map((zt) => (
+                    <option key={zt} value={zt}>
+                      {t(SPECIAL_ZONE_TYPE_LABEL_KEY[zt])}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-xs">Ширина (px):</Label>
+                  <Label className="text-xs">{t(`${M}.zoneDialog.width`)}</Label>
                   <Input
                     type="number"
                     name="width"
@@ -2322,7 +2418,7 @@ function VirtualWarehouseMapPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs">Высота (px):</Label>
+                  <Label className="text-xs">{t(`${M}.zoneDialog.height`)}</Label>
                   <Input
                     type="number"
                     name="height"
@@ -2334,16 +2430,16 @@ function VirtualWarehouseMapPage() {
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Статус / Операционная задача:</Label>
+                <Label className="text-xs">{t(`${M}.zoneDialog.status`)}</Label>
                 <Input
                   name="status"
-                  defaultValue={editingZoneData?.status || 'Свободно для разгрузки'}
+                  defaultValue={editingZoneData?.status || t(`${M}.zoneDialog.defaultStatus`)}
                   className="text-xs"
                 />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Число сотрудников на посту:</Label>
+                <Label className="text-xs">{t(`${M}.zoneDialog.workers`)}</Label>
                 <Input
                   type="number"
                   name="activeWorkers"
@@ -2353,16 +2449,16 @@ function VirtualWarehouseMapPage() {
                 />
               </div>
 
-              <div className="flex justify-between items-center pt-3 border-t">
+              <div className="flex flex-wrap justify-between items-center pt-3 border-t border-border gap-2">
                 {editingZoneData && isEditMode ? (
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-2xs"
+                    className="text-rose-600 hover:text-rose-700 text-xs"
                     onClick={() => handleDeleteZone(editingZoneData.id)}
                   >
-                    <Trash2 className="h-3.5 w-3.5 mr-1" /> Удалить зону
+                    <Trash2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" /> {t(`${M}.zoneDialog.delete`)}
                   </Button>
                 ) : (
                   <div />
@@ -2378,10 +2474,10 @@ function VirtualWarehouseMapPage() {
                       setIsAddingZoneOpen(false);
                     }}
                   >
-                    Отмена
+                    {t('common.cancel')}
                   </Button>
-                  <Button type="submit" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
-                    <Save className="h-3.5 w-3.5 mr-1" /> Сохранить зону
+                  <Button type="submit" size="sm" className="font-semibold">
+                    <Save className="h-3.5 w-3.5 mr-1" aria-hidden="true" /> {t(`${M}.zoneDialog.save`)}
                   </Button>
                 </div>
               </div>
@@ -2389,6 +2485,47 @@ function VirtualWarehouseMapPage() {
           </DialogContent>
         </Dialog>
       )}
+    </div>
+  );
+}
+
+function StatCell({
+  icon,
+  label,
+  value,
+  sublabel,
+  tone,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  sublabel?: string;
+  tone?: 'success' | 'info' | 'warning';
+}) {
+  const toneClass =
+    tone === 'success'
+      ? 'border-emerald-500/20 bg-emerald-500/5'
+      : tone === 'info'
+      ? 'border-sky-500/20 bg-sky-500/5'
+      : tone === 'warning'
+      ? 'border-amber-500/20 bg-amber-500/5'
+      : 'border-border bg-card';
+  const toneText =
+    tone === 'success'
+      ? 'text-emerald-700 dark:text-emerald-400'
+      : tone === 'info'
+      ? 'text-sky-700 dark:text-sky-400'
+      : tone === 'warning'
+      ? 'text-amber-700 dark:text-amber-400'
+      : 'text-muted-foreground';
+  return (
+    <div className={`p-4 rounded-md border shadow-xs ${toneClass}`}>
+      <div className="flex items-center justify-between">
+        <span className={`text-xs font-medium ${toneText}`}>{label}</span>
+        {icon}
+      </div>
+      <div className="text-2xl font-bold text-foreground mt-2 font-mono tabular-nums">{value}</div>
+      {sublabel && <span className={`text-[10px] ${toneText} font-medium`}>{sublabel}</span>}
     </div>
   );
 }

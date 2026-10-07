@@ -1876,6 +1876,261 @@
         "warehouseRequired": "Receiving warehouse is required",
         "stockNonNegative": "Initial stock cannot be negative"
       }
+    },
+    "inventory": {
+      "map": {
+        "title": "Warehouse map (WMS digital twin)",
+        "subtitle": "2D rack layout, picker navigation, bin locator and live equipment telemetry.",
+        "facilityLabel": "Warehouse facility",
+        "units": {
+          "palletsShort": "plt."
+        },
+        "actions": {
+          "editLayout": "Edit layout",
+          "exitEditor": "Exit editor",
+          "waveMode": "Order route (wave picking)",
+          "singleMode": "Single item search"
+        },
+        "editor": {
+          "bannerTitle": "Warehouse layout editor:",
+          "bannerHint": "Drag racks and receiving/shipping zones with the mouse.",
+          "addRack": "Add rack",
+          "addZone": "Add zone",
+          "resetLayout": "Reset to default",
+          "newZoneName": "Outbound Dock 6 (new ramp)",
+          "newZoneStatus": "Ready for operation"
+        },
+        "stats": {
+          "capacity": "Total capacity",
+          "capacityUnit": "pallets",
+          "occupancy": "Warehouse occupancy",
+          "occupancyPallets": "({{count}} pallets)",
+          "equipment": "Equipment & pickers",
+          "equipmentOnline": "units on shift",
+          "docks": "Loading docks",
+          "docksSplit": "{{in}} in • {{out}} out"
+        },
+        "search": {
+          "label": "Search racks, bins and products",
+          "placeholder": "Search by SKU (SKU-PAL-01), product name or bin (A-04-108)…",
+          "clear": "Clear search",
+          "rackFallback": "Aisle {{aisle}} • Rack {{number}}"
+        },
+        "layers": {
+          "label": "Map layer:",
+          "occupancy": "Occupancy (% pallets)",
+          "abc": "ABC pick velocity",
+          "cold": "Cold (+2..+6°C)",
+          "hazardous": "Hazardous ADR"
+        },
+        "zoom": {
+          "in": "Zoom in",
+          "out": "Zoom out",
+          "reset": "Reset zoom to 100%"
+        },
+        "route": {
+          "bannerRack": "Route built to rack {{rack}}",
+          "bannerBin": "(bin {{bin}})",
+          "meta": "Distance: {{m}} m • ~{{s}} s",
+          "reset": "Reset route"
+        },
+        "legend": {
+          "title": "Map legend:",
+          "occFree": "<60% (Free)",
+          "occOptimal": "60–85% (Optimal)",
+          "occOver": ">85% (Overload)",
+          "abcA": "Category A (fast picks)",
+          "abcB": "Category B (medium)",
+          "abcC": "Category C (buffer)",
+          "cold": "Cold chain circuit (+2..+6°C)",
+          "hazardous": "Hazardous goods zone (ADR)",
+          "hintEdit": "Click and drag racks/zones with the mouse",
+          "hintExplore": "Click a rack to inspect its tiers"
+        },
+        "svg": {
+          "canvasLabel": "Interactive 2D warehouse floor plan",
+          "corridor": "MAIN PEDESTRIAN SAFETY CORRIDOR (LANE A ➔ D)",
+          "aisle": "AISLE {{letter}}",
+          "aisleCold": "AISLE {{letter}} (COLD)",
+          "aisleAdr": "AISLE {{letter}} (ADR)",
+          "aisleBuffer": "AISLE {{letter}} (BUFFER)",
+          "target": "TARGET BIN",
+          "packStation": "PACK STATION (START / FINISH)",
+          "eqForklift": "FLT",
+          "eqReach": "RCH",
+          "eqAgv": "AGV"
+        },
+        "binStatus": {
+          "occupied": "Occupied",
+          "free": "Free",
+          "reserved": "Reserved",
+          "maintenance": "Maintenance"
+        },
+        "eqStatus": {
+          "active": "Active picking",
+          "putaway": "Putaway",
+          "idle": "Idle",
+          "charging": "Charging"
+        },
+        "zoneType": {
+          "palletRacks": "High-bay pallet racks (Pallet Racks)",
+          "mezzanine": "Mezzanine & piece picking (Mezzanine)",
+          "coldChain": "Cold chain circuit (+2..+6°C Cold Chain)",
+          "hazardous": "Hazardous goods zone (Hazardous ADR)"
+        },
+        "specialZoneType": {
+          "inboundDock": "Inbound dock (receiving)",
+          "outboundDock": "Outbound dock (shipping)",
+          "packStation": "Pick & pack station (Pack Station)",
+          "quarantine": "Quarantine & claims zone (Quarantine RMA)",
+          "charging": "Equipment charging station (Charging)"
+        },
+        "inspector": {
+          "title": "Rack {{code}}",
+          "editRack": "Edit rack settings",
+          "deleteRack": "Delete this rack",
+          "occupancy": "Rack occupancy:",
+          "occupancyValue": "{{occupied}} / {{capacity}} plt. ({{pct}}%)",
+          "aisleSection": "Aisle / section",
+          "aisleValue": "Aisle {{aisle}} • #{{number}}",
+          "temperature": "Temperature",
+          "elevationTitle": "Vertical shelf section (tiers):",
+          "elevationHint": "4 tiers × 3 positions",
+          "tier1": "Tier 1 (Picking / manual pick)",
+          "tier2": "Tier 2 (Middle tier)",
+          "tier3": "Tier 3 (Buffer reserve)",
+          "tier4": "Tier 4 (High-bay / top)",
+          "binFree": "Free",
+          "binFreeShort": "Free",
+          "binQty": "{{count}} pcs",
+          "binTitle": "Bin {{code}} (tier {{tier}})",
+          "binSku": "SKU: {{sku}} • Qty: {{count}} pcs",
+          "binBatch": "Batch/LOT: {{lot}}",
+          "relocate": "Relocate",
+          "clearBin": "Clear bin",
+          "placeProduct": "Place product",
+          "binFreeHint": "Bin is free for putaway",
+          "buildRoute": "Route to this bin",
+          "emptyTitle": "No rack selected",
+          "emptyHint": "Click any rack on the map to open its vertical tier and pallet section."
+        },
+        "equipment": {
+          "title": "Warehouse equipment on shift ({{count}})",
+          "unit": "Unit",
+          "operator": "Operator",
+          "task": "Current task",
+          "battery": "Battery",
+          "batteryAria": "Battery {{pct}}%",
+          "status": "Status",
+          "emptyTitle": "No equipment on shift",
+          "emptyHint": "Forklifts and AGVs will appear here once the facility is operational."
+        },
+        "wave": {
+          "panelTitle": "Wave picking list",
+          "orderLabel": "Order for wave picking",
+          "routeHint": "Optimal closed circuit through bins without counter-flows (TSP wave picking).",
+          "totalMeta": "Total route: {{m}} m • ~{{s}} s • Saving: 38%",
+          "progress": "Picking progress: {{picked}} of {{total}} bins",
+          "corridorLength": "Corridor length: ~{{m}} m",
+          "savingHint": "Saving: ~38% of time",
+          "finish": "Finish picking at pack station",
+          "tablePick": "Picked",
+          "tableStop": "Stop",
+          "tableBin": "Bin",
+          "tableProduct": "Product / SKU",
+          "tableRack": "Rack",
+          "tableQty": "Qty",
+          "tableStatus": "Status",
+          "statusPicked": "Picked",
+          "statusPending": "Pending",
+          "pickAria": "Toggle stop {{stop}} picked",
+          "emptyTitle": "No stops on this route",
+          "emptyHint": "Pick an order to build a picking circuit.",
+          "order1": "ORD-2026-0891 (Baltic Retail — 3 lines)",
+          "order2": "ORD-2026-0892 (Pomerania Foods — 2 lines)"
+        },
+        "abcOption": {
+          "a": "Category A (fast)",
+          "b": "Category B (medium)",
+          "c": "Category C (buffer)"
+        },
+        "field": {
+          "sku": "SKU:",
+          "skuPlaceholder": "e.g. SKU-PAL-01",
+          "product": "Product name:",
+          "productPlaceholder": "e.g. EPAL Euro-Pallet Standard",
+          "category": "Category:",
+          "qty": "Quantity (pcs):",
+          "batch": "Batch/LOT number:",
+          "expiry": "Expiry / inspection date:"
+        },
+        "binDialog": {
+          "title": "Assign product to bin {{code}}",
+          "desc": "Set or change the stock keeping unit (tier {{tier}}, position {{position}}).",
+          "defaultCategory": "Wooden packaging",
+          "save": "Save to bin"
+        },
+        "relocateDialog": {
+          "title": "Relocate stock to another bin",
+          "desc": "Source bin: {{bin}} • Product: {{product}}",
+          "targetLabel": "Select target bin:",
+          "targetPlaceholder": "-- Select a free or compatible bin --",
+          "optionFree": "{{code}} [{{rack}}] — Free",
+          "optionOccupied": "{{code}} [{{rack}}] — Occupied ({{sku}})",
+          "qtyLabel": "Quantity to relocate (pcs):",
+          "availableHint": "Available in source bin: {{count}} pcs.",
+          "confirm": "Confirm relocation"
+        },
+        "rackDialog": {
+          "title": "Rack settings {{code}}",
+          "desc": "Configure identifier, pallet capacity and temperature regime.",
+          "code": "Rack code:",
+          "aisle": "Aisle:",
+          "capacity": "Capacity (pallets):",
+          "abc": "ABC group:",
+          "zoneType": "Storage zone type:",
+          "temperature": "Temperature regime:",
+          "save": "Save rack"
+        },
+        "zoneDialog": {
+          "editTitle": "Zone settings: {{name}}",
+          "addTitle": "Add new warehouse zone",
+          "desc": "Set parameters, size and status of the functional zone.",
+          "name": "Zone name:",
+          "type": "Functional zone type:",
+          "width": "Width (px):",
+          "height": "Height (px):",
+          "status": "Status / operational task:",
+          "workers": "Workers on post:",
+          "defaultName": "Ramp 7: Perishable goods",
+          "defaultStatus": "Available for unloading",
+          "delete": "Delete zone",
+          "save": "Save zone"
+        },
+        "toast": {
+          "routeBuilt": "Pick route built to {{target}} ({{m}} m)",
+          "rackPosSaved": "Rack position saved!",
+          "zonePosSaved": "Zone position saved!",
+          "zoneSaved": "Warehouse zone \"{{name}}\" saved!",
+          "zoneDeleted": "Warehouse zone deleted.",
+          "zoneInfo": "{{name}}: {{status}}",
+          "rackAdded": "New rack {{code}} added to the map!",
+          "rackSaved": "Rack {{code}} settings saved!",
+          "rackDeleted": "Rack removed from layout.",
+          "layoutReset": "Warehouse layout reset to default!",
+          "binUpdated": "Stock in bin {{code}} updated!",
+          "binCleared": "Bin cleared.",
+          "relocateTargetMissing": "Select a target bin.",
+          "relocateNotFound": "Target bin not found.",
+          "relocated": "Moved {{qty}} pcs ({{sku}}) from {{from}} to {{to}}!",
+          "waveEnabled": "Wave picking mode enabled!",
+          "editEnabled": "Layout editor: drag racks and zones with the mouse.",
+          "stopPicked": "{{sku}} picked to cart!",
+          "allPicked": "All lines automatically marked as picked!",
+          "orderCompleted": "All lines of order {{order}} picked at the pack station!",
+          "equipmentInfo": "{{name}}: {{task}}"
+        }
+      }
     }
   }
 }
