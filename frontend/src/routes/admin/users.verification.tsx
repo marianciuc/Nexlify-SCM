@@ -87,6 +87,10 @@ const PAYMENT_TERMS_LABEL_KEY: Record<PaymentTerms, TranslationPath> = {
   PREPAYMENT: 'admin.users.verification.paymentTerms.prepayment',
 };
 
+/** Default audit note persisted with approvals — locale-independent, like the rejection reason values. */
+const DEFAULT_APPROVAL_NOTES =
+  'Zweryfikowano w rejestrze podatników VAT. Zgodność rachunku MPP potwierdzona.';
+
 const DEFAULT_REJECTION_REASON =
   'Rachunek bankowy nie figuruje w wykazie Białej Listy Ministerstwa Finansów (Brak MPP)';
 
@@ -254,7 +258,7 @@ function AdminKycVerificationQueueContent() {
     setApprovingApp(app);
     setApprovedCreditLimit(app.requestedCreditLimitPln || 100000);
     setPaymentTerms(((app.paymentTerms as 'NET_15' | 'NET_30' | 'NET_60') || 'NET_30'));
-    setApprovalNotes(t('admin.users.verification.approveDialog.defaultNotes'));
+    setApprovalNotes(DEFAULT_APPROVAL_NOTES);
   };
 
   const handleConfirmApproval = () => {
@@ -306,7 +310,7 @@ function AdminKycVerificationQueueContent() {
         action: 'APPROVE',
         approvedCreditLimitPln: app.requestedCreditLimitPln || 100000,
         paymentTerms: 'NET_30',
-        notes: t('admin.users.verification.approveDialog.defaultNotes'),
+        notes: DEFAULT_APPROVAL_NOTES,
       });
     });
     setSelected(new Set());
