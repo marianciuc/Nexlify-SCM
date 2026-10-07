@@ -6,10 +6,9 @@ import {
   ShieldCheck,
   PenTool,
   Check,
-  Eye,
   X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -40,14 +39,6 @@ export const Route = createFileRoute('/logistics/ecmr')({
   },
 });
 
-const signPodSchema = z.object({
-  signerName: z.string().min(2, 'signerNameRequired'),
-  recipientPin: z.string().min(4, 'recipientPinRequired'),
-  notes: z.string().optional(),
-});
-
-type SignPodFormData = z.infer<typeof signPodSchema>;
-
 type SignatureStatus = EcmrDocument['signatureStatus'];
 
 const SIGNATURE_TONE: Record<SignatureStatus, 'success' | 'warning'> = {
@@ -71,6 +62,19 @@ function LogisticsEcmrContent() {
 
   const [activeDoc, setActiveDoc] = useState<EcmrDocument | null>(null);
   const [showSignModal, setShowSignModal] = useState<boolean>(false);
+
+  // Validation messages are user-visible, so the schema is rebuilt with the active locale.
+  const signPodSchema = useMemo(
+    () =>
+      z.object({
+        signerName: z.string().min(2, t('logistics.ecmr.signDialog.validation.signerNameRequired')),
+        recipientPin: z.string().min(4, t('logistics.ecmr.signDialog.validation.recipientPinRequired')),
+        notes: z.string().optional(),
+      }),
+    [t]
+  );
+
+  type SignPodFormData = z.infer<typeof signPodSchema>;
 
   const form = useForm<SignPodFormData>({
     resolver: zodResolver(signPodSchema),
@@ -184,15 +188,6 @@ function LogisticsEcmrContent() {
                         >
                           <Printer className="h-3.5 w-3.5" aria-hidden="true" />
                           <span className="sr-only sm:not-sr-only">{t('logistics.ecmr.actions.print')}</span>
-                        </Button>
-                        <Button
-                          size="xs"
-                          variant="ghost"
-                          aria-label={t('logistics.ecmr.actions.viewAria', { cmr: doc.cmrNumber })}
-                          className="gap-1 text-muted-foreground hover:text-foreground"
-                        >
-                          <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-                          <span className="sr-only">{t('logistics.ecmr.actions.view')}</span>
                         </Button>
                       </div>
                     </td>

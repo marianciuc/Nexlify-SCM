@@ -937,9 +937,7 @@
         "sign": "Подписать POD",
         "signAria": "Подписать акт приёма-передачи е-ЦМР {{cmr}}",
         "print": "Печать",
-        "printAria": "Печать е-ЦМР {{cmr}}",
-        "view": "Открыть",
-        "viewAria": "Открыть е-ЦМР {{cmr}}"
+        "printAria": "Печать е-ЦМР {{cmr}}"
       },
       "signDialog": {
         "title": "Подпись при приёмке (sign-on-glass)",
@@ -953,7 +951,11 @@
         "handshakeLabel": "Цифровое рукопожатие",
         "handshakePlaceholder": "Холст цифровой подписи",
         "handshakeHelper": "Подтверждение приёмки с меткой времени SHA-256",
-        "confirm": "Подтвердить доставку"
+        "confirm": "Подтвердить доставку",
+        "validation": {
+          "signerNameRequired": "Имя получателя / грузополучателя обязательно",
+          "recipientPinRequired": "Введите 4-значный PIN-код получателя"
+        }
       },
       "empty": {
         "title": "Накладные не найдены",
@@ -971,7 +973,11 @@
         "distance": "Расстояние (OSM)",
         "duration": "Время в пути",
         "cost": "Топливо и сборы",
-        "co2": "Выбросы CO₂"
+        "co2": "Выбросы CO₂",
+        "validation": {
+          "originRequired": "Укажите склад отправления",
+          "destinationRequired": "Укажите пункт назначения"
+        }
       },
       "shipments": {
         "title": "Активные рейсы и манифесты",

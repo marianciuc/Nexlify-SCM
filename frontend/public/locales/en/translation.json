@@ -937,9 +937,7 @@
         "sign": "Sign POD",
         "signAria": "Sign proof of delivery for e-CMR {{cmr}}",
         "print": "Print",
-        "printAria": "Print e-CMR {{cmr}}",
-        "view": "View",
-        "viewAria": "View e-CMR {{cmr}}"
+        "printAria": "Print e-CMR {{cmr}}"
       },
       "signDialog": {
         "title": "Sign-on-glass proof of delivery",
@@ -953,7 +951,11 @@
         "handshakeLabel": "Digital signature handshake",
         "handshakePlaceholder": "Digital signature canvas",
         "handshakeHelper": "SHA-256 timestamped delivery confirmation",
-        "confirm": "Confirm delivery"
+        "confirm": "Confirm delivery",
+        "validation": {
+          "signerNameRequired": "Recipient / consignee name is required",
+          "recipientPinRequired": "Enter 4-digit recipient PIN code"
+        }
       },
       "empty": {
         "title": "No waybills found",
@@ -971,7 +973,11 @@
         "distance": "Distance (OSM)",
         "duration": "Time on road",
         "cost": "Fuel & tolls",
-        "co2": "CO₂ emissions"
+        "co2": "CO₂ emissions",
+        "validation": {
+          "originRequired": "Origin warehouse is required",
+          "destinationRequired": "Destination is required"
+        }
       },
       "shipments": {
         "title": "Active shipments & manifests",

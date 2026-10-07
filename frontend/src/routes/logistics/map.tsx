@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {createFileRoute} from '@tanstack/react-router';
 import {Truck, Navigation, Send, MapPin, Route as RouteIcon, Clock, Leaf, Fuel} from 'lucide-react';
-import {useState} from 'react';
+import {useMemo, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {toast} from 'sonner';
 import {z} from 'zod';
@@ -21,13 +21,6 @@ import {
 } from '@/hooks/useScmQueries';
 import { type TranslationPath } from '@/types/generated-locale';
 import type {Shipment, RouteOptimizationResult} from '@/types/scm-domain';
-
-const routeCalcSchema = z.object({
-    origin: z.string().min(1, 'originRequired'),
-    destination: z.string().min(1, 'destinationRequired'),
-});
-
-type RouteCalcFormData = z.infer<typeof routeCalcSchema>;
 
 type ShipmentStatus = 'PLANNED' | 'DISPATCHED' | 'IN_TRANSIT' | 'DELIVERED';
 
@@ -66,6 +59,18 @@ function LogisticsMapContent() {
     const optimizeMutation = useOptimizeRouteMutation();
     const [shipments, setShipments] = useState<Shipment[]>(shipmentsData);
     const [routeResult, setRouteResult] = useState<RouteOptimizationResult | null>(null);
+
+    // Validation messages are user-visible, so the schema is rebuilt with the active locale.
+    const routeCalcSchema = useMemo(
+        () =>
+            z.object({
+                origin: z.string().min(1, t('logistics.map.calculator.validation.originRequired')),
+                destination: z.string().min(1, t('logistics.map.calculator.validation.destinationRequired')),
+            }),
+        [t]
+    );
+
+    type RouteCalcFormData = z.infer<typeof routeCalcSchema>;
 
     const form = useForm<RouteCalcFormData>({
         resolver: zodResolver(routeCalcSchema),
