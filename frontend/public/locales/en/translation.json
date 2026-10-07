@@ -1580,6 +1580,301 @@
         "priceHelper": "Current price:",
         "moq": "MOQ"
       }
+    },
+    "bids": {
+      "title": "RFQ tenders",
+      "subtitle": "Reverse-auction invitations to bid — deadline urgency and budget fit",
+      "loading": "Loading tenders…",
+      "error": "Could not load tenders. Refresh the page or try again later.",
+      "empty": "No matching open requests yet.",
+      "filters": {
+        "ariaLabel": "Filter by tender status",
+        "searchLabel": "Search tenders",
+        "searchPlaceholder": "Search by SKU, category, RFQ number…",
+        "all": "All",
+        "open": "Open",
+        "evaluation": "Under review",
+        "awarded": "Awarded",
+        "clearAll": "Clear filters"
+      },
+      "table": {
+        "caption": "Open tenders",
+        "rfq": "RFQ",
+        "title": "Title & category",
+        "items": "Items",
+        "deadline": "Deadline",
+        "budget": "Budget",
+        "status": "Status",
+        "action": "Action"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "OPEN": "Open for bids",
+        "EVALUATION": "Under review",
+        "AWARDED": "Awarded",
+        "CLOSED": "Closed"
+      },
+      "urgency": {
+        "overdue": "Overdue",
+        "today": "Due today",
+        "days": "{{count}} d",
+        "onTrack": "On track"
+      },
+      "budgetFit": {
+        "label": "Budget fit",
+        "within": "Within budget",
+        "above": "+{{pct}}% over"
+      },
+      "actions": {
+        "submitBid": "Submit bid",
+        "submitBidAria": "Submit bid for tender {{number}}",
+        "viewBids": "View bids ({{count}})",
+        "viewBidsAria": "View competing bids for {{number}}"
+      },
+      "award": {
+        "winner": "Winner",
+        "winnerValue": "Winner: {{supplier}} for {{amount}} {{currency}}",
+        "slaVerified": "SLA verified"
+      },
+      "modal": {
+        "title": "Competing bids for {{number}}",
+        "budgetLine": "Target budget: {{amount}} {{currency}} | Required: {{qty}} {{unit}}",
+        "anonymousBidder": "Tender participant",
+        "leadTime": "Lead time: {{days}} working days",
+        "warranty": "Warranty: {{terms}}",
+        "savings": "-{{pct}}% to budget",
+        "yourBid": "This is your bid",
+        "winnerBadge": "WINNER"
+      }
+    },
+    "pricing": {
+      "title": "B2B pricing contracts",
+      "subtitle": "Custom volume discounts and locked-in pricing for verified B2B customer NIPs.",
+      "filters": {
+        "ariaLabel": "Filter by status",
+        "searchLabel": "Search contracts",
+        "searchPlaceholder": "Contract no., buyer, NIP, SKU…",
+        "all": "All",
+        "active": "Active",
+        "expired": "Expired",
+        "clearAll": "Clear filters"
+      },
+      "table": {
+        "caption": "Pricing contracts",
+        "contractNo": "Contract",
+        "buyer": "Buyer / NIP",
+        "item": "SKU / item",
+        "listPrice": "List price",
+        "contractPrice": "Contract",
+        "discount": "Discount",
+        "validUntil": "Valid until",
+        "status": "Status",
+        "action": "Action"
+      },
+      "status": {
+        "ACTIVE": "Active",
+        "EXPIRED": "Expired"
+      },
+      "actions": {
+        "new": "New contract",
+        "details": "Open",
+        "detailsAria": "Open contract {{number}}"
+      },
+      "modal": {
+        "title": "Issue B2B customer contract price",
+        "fields": {
+          "buyerName": "Buyer legal entity",
+          "buyerNamePlaceholder": "e.g. Baltic Retail Group Sp. z o.o.",
+          "buyerNip": "Tax NIP (10 digits)",
+          "buyerNipPlaceholder": "8522619472",
+          "sku": "Select SKU to contract",
+          "discount": "Volume discount, %",
+          "validUntil": "Valid until date"
+        },
+        "cancel": "Cancel",
+        "submit": "Bind contract terms",
+        "skuOption": "{{sku}} — {{name}} (List: {{price}} PLN)",
+        "success": "B2B pricing contract {{number}} for NIP {{nip}} activated.",
+        "validation": {
+          "buyerRequired": "Buyer legal entity is required",
+          "nipRequired": "Valid 10-digit NIP is required",
+          "skuRequired": "SKU is required",
+          "validUntilRequired": "Valid-until date is required"
+        }
+      },
+      "detail": {
+        "backToList": "Back to pricing contracts",
+        "heading": "Contract terms: {{number}}",
+        "activeBadge": "Active agreement",
+        "buyerCard": "Contract counterparty",
+        "buyerName": "Buyer legal entity",
+        "buyerNip": "Tax NIP",
+        "buyerNipValue": "NIP: {{nip}}",
+        "buyerVies": "VIES verified · Trade credit limit active",
+        "itemCard": "Contracted SKU & price",
+        "sku": "Contracted SKU",
+        "listPrice": "Catalog list price",
+        "contractPrice": "Fixed contract price (PLN net)",
+        "moq": "Minimum order (MOQ)",
+        "paymentTerms": "Payment terms",
+        "save": "Save contract changes",
+        "saved": "Contract {{id}} updated and synced with order service.",
+        "linesHeading": "Contract line items",
+        "lines": {
+          "sku": "SKU",
+          "name": "Item",
+          "qty": "Quantity",
+          "unitPrice": "Unit price",
+          "discount": "Discount"
+        },
+        "linesEmpty": "No line items on this contract."
+      }
+    },
+    "fulfillment": {
+      "backToQueue": "Back to picking queue",
+      "title": "WMS picking & dispatch workstation",
+      "orderLine": "Picking order: {{number}} · Buyer: {{customer}}",
+      "printLabels": "Print GS1-128 labels",
+      "printLabelsSuccess": "GS1-128 pallet label printed.",
+      "statusBar": {
+        "title": "Order status",
+        "stepCounter": "WMS execution (Step {{current}} of {{total}}: Picking)"
+      },
+      "scanner": {
+        "label": "Barcode scanner",
+        "placeholder": "Scan EAN-13 or enter SKU (e.g. 5901234567890 or SKU-PAL-01)…",
+        "verify": "Verify",
+        "verifyAll": "Verify all"
+      },
+      "pickList": {
+        "title": "Pick list",
+        "viewMap": "Picking route on 2D map",
+        "mapAria": "Show bin {{bin}} on warehouse map",
+        "tableCaption": "Pick list line items",
+        "zoneBin": "Zone & bin",
+        "item": "SKU / name",
+        "barcode": "EAN barcode",
+        "required": "Required",
+        "picked": "Picked",
+        "verification": "Status",
+        "verifiedBadge": "Scanned",
+        "pendingBadge": "Awaiting scan"
+      },
+      "weight": {
+        "label": "Verification weight on scales (gross, kg)"
+      },
+      "dispatch": {
+        "button": "Confirm pick and dispatch",
+        "success": "Order {{number}} dispatched. e-CMR waybill generated."
+      },
+      "verifySuccess": "Verified: {{name}} ({{qty}} units)",
+      "verifyError": "Barcode not found in pick list or already verified",
+      "verifyAllSuccess": "All items confirmed at packing station",
+      "itemsUnit": "pcs"
+    },
+    "settings": {
+      "title": "Supplier organization & WMS settings",
+      "subtitle": "Manage manufacturer credentials, multi-hub warehouse facilities, and Polish MPP split-payment bank accounts.",
+      "form": {
+        "sectionTitle": "Corporate credentials & split-payment bank",
+        "name": "Supplier legal entity",
+        "nip": "Tax ID (NIP)",
+        "iban": "Bank account for Polish split payment (MPP)",
+        "save": "Save settings",
+        "saved": "Supplier profile, warehouse parameters and banking credentials updated.",
+        "validation": {
+          "nameRequired": "Supplier legal entity is required",
+          "nipRequired": "Valid 10-digit NIP is required",
+          "ibanRequired": "Valid bank account (IBAN) is required"
+        }
+      },
+      "kyc": {
+        "verifiedBadge": "B2B compliant",
+        "verifiedTitle": "Verified B2B supplier",
+        "verifiedDescription": "Split-payment (MPP) bank account registered with the Ministry of Finance registry.",
+        "pendingTitle": "Supplier submission awaiting verification",
+        "pendingDescription": "KRS and settlement account are checked automatically against MF & VIES registries.",
+        "pendingBadge": "Audit in progress",
+        "updateCta": "Update KYC / certificates"
+      },
+      "api": {
+        "title": "ERP integration webhook API key",
+        "helper": "Use this bearer key to connect SAP, Comarch ERP Optima, or Microsoft Dynamics via REST webhooks."
+      }
+    },
+    "productNew": {
+      "backToCatalog": "Back to products catalog",
+      "title": "Register new wholesale SKU in WMS",
+      "subtitle": "Set up nomenclature parameters, hierarchical category, brand, manufacturer, dimensions and initial stock.",
+      "sections": {
+        "identification": "Identification & classification",
+        "logistics": "Logistics dimensions & units",
+        "pricing": "Wholesale pricing & ordering rules",
+        "stock": "Initial warehouse allocation"
+      },
+      "fields": {
+        "sku": "SKU",
+        "skuPlaceholder": "e.g. SKU-BOX-12",
+        "ean": "EAN-13 / GTIN barcode",
+        "eanPlaceholder": "5901234567890",
+        "name": "Full product name",
+        "namePlaceholder": "e.g. Heavy-duty 5-layer corrugated box 600x400x400",
+        "category": "Category / subcategory",
+        "categoryPlaceholder": "Select a category or subcategory…",
+        "brand": "Brand",
+        "brandPlaceholder": "Select a brand…",
+        "manufacturer": "Manufacturer",
+        "manufacturerPlaceholder": "Select a manufacturer…",
+        "dimensionLength": "Length / depth",
+        "dimensionWidth": "Width",
+        "dimensionHeight": "Height",
+        "dimensionUnit": "Dimension unit",
+        "weight": "Unit weight (kg)",
+        "unit": "Base unit of measure",
+        "basePrice": "Net wholesale price (PLN)",
+        "moq": "Minimum order (MOQ)",
+        "warehouse": "Receiving warehouse",
+        "initialStock": "Physical quantity received"
+      },
+      "unitOption": {
+        "pcs": "Pieces (pcs)",
+        "kg": "Kilograms (kg)",
+        "g": "Grams (g)",
+        "l": "Liters (l)",
+        "ml": "Milliliters (ml)",
+        "m": "Meters (m)",
+        "cm": "Centimeters (cm)",
+        "mm": "Millimeters (mm)",
+        "m2": "Square meters (m²)",
+        "m3": "Cubic meters (m³)",
+        "box": "Box",
+        "pallet": "Pallet",
+        "pack": "Pack"
+      },
+      "dimensionUnitOption": {
+        "mm": "Millimeters (mm)",
+        "cm": "Centimeters (cm)",
+        "m": "Meters (m)",
+        "in": "Inches (in)"
+      },
+      "actions": {
+        "createCategory": "Create category",
+        "createBrand": "Create brand",
+        "createManufacturer": "Create manufacturer",
+        "cancel": "Cancel",
+        "submit": "Save SKU & book initial stock"
+      },
+      "validation": {
+        "skuRequired": "SKU is required",
+        "nameRequired": "Product name is required",
+        "categoryRequired": "Category is required",
+        "weightPositive": "Weight must be positive",
+        "unitRequired": "Unit of measure is required",
+        "pricePositive": "Price must be positive",
+        "moqPositive": "Minimum order must be ≥ 1",
+        "warehouseRequired": "Receiving warehouse is required",
+        "stockNonNegative": "Initial stock cannot be negative"
+      }
     }
   }
 }

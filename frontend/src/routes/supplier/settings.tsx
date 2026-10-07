@@ -1,46 +1,68 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
 import { Building2, Key, ShieldCheck, Save, Clock } from 'lucide-react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { FormFieldInput } from '@/components/forms/common';
 import { KycSubmissionModal } from '@/components/kyc/KycSubmissionModal';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/page-header';
+import { StatusBadge, type StatusTone } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useLocale } from '@/hooks/useLocale';
 import { useTenantListQuery, useKycApplicationsQuery } from '@/hooks/useScmQueries';
 
 export const Route = createFileRoute('/supplier/settings')({
   component: SupplierSettingsPage,
   staticData: {
     crumb: {
-      label: 'Supplier Settings',
+      label: 'nav.supplier.settings',
     },
   },
 });
 
-const supplierSettingsSchema = z.object({
-  name: z.string().min(1, 'Supplier legal entity is required'),
-  nip: z.string().min(10, 'Valid 10-digit NIP is required'),
-  iban: z.string().min(15, 'Valid bank account number (IBAN) is required'),
-});
-
-type SupplierSettingsFormData = z.infer<typeof supplierSettingsSchema>;
+const KYC_TONE: Record<'VERIFIED' | 'PENDING_AUDIT' | 'REJECTED' | 'NOT_SUBMITTED', StatusTone> = {
+  VERIFIED: 'success',
+  PENDING_AUDIT: 'warning',
+  REJECTED: 'danger',
+  NOT_SUBMITTED: 'neutral',
+};
 
 function SupplierSettingsPage() {
+  return <SupplierSettingsContent />;
+}
+
+function SupplierSettingsContent() {
+  const { t } = useLocale();
   const { data: tenants = [] } = useTenantListQuery();
   const { data: kycApps = [] } = useKycApplicationsQuery();
 
   const currentSupplier = tenants.find((t) => t.role === 'SUPPLIER') || tenants[1];
   const currentKyc = kycApps.find(
-    (app) => (currentSupplier && app.nip === currentSupplier.nip) || (currentSupplier && app.tenantId === currentSupplier.id)
+    (app) =>
+      (currentSupplier && app.nip === currentSupplier.nip) ||
+      (currentSupplier && app.tenantId === currentSupplier.id)
   );
 
   const kycStatus = currentSupplier?.kycStatus || currentKyc?.status || 'VERIFIED';
+
+  // Validation messages are user-visible — rebuild schema with the active locale.
+  const supplierSettingsSchema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(1, t('supplier.settings.form.validation.nameRequired')),
+        nip: z.string().min(10, t('supplier.settings.form.validation.nipRequired')),
+        iban: z.string().min(15, t('supplier.settings.form.validation.ibanRequired')),
+      }),
+    [t]
+  );
+
+  type SupplierSettingsFormData = z.infer<typeof supplierSettingsSchema>;
 
   const form = useForm<SupplierSettingsFormData>({
     resolver: zodResolver(supplierSettingsSchema),
@@ -52,39 +74,44 @@ function SupplierSettingsPage() {
   });
 
   const onSubmit = (_data: SupplierSettingsFormData) => {
-    toast.success('Supplier profile, warehouse parameters and banking credentials updated!');
+    toast.success(t('supplier.settings.form.saved'));
   };
 
   const apiKey = 'nex_live_sec_8914810294810928419';
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <Building2 className="h-6 w-6 text-amber-600" />
-          Supplier Organization & WMS Settings
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Manage manufacturer credentials, multi-hub warehouse facilities, and Polish MPP Split Payment bank accounts.
-        </p>
-      </div>
+    <div className="space-y-6 max-w-3xl mx-auto min-w-0">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-primary" aria-hidden="true" />
+            {t('supplier.settings.title')}
+          </span>
+        }
+        subtitle={t('supplier.settings.subtitle')}
+      />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Verification Status Card */}
           {kycStatus === 'VERIFIED' && (
-            <Card className="border-amber-200 bg-amber-50/20 dark:bg-amber-950/10 shadow-xs">
+            <Card className="border-primary/30 bg-primary/5 shadow-xs">
               <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <ShieldCheck className="h-8 w-8 text-amber-600 shrink-0" />
+                  <ShieldCheck
+                    className="h-8 w-8 text-primary shrink-0"
+                    aria-hidden="true"
+                  />
                   <div>
-                    <div className="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                      <span>Certyfikowany Dostawca B2B (Verified Supplier)</span>
-                      <Badge className="bg-amber-600 text-white text-2xs">Biała Lista: Zgodny</Badge>
+                    <div className="font-bold text-sm text-foreground flex items-center gap-2">
+                      <span>{t('supplier.settings.kyc.verifiedTitle')}</span>
+                      <StatusBadge
+                        tone={KYC_TONE[kycStatus as keyof typeof KYC_TONE] ?? 'success'}
+                        label={t('supplier.settings.kyc.verifiedBadge')}
+                        size="sm"
+                      />
                     </div>
-                    <div className="text-xs text-slate-500 mt-0.5">
-                      Rachunek bankowy do mechanizmu podzielonej płatności (MPP) zarejestrowany w wykazie Ministerstwa Finansów.
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      {t('supplier.settings.kyc.verifiedDescription')}
                     </div>
                   </div>
                 </div>
@@ -97,8 +124,13 @@ function SupplierSettingsPage() {
                     iban: currentSupplier?.iban,
                   }}
                   triggerButton={
-                    <Button type="button" variant="outline" size="sm" className="text-2xs h-8 border-amber-300">
-                      Aktualizuj dane KYC / Certyfikaty
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-8 font-medium"
+                    >
+                      {t('supplier.settings.kyc.updateCta')}
                     </Button>
                   }
                 />
@@ -107,47 +139,53 @@ function SupplierSettingsPage() {
           )}
 
           {kycStatus === 'PENDING_AUDIT' && (
-            <Card className="border-amber-300 bg-amber-50/50 dark:bg-amber-950/20 shadow-xs">
-              <CardContent className="p-4 flex items-center justify-between">
+            <Card className="border-amber-300 bg-amber-500/5 shadow-xs">
+              <CardContent className="p-4 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <Clock className="h-6 w-6 text-amber-600 shrink-0 animate-spin" />
+                  <Clock
+                    className="h-6 w-6 text-amber-600 dark:text-amber-400 shrink-0"
+                    aria-hidden="true"
+                  />
                   <div>
-                    <h3 className="font-bold text-sm text-amber-900 dark:text-amber-200">
-                      Zgłoszenie dostawcy oczekuje na weryfikację
+                    <h3 className="font-bold text-sm text-foreground">
+                      {t('supplier.settings.kyc.pendingTitle')}
                     </h3>
-                    <p className="text-2xs text-amber-700 dark:text-amber-400">
-                      KRS i rachunek rozliczeniowy podlegają automatycznej kontroli w rejestrach MF i VIES.
+                    <p className="text-xs text-muted-foreground">
+                      {t('supplier.settings.kyc.pendingDescription')}
                     </p>
                   </div>
                 </div>
-                <Badge className="bg-amber-600 text-white text-2xs">Audit In Progress</Badge>
+                <StatusBadge
+                  tone="warning"
+                  label={t('supplier.settings.kyc.pendingBadge')}
+                  size="sm"
+                />
               </CardContent>
             </Card>
           )}
 
-          {/* Legal & Banking Form */}
-          <Card className="border-slate-200 dark:border-slate-800">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Corporate Credentials & Split Payment Bank</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-xs">
+          <Card className="border-border shadow-xs bg-card">
+            <CardContent className="p-4 sm:p-6 space-y-4">
+              <span className="block text-sm font-semibold text-foreground">
+                {t('supplier.settings.form.sectionTitle')}
+              </span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormFieldInput
                   control={form.control}
                   name="name"
-                  label="Supplier Legal Entity:"
+                  label={t('supplier.settings.form.name')}
                   className="font-medium"
                 />
                 <FormFieldInput
                   control={form.control}
                   name="nip"
-                  label="Tax ID (NIP):"
+                  label={t('supplier.settings.form.nip')}
                   className="font-mono font-bold"
                 />
                 <FormFieldInput
                   control={form.control}
                   name="iban"
-                  label="Bank Account for Polish Split Payment (MPP):"
+                  label={t('supplier.settings.form.iban')}
                   containerClassName="md:col-span-2"
                   className="font-mono font-bold"
                 />
@@ -155,24 +193,32 @@ function SupplierSettingsPage() {
             </CardContent>
           </Card>
 
-          {/* API Credentials */}
-          <Card className="border-slate-200 dark:border-slate-800">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Key className="h-4 w-4 text-amber-600" /> ERP Integration Webhook API Key
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-xs">
-              <Input value={apiKey} readOnly className="font-mono text-xs bg-slate-50 dark:bg-slate-900" />
-              <p className="text-2xs text-slate-500">
-                Use this bearer key to connect SAP, Comarch ERP Optima, or Microsoft Dynamics via REST Webhooks.
+          <Card className="border-border shadow-xs bg-card">
+            <CardContent className="p-4 sm:p-6 space-y-2">
+              <span className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Key className="h-4 w-4 text-primary" aria-hidden="true" />
+                {t('supplier.settings.api.title')}
+              </span>
+              <Input
+                value={apiKey}
+                readOnly
+                aria-label={t('supplier.settings.api.title')}
+                className="font-mono text-xs bg-muted/50"
+              />
+              <p className="text-xs text-muted-foreground">
+                {t('supplier.settings.api.helper')}
               </p>
             </CardContent>
           </Card>
 
           <div className="flex justify-end">
-            <Button type="submit" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white gap-2 font-semibold w-full sm:w-auto">
-              <Save className="h-4 w-4" /> Save Configuration
+            <Button
+              type="submit"
+              size="sm"
+              className="gap-1.5 w-full sm:w-auto font-semibold shadow-xs"
+            >
+              <Save className="h-4 w-4" aria-hidden="true" />
+              {t('supplier.settings.form.save')}
             </Button>
           </div>
         </form>

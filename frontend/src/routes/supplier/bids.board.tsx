@@ -1,369 +1,333 @@
-import {createFileRoute, Link} from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import {
-    FileText,
-    Gavel,
-    Clock,
-    DollarSign,
-    Building2,
-    MapPin,
-    ArrowUpRight,
-    TrendingDown,
-    Award,
-    ShieldCheck,
-    Send,
+  Gavel,
+  Send,
+  ArrowUpRight,
+  ShieldCheck,
+  X,
+  Search,
 } from 'lucide-react';
-import {useState} from 'react';
+import { useMemo, useState } from 'react';
 
-import {Badge} from '@/components/ui/badge';
-import {Button} from '@/components/ui/button';
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import {Input} from '@/components/ui/input';
+import { MoneyDisplay } from '@/components/money-display';
+import { PageHeader } from '@/components/page-header';
+import { StatusBadge, type StatusTone } from '@/components/status-badge';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { useLocale } from '@/hooks/useLocale';
 import { useOpenRfqsQuery } from '@/hooks/useScmQueries';
-import useEnvironmentStore from '@/service/env/environment-store';
-import type {RfqItem} from '@/types/scm-domain';
+import { type TranslationPath } from '@/types/generated-locale';
+import type { RfqItem } from '@/types/scm-domain';
 
 export const Route = createFileRoute('/supplier/bids/board')({
-    component: RfqMarketplacePage,
-    staticData: {
-        crumb: {
-            label: 'RFQ Tenders',
-        },
+  component: RfqMarketplacePage,
+  staticData: {
+    crumb: {
+      label: 'nav.supplier.rfq',
     },
+  },
 });
 
+type StatusFilter = 'ALL' | 'OPEN' | 'EVALUATION' | 'AWARDED';
+
+const STATUS_FILTERS: { id: StatusFilter; labelKey: TranslationPath }[] = [
+  { id: 'ALL', labelKey: 'supplier.bids.filters.all' },
+  { id: 'OPEN', labelKey: 'supplier.bids.filters.open' },
+  { id: 'EVALUATION', labelKey: 'supplier.bids.filters.evaluation' },
+  { id: 'AWARDED', labelKey: 'supplier.bids.filters.awarded' },
+];
+
+const RFQ_STATUS_TONE: Record<RfqItem['status'], StatusTone> = {
+  DRAFT: 'neutral',
+  OPEN: 'success',
+  EVALUATION: 'warning',
+  AWARDED: 'info',
+  CLOSED: 'neutral',
+};
+
 function RfqMarketplacePage() {
-    const {currentTenant} = useEnvironmentStore();
-    const {data: rfqs = [], isLoading, isError} = useOpenRfqsQuery();
+  return <RfqMarketplaceContent />;
+}
 
-    const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
-    const [searchQuery, setSearchQuery] = useState<string>('');
-    const [activeRfqId, setActiveRfqId] = useState<string | null>(null);
+function RfqMarketplaceContent() {
+  const { t } = useLocale();
+  const { data: rfqs = [], isLoading, isError } = useOpenRfqsQuery();
 
-    const activeRfqForBids = activeRfqId ? (rfqs.find((r) => r.id === activeRfqId) || null) : null;
+  const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('ALL');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-    const filtered = rfqs.filter(r => {
-        const matchesStatus = selectedStatus === 'ALL' || r.status === selectedStatus;
-        const matchesSearch = searchQuery === '' ||
-            r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            r.rfqNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            r.category.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesStatus && matchesSearch;
+  const counts = useMemo(
+    () => ({
+      ALL: rfqs.length,
+      OPEN: rfqs.filter((r) => r.status === 'OPEN').length,
+      EVALUATION: rfqs.filter((r) => r.status === 'EVALUATION').length,
+      AWARDED: rfqs.filter((r) => r.status === 'AWARDED').length,
+    }),
+    [rfqs]
+  );
+
+  const filtered = useMemo(() => {
+    const s = searchQuery.toLowerCase().trim();
+    return rfqs.filter((r) => {
+      const matchesStatus = selectedStatus === 'ALL' || r.status === selectedStatus;
+      if (!matchesStatus) return false;
+      if (!s) return true;
+      return (
+        r.title.toLowerCase().includes(s) ||
+        r.rfqNumber.toLowerCase().includes(s) ||
+        r.category.toLowerCase().includes(s) ||
+        r.issuerName.toLowerCase().includes(s)
+      );
     });
+  }, [rfqs, selectedStatus, searchQuery]);
 
-    const getStatusBadge = (status: RfqItem['status']) => {
-        switch (status) {
-            case 'DRAFT':
-                return <Badge variant='outline' className='bg-muted text-muted-foreground border-border'>Черновик</Badge>;
-            case 'OPEN':
-                return <Badge variant='outline' className='bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:text-emerald-400'>Открыт для предложений</Badge>;
-            case 'EVALUATION':
-                return <Badge variant='outline' className='bg-amber-500/10 text-amber-700 border-amber-500/20 dark:text-amber-400'>На оценке</Badge>;
-            case 'AWARDED':
-                return <Badge variant='outline' className='bg-purple-500/10 text-purple-700 border-purple-500/20 dark:text-purple-400'>Контракт заключен</Badge>;
-            case 'CLOSED':
-                return <Badge variant='outline' className='bg-muted text-muted-foreground border-border'>Закрыт</Badge>;
+  const hasFilters = selectedStatus !== 'ALL' || searchQuery.length > 0;
+  const clearAll = () => {
+    setSelectedStatus('ALL');
+    setSearchQuery('');
+  };
+
+  const statusLabelKey: Record<RfqItem['status'], TranslationPath> = {
+    DRAFT: 'supplier.bids.status.DRAFT',
+    OPEN: 'supplier.bids.status.OPEN',
+    EVALUATION: 'supplier.bids.status.EVALUATION',
+    AWARDED: 'supplier.bids.status.AWARDED',
+    CLOSED: 'supplier.bids.status.CLOSED',
+  };
+
+  return (
+    <div className="space-y-6 max-w-7xl mx-auto min-w-0">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <Gavel className="h-5 w-5 text-primary" aria-hidden="true" />
+            {t('supplier.bids.title')}
+          </span>
         }
-    };
+        subtitle={t('supplier.bids.subtitle')}
+      />
 
-    return (
-        <div className='flex flex-col gap-6 max-w-7xl mx-auto'>
-            {/* Header */}
-            <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
-                <div>
-                    <h1 className='text-2xl font-bold tracking-tight text-foreground flex items-center gap-2.5'>
-                        <div className='w-9 h-9 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold'>
-                            <Gavel className='h-5 w-5' />
-                        </div>
-                        Биржа тендеров B2B (Торги и RFQ)
-                    </h1>
-                    <p className='text-sm text-muted-foreground mt-1'>
-                        Реверсивные аукционы, подача предложений поставщиками и контрактация для <strong>{currentTenant.name}</strong>
-                    </p>
-                </div>
-            </div>
-
-            {/* KPI Cards */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
-                <Card className='border-border shadow-xs'>
-                    <CardHeader className='flex flex-row items-center justify-between pb-2'>
-                        <CardTitle className='text-xs font-semibold text-muted-foreground uppercase tracking-wider'>Активные тендеры</CardTitle>
-                        <FileText className='h-4 w-4 text-blue-600 dark:text-blue-400' />
-                    </CardHeader>
-                    <CardContent>
-                        <div className='text-2xl font-extrabold text-foreground'>
-                            {rfqs.filter(r => r.status === 'OPEN' || r.status === 'EVALUATION').length}
-                        </div>
-                        <p className='text-xs text-muted-foreground mt-1 flex items-center gap-1'>
-                            <span className='text-emerald-600 dark:text-emerald-400 font-semibold'>+2 новых</span> на этой неделе
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className='border-border shadow-xs'>
-                    <CardHeader className='flex flex-row items-center justify-between pb-2'>
-                        <CardTitle className='text-xs font-semibold text-muted-foreground uppercase tracking-wider'>Получено предложений</CardTitle>
-                        <DollarSign className='h-4 w-4 text-emerald-600 dark:text-emerald-400' />
-                    </CardHeader>
-                    <CardContent>
-                        <div className='text-2xl font-extrabold text-foreground'>
-                            {rfqs.reduce((acc, r) => acc + r.bids.length, 0)}
-                        </div>
-                        <p className='text-xs text-muted-foreground mt-1 flex items-center gap-1'>
-                            <span className='text-emerald-600 dark:text-emerald-400 font-semibold'>3.2 предложения</span> в среднем на тендер
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className='border-border shadow-xs'>
-                    <CardHeader className='flex flex-row items-center justify-between pb-2'>
-                        <CardTitle className='text-xs font-semibold text-muted-foreground uppercase tracking-wider'>Снижение стоимости</CardTitle>
-                        <TrendingDown className='h-4 w-4 text-indigo-600 dark:text-indigo-400' />
-                    </CardHeader>
-                    <CardContent>
-                        <div className='text-2xl font-extrabold text-foreground'>
-                            7.4%
-                        </div>
-                        <p className='text-xs text-muted-foreground mt-1 flex items-center gap-1'>
-                            Ниже начального лимита бюджета
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className='border-border shadow-xs'>
-                    <CardHeader className='flex flex-row items-center justify-between pb-2'>
-                        <CardTitle className='text-xs font-semibold text-muted-foreground uppercase tracking-wider'>Контрактованный объем</CardTitle>
-                        <Award className='h-4 w-4 text-purple-600 dark:text-purple-400' />
-                    </CardHeader>
-                    <CardContent>
-                        <div className='text-2xl font-extrabold text-foreground'>
-                            {rfqs.filter(r => r.status === 'AWARDED').reduce((acc, r) => acc + (r.awardedAmount || r.targetBudget), 0).toLocaleString('ru-RU')} PLN
-                        </div>
-                        <p className='text-xs text-muted-foreground mt-1'>
-                            Фактура VAT формируется автоматически
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Filter and Search Bar */}
-            <div className='flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-card p-3 rounded-xl border border-border shadow-xs'>
-                <div className='flex flex-wrap items-center gap-1.5'>
-                    {[
-                        { id: 'ALL', label: 'Все' },
-                        { id: 'OPEN', label: 'Открытые' },
-                        { id: 'EVALUATION', label: 'Оценка' },
-                        { id: 'AWARDED', label: 'Завершенные' },
-                    ].map(st => (
-                        <button
-                            key={st.id}
-                            onClick={() => setSelectedStatus(st.id)}
-                            className={`text-xs px-3 py-1.5 rounded-lg font-semibold transition-all ${
-                                selectedStatus === st.id
-                                    ? 'bg-primary text-white shadow-xs'
-                                    : 'text-muted-foreground hover:bg-muted'
-                            }`}
-                        >
-                            {st.label}
-                        </button>
-                    ))}
-                </div>
-                <div className='w-full sm:w-72'>
-                    <Input
-                        placeholder='Поиск тендеров по SKU, категории, номеру...'
-                        value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
-                        className='h-8 text-xs bg-background border-input'
-                    />
-                </div>
-            </div>
-
-            {/* RFQ Tender List */}
-            <div className='grid grid-cols-1 gap-4'>
-                {isLoading ? (
-                    <div role="status" className="py-12 text-center text-sm text-muted-foreground">Загружаем открытые запросы…</div>
-                ) : isError ? (
-                    <div role="alert" className="py-12 text-center text-sm text-destructive">Не удалось загрузить запросы. Обновите страницу или попробуйте позже.</div>
-                ) : filtered.length === 0 ? (
-                    <div className="py-12 text-center text-sm text-muted-foreground">Подходящих открытых запросов пока нет.</div>
-                ) : filtered.map(rfq => (
-                    <Card key={rfq.id} className='border-border shadow-xs hover:border-primary/40 transition-all'>
-                        <CardContent className='p-5'>
-                            <div className='flex flex-col lg:flex-row lg:items-center justify-between gap-4'>
-                                <div className='space-y-2 flex-1'>
-                                    <div className='flex flex-wrap items-center gap-2'>
-                                        <span className='font-mono font-bold text-xs text-primary px-2 py-0.5 rounded bg-primary/10'>
-                                            {rfq.rfqNumber}
-                                        </span>
-                                        <Badge variant='outline' className='text-[11px] font-medium'>
-                                            {rfq.category}
-                                        </Badge>
-                                        {getStatusBadge(rfq.status)}
-                                    </div>
-
-                                    <h3 className='text-base font-bold text-foreground'>
-                                        {rfq.title}
-                                    </h3>
-
-                                    <p className='text-xs text-muted-foreground line-clamp-2'>
-                                        {rfq.description}
-                                    </p>
-
-                                    <div className='flex flex-wrap items-center gap-4 text-xs text-muted-foreground pt-1'>
-                                        <span className='flex items-center gap-1'>
-                                            <Building2 className='h-3.5 w-3.5 text-muted-foreground' />
-                                            {rfq.issuerName}
-                                        </span>
-                                        <span className='flex items-center gap-1'>
-                                            <MapPin className='h-3.5 w-3.5 text-muted-foreground' />
-                                            {rfq.deliveryLocation}
-                                        </span>
-                                        <span className='flex items-center gap-1'>
-                                            <Clock className='h-3.5 w-3.5 text-muted-foreground' />
-                                            Срок: {rfq.deadline}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Financial & Action Column */}
-                                <div className='flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-between gap-3 lg:min-w-[200px] border-t lg:border-t-0 pt-3 lg:pt-0'>
-                                    <div className='text-left lg:text-right'>
-                                        <span className='text-[11px] text-muted-foreground uppercase tracking-wider block font-semibold'>
-                                            {rfq.status === 'AWARDED' ? 'Сумма контракта' : 'Лимит бюджета'}
-                                        </span>
-                                        <div className='text-lg font-extrabold text-foreground'>
-                                            {(rfq.awardedAmount || rfq.targetBudget).toLocaleString('ru-RU', {minimumFractionDigits: 2})} {rfq.currency}
-                                        </div>
-                                        <span className='text-[11px] text-muted-foreground'>
-                                            Потребность: {rfq.requiredQuantity} {rfq.unitOfMeasure}
-                                        </span>
-                                    </div>
-
-                                    <div className='flex items-center gap-2 w-full sm:w-auto'>
-                                        {rfq.bids.length > 0 && (
-                                            <Button
-                                                variant='outline'
-                                                size='sm'
-                                                onClick={() => setActiveRfqId(rfq.id)}
-                                                className='text-xs gap-1.5 border-border'
-                                            >
-                                                <span>Предложения ({rfq.bids.length})</span>
-                                                <ArrowUpRight className='h-3.5 w-3.5' />
-                                            </Button>
-                                        )}
-
-                                        {rfq.status !== 'AWARDED' && rfq.status !== 'CLOSED' && (
-                                            <Link to="/supplier/bids/$rfqId/submit" params={{ rfqId: rfq.id }}>
-                                                <Button
-                                                    size='sm'
-                                                    className='gap-1.5 bg-amber-600 hover:bg-amber-700 text-white shadow-xs font-semibold'
-                                                >
-                                                    <Send className='h-3.5 w-3.5' />
-                                                    <span>Подать предложение</span>
-                                                </Button>
-                                            </Link>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Award banner if awarded */}
-                            {rfq.status === 'AWARDED' && (
-                                <div className='mt-4 p-2.5 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-between text-xs'>
-                                    <div className='flex items-center gap-2 text-purple-800 dark:text-purple-300'>
-                                        <ShieldCheck className='h-4 w-4 text-purple-600 dark:text-purple-400' />
-                                        <span>Победитель: <strong>{rfq.awardedSupplierName}</strong> на сумму <strong>{rfq.awardedAmount?.toLocaleString('ru-RU')} {rfq.currency}</strong></span>
-                                    </div>
-                                    <Badge variant='outline' className='bg-card text-purple-700 dark:text-purple-300 border-purple-500/30 text-[10px]'>
-                                        SLA проверен
-                                    </Badge>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-
-            {/* Modal: View Bids & Award Contract */}
-            <Dialog open={Boolean(activeRfqForBids)} onOpenChange={(open) => !open && setActiveRfqId(null)}>
-                <DialogContent className='max-w-2xl w-full p-6 flex flex-col gap-4 max-h-[85vh] overflow-y-auto'>
-                    {activeRfqForBids && (
-                        <>
-                            <DialogHeader className='border-b pb-3 border-border'>
-                                <DialogTitle className='text-lg font-bold flex items-center gap-2'>
-                                    <Gavel className='h-5 w-5 text-indigo-600' />
-                                    Конкурентные предложения по {activeRfqForBids.rfqNumber}
-                                </DialogTitle>
-                                <DialogDescription className='text-xs text-muted-foreground'>
-                                    Целевой бюджет: {activeRfqForBids.targetBudget.toLocaleString('ru-RU')} {activeRfqForBids.currency} | Потребность: {activeRfqForBids.requiredQuantity} {activeRfqForBids.unitOfMeasure}
-                                </DialogDescription>
-                            </DialogHeader>
-
-                            <div className='space-y-3'>
-                                {activeRfqForBids.bids.map((bid) => {
-                                    const savings = activeRfqForBids.targetBudget - bid.bidAmount;
-                                    const savingsPct = ((savings / activeRfqForBids.targetBudget) * 100).toFixed(1);
-
-                                    return (
-                                        <div
-                                            key={bid.id}
-                                            className={`p-4 rounded-xl border transition-all ${
-                                                bid.status === 'ACCEPTED'
-                                                    ? 'bg-purple-500/10 border-purple-500/30'
-                                                    : 'bg-muted/40 border-border hover:border-primary/40'
-                                            }`}
-                                        >
-                                            <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3'>
-                                                <div>
-                                                    <div className='flex items-center gap-2'>
-                                                        <span className='font-bold text-sm text-foreground'>
-                                                            {bid.supplierName || 'Участник тендера'}
-                                                        </span>
-                                                        {bid.supplierNip && <Badge variant='outline' className='text-[10px]'>NIP: {bid.supplierNip}</Badge>}
-                                                        {bid.status === 'ACCEPTED' && (
-                                                            <Badge className='bg-purple-600 text-white text-[10px]'>ПОБЕДИТЕЛЬ</Badge>
-                                                        )}
-                                                    </div>
-                                                    <p className='text-xs text-muted-foreground mt-1'>
-                                                        Срок поставки: <strong>{bid.leadTimeDays} раб. дней</strong> | Гарантия: {bid.warrantyTerms}
-                                                    </p>
-                                                    {bid.notes && (
-                                                        <p className='text-xs italic text-muted-foreground mt-1'>"{bid.notes}"</p>
-                                                    )}
-                                                </div>
-
-                                                <div className='flex sm:flex-col items-end justify-between sm:justify-center gap-2'>
-                                                    <div className='text-right'>
-                                                        <div className='text-base font-extrabold text-foreground'>
-                                                            {bid.bidAmount.toLocaleString('ru-RU', {minimumFractionDigits: 2})} {bid.currency}
-                                                        </div>
-                                                        {savings > 0 && (
-                                                            <span className='text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold'>
-                                                                -{savingsPct}% к бюджету
-                                                            </span>
-                                                        )}
-                                                    </div>
-
-                                                    {bid.supplierId === currentTenant.id && <span className='text-xs text-muted-foreground'>Это ваше предложение</span>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </>
-                    )}
-                </DialogContent>
-            </Dialog>
-
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div
+          className="flex items-center gap-1 bg-card p-1 rounded-lg border border-border shadow-xs text-xs overflow-x-auto"
+          role="group"
+          aria-label={t('supplier.bids.filters.ariaLabel')}
+        >
+          {STATUS_FILTERS.map((f) => {
+            const isActive = selectedStatus === f.id;
+            return (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setSelectedStatus(f.id)}
+                aria-pressed={isActive}
+                className={`px-3 py-1.5 rounded-md font-semibold transition-colors shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 ${
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                }`}
+              >
+                <span>{t(f.labelKey)}</span>
+                <span
+                  className={`tabular-nums px-1.5 rounded text-[10px] font-bold ${
+                    isActive
+                      ? 'bg-primary-foreground/15 text-primary-foreground'
+                      : 'bg-muted text-muted-foreground'
+                  }`}
+                >
+                  {counts[f.id]}
+                </span>
+              </button>
+            );
+          })}
         </div>
-    );
+
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <Input
+              placeholder={t('supplier.bids.filters.searchPlaceholder')}
+              aria-label={t('supplier.bids.filters.searchLabel')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 h-9 w-full sm:w-[280px] text-xs bg-background border-input"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label={t('common.clear')}
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+          {hasFilters && (
+            <Button variant="ghost" size="sm" onClick={clearAll} className="text-xs">
+              {t('supplier.bids.filters.clearAll')}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <Card className="border-border shadow-xs overflow-hidden bg-card">
+        <CardContent className="p-0 overflow-x-auto">
+          <table className="w-full text-left text-sm min-w-[860px]">
+            <caption className="sr-only">{t('supplier.bids.table.caption')}</caption>
+            <thead className="bg-muted/40 border-b border-border text-muted-foreground whitespace-nowrap uppercase tracking-wider text-[11px] font-semibold">
+              <tr>
+                <th className="py-3 px-4">{t('supplier.bids.table.rfq')}</th>
+                <th className="py-3 px-4">{t('supplier.bids.table.title')}</th>
+                <th className="py-3 px-4 text-right">{t('supplier.bids.table.items')}</th>
+                <th className="py-3 px-4">{t('supplier.bids.table.deadline')}</th>
+                <th className="py-3 px-4 text-right">{t('supplier.bids.table.budget')}</th>
+                <th className="py-3 px-4">{t('supplier.bids.table.status')}</th>
+                <th className="py-3 px-4 text-right">{t('supplier.bids.table.action')}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border whitespace-nowrap">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-sm text-muted-foreground">
+                    {t('supplier.bids.loading')}
+                  </td>
+                </tr>
+              ) : isError ? (
+                <tr>
+                  <td
+                    colSpan={7}
+                    role="alert"
+                    className="py-12 text-center text-sm text-destructive"
+                  >
+                    {t('supplier.bids.error')}
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-sm text-muted-foreground">
+                    {t('supplier.bids.empty')}
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((rfq) => {
+                  const itemCount = rfq.items?.length ?? 1;
+                  return (
+                    <tr key={rfq.id} className="hover:bg-muted/40 transition-colors">
+                      <td className="py-3 px-4 font-mono font-bold text-xs text-primary">
+                        <span className="inline-flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded bg-primary/10">{rfq.rfqNumber}</span>
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 max-w-[320px]">
+                        <Link
+                          to="/supplier/bids/$rfqId/submit"
+                          params={{ rfqId: rfq.id }}
+                          className="font-semibold text-foreground hover:text-primary transition-colors line-clamp-1"
+                        >
+                          {rfq.title}
+                        </Link>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[11px] text-muted-foreground">
+                          <Badge variant="outline" className="text-[10px] font-mono font-semibold">
+                            {rfq.category}
+                          </Badge>
+                          <span>·</span>
+                          <span className="truncate">{rfq.issuerName}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-right tabular-nums font-semibold text-foreground">
+                        {itemCount}
+                      </td>
+                      <td className="py-3 px-4">
+                        <DeadlineCell deadline={rfq.deadline} t={t} />
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <MoneyDisplay amount={rfq.targetBudget} variant="inline" emphasize />
+                      </td>
+                      <td className="py-3 px-4">
+                        <StatusBadge
+                          tone={RFQ_STATUS_TONE[rfq.status]}
+                          label={t(statusLabelKey[rfq.status])}
+                          size="sm"
+                        />
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {rfq.bids.length > 0 && (
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] font-semibold gap-1"
+                              aria-label={t('supplier.bids.actions.viewBidsAria', {
+                                number: rfq.rfqNumber,
+                              })}
+                            >
+                              <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+                              {rfq.bids.length}
+                            </Badge>
+                          )}
+                          {rfq.status !== 'AWARDED' && rfq.status !== 'CLOSED' ? (
+                            <Link
+                              to="/supplier/bids/$rfqId/submit"
+                              params={{ rfqId: rfq.id }}
+                              aria-label={t('supplier.bids.actions.submitBidAria', {
+                                number: rfq.rfqNumber,
+                              })}
+                            >
+                              <Button
+                                size="xs"
+                                className="gap-1.5 shadow-xs font-semibold"
+                              >
+                                <Send className="h-3 w-3" aria-hidden="true" />
+                                {t('supplier.bids.actions.submitBid')}
+                              </Button>
+                            </Link>
+                          ) : (
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] gap-1 border-primary/30 bg-primary/5 text-primary"
+                            >
+                              <ShieldCheck className="h-3 w-3" aria-hidden="true" />
+                              {t('supplier.bids.award.slaVerified')}
+                            </Badge>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function DeadlineCell({ deadline, t }: { deadline: string; t: (key: TranslationPath, opts?: Record<string, unknown>) => string }) {
+  const date = new Date(deadline);
+  const today = new Date();
+  const diffMs = date.getTime() - today.setHours(0, 0, 0, 0);
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  const tone: StatusTone =
+    diffDays < 0 ? 'danger' : diffDays <= 2 ? 'warning' : 'neutral';
+  const label =
+    diffDays < 0
+      ? t('supplier.bids.urgency.overdue')
+      : diffDays === 0
+      ? t('supplier.bids.urgency.today')
+      : t('supplier.bids.urgency.days', { count: diffDays });
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="font-mono text-xs text-foreground">{deadline}</span>
+      <StatusBadge tone={tone} label={label} size="sm" />
+    </div>
+  );
 }
 
 export default RfqMarketplacePage;
