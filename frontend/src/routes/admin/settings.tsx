@@ -1,48 +1,50 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
-import {
-  Settings,
-  Server,
-  Save,
-  Sliders,
-  Check,
-} from 'lucide-react';
-import { useEffect } from 'react';
+import { Check, Save, Settings } from 'lucide-react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { FormFieldInput, FormFieldCheckbox } from '@/components/forms/common';
+import { FormFieldCheckbox, FormFieldInput } from '@/components/forms/common';
+import { PageHeader } from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormLabel } from '@/components/ui/form';
+import { Card, CardContent } from '@/components/ui/card';
+import { Form } from '@/components/ui/form';
+import { useLocale } from '@/hooks/useLocale';
 import {
   useEnvironmentStore,
   AVAILABLE_ENVIRONMENTS,
   type EnvironmentType,
 } from '@/service/env/environment-store';
+import { type TranslationPath } from '@/types/generated-locale';
 
 export const Route = createFileRoute('/admin/settings')({
   component: AdminPlatformSettingsPage,
   staticData: {
     crumb: {
-      label: 'Platform Settings',
+      label: 'nav.admin.settings',
     },
   },
 });
 
-const adminSettingsSchema = z.object({
-  selectedEnv: z.enum(['development', 'staging', 'production', 'custom'] as const),
-  gatewayUrl: z.string().min(1, 'Gateway URL is required'),
-  keycloakUrl: z.string().min(1, 'SSO Provider URL is required'),
-  mockEnabled: z.boolean(),
-  maintenanceMode: z.boolean(),
-});
+const ENV_LABEL_KEY: Record<EnvironmentType, TranslationPath> = {
+  development: 'admin.settings.env.development',
+  staging: 'admin.settings.env.staging',
+  production: 'admin.settings.env.production',
+  custom: 'admin.settings.env.custom',
+};
 
-type AdminSettingsFormData = z.infer<typeof adminSettingsSchema>;
+type AdminSettingsFormData = {
+  selectedEnv: EnvironmentType;
+  gatewayUrl: string;
+  keycloakUrl: string;
+  mockEnabled: boolean;
+};
 
 function AdminPlatformSettingsPage() {
+  const { t } = useLocale();
   const {
     currentEnvironment,
     customUrl,
@@ -51,6 +53,18 @@ function AdminPlatformSettingsPage() {
     setManualConfig,
   } = useEnvironmentStore();
 
+  // Validation messages are user-visible, so the schema is rebuilt with the active locale.
+  const adminSettingsSchema = useMemo(
+    () =>
+      z.object({
+        selectedEnv: z.enum(['development', 'staging', 'production', 'custom'] as const),
+        gatewayUrl: z.string().min(1, t('admin.settings.gatewayRequired')),
+        keycloakUrl: z.string().min(1, t('admin.settings.keycloakRequired')),
+        mockEnabled: z.boolean(),
+      }),
+    [t]
+  );
+
   const form = useForm<AdminSettingsFormData>({
     resolver: zodResolver(adminSettingsSchema),
     defaultValues: {
@@ -58,7 +72,6 @@ function AdminPlatformSettingsPage() {
       gatewayUrl: customUrl,
       keycloakUrl: customKeycloakUrl,
       mockEnabled: isMockMode,
-      maintenanceMode: false,
     },
   });
 
@@ -70,7 +83,6 @@ function AdminPlatformSettingsPage() {
       gatewayUrl: customUrl,
       keycloakUrl: customKeycloakUrl,
       mockEnabled: isMockMode,
-      maintenanceMode: false,
     });
   }, [currentEnvironment, customUrl, customKeycloakUrl, isMockMode, form]);
 
@@ -81,40 +93,38 @@ function AdminPlatformSettingsPage() {
       customKeycloakUrl: data.keycloakUrl,
       isMockMode: data.mockEnabled,
     });
-    toast.success('Platform connectivity settings saved successfully!');
+    toast.success(t('admin.settings.savedToast'));
   };
 
-  const envConfig = AVAILABLE_ENVIRONMENTS[selectedEnv] || AVAILABLE_ENVIRONMENTS.development;
-
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <Settings className="h-6 w-6 text-red-600" />
-          Global Platform Settings & Connectivity
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Environment selection, API connectivity endpoints, and platform operational modes.
-        </p>
-      </div>
+    <div className="space-y-6 max-w-3xl mx-auto min-w-0">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <Settings className="h-5 w-5 text-primary" aria-hidden="true" />
+            {t('admin.settings.title')}
+          </span>
+        }
+        subtitle={t('admin.settings.subtitle')}
+      />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Environment Selector Card */}
-          <Card className="border-slate-200 dark:border-slate-800">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <Sliders className="h-4 w-4 text-red-600" /> Active Platform Environment
-                </span>
-                <Badge variant="outline" className={`text-xs py-0.5 px-2 ${envConfig.badgeColor}`}>
+          {/* Active environment — drives gateway + SSO endpoint resolution */}
+          <Card className="border-border shadow-xs bg-card">
+            <CardContent className="p-4 sm:p-6 space-y-4">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-foreground">{t('admin.settings.envTitle')}</span>
+                <Badge variant="outline" className="text-[10px] font-mono font-semibold">
                   {selectedEnv.toUpperCase()}
                 </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              </div>
+              <p className="text-xs text-muted-foreground">{t('admin.settings.envDescription')}</p>
+              <div
+                className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+                role="group"
+                aria-label={t('admin.settings.envGroupAria')}
+              >
                 {(Object.keys(AVAILABLE_ENVIRONMENTS) as EnvironmentType[]).map((envKey) => {
                   const env = AVAILABLE_ENVIRONMENTS[envKey];
                   const isSelected = selectedEnv === envKey;
@@ -122,25 +132,26 @@ function AdminPlatformSettingsPage() {
                     <button
                       key={envKey}
                       type="button"
+                      aria-pressed={isSelected}
                       onClick={() => {
                         form.setValue('selectedEnv', envKey);
                         if (envKey !== 'custom') {
                           form.setValue('gatewayUrl', env.url);
                         }
                       }}
-                      className={`p-2.5 rounded-lg border text-left transition-all flex flex-col justify-between cursor-pointer ${
+                      className={`p-3 rounded-lg border text-left transition-colors flex flex-col gap-1 cursor-pointer ${
                         isSelected
-                          ? 'border-red-600 bg-red-50/40 dark:border-red-500 dark:bg-red-950/30 ring-1 ring-red-600'
-                          : 'border-slate-200 hover:border-slate-300 dark:border-slate-800 bg-card'
+                          ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                          : 'border-border bg-card hover:bg-muted/50'
                       }`}
                     >
-                      <div className="flex items-center justify-between w-full mb-1">
-                        <span className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
-                          {env.label.split(' ')[0]}
-                        </span>
-                        {isSelected && <Check className="h-3.5 w-3.5 text-red-600 shrink-0" />}
-                      </div>
-                      <span className="text-[10px] text-muted-foreground truncate">{env.url || 'Manual URL'}</span>
+                      <span className="flex items-center justify-between gap-2 w-full">
+                        <span className="text-xs font-semibold text-foreground">{t(ENV_LABEL_KEY[envKey])}</span>
+                        {isSelected && <Check className="h-3.5 w-3.5 text-primary shrink-0" aria-hidden="true" />}
+                      </span>
+                      <span className="font-mono text-[10px] text-muted-foreground truncate" dir="ltr">
+                        {env.url}
+                      </span>
                     </button>
                   );
                 })}
@@ -148,66 +159,52 @@ function AdminPlatformSettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Endpoints Card */}
-          <Card className="border-slate-200 dark:border-slate-800">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Server className="h-4 w-4 text-red-600" /> Platform Connectivity Endpoints
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-xs">
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <FormLabel className="text-xs font-semibold">API Gateway Base URL:</FormLabel>
-                  {selectedEnv !== 'custom' && (
-                    <span className="text-[10px] text-amber-600 dark:text-amber-400">
-                      (Preset mode: {selectedEnv})
-                    </span>
-                  )}
-                </div>
-                <FormFieldInput
-                  control={form.control}
-                  name="gatewayUrl"
-                  onChange={(e) => {
-                    form.setValue('gatewayUrl', e.target.value);
-                    form.setValue('selectedEnv', 'custom');
-                  }}
-                  className="font-mono text-xs"
-                />
-              </div>
+          {/* Connectivity endpoints + runtime modes */}
+          <Card className="border-border shadow-xs bg-card">
+            <CardContent className="p-4 sm:p-6 space-y-4">
+              <span className="text-sm font-semibold text-foreground block">
+                {t('admin.settings.endpointsTitle')}
+              </span>
+              <FormFieldInput
+                control={form.control}
+                name="gatewayUrl"
+                label={t('admin.settings.gatewayLabel')}
+                description={selectedEnv !== 'custom' ? t('admin.settings.presetHint') : undefined}
+                onChange={(e) => {
+                  form.setValue('gatewayUrl', e.target.value);
+                  form.setValue('selectedEnv', 'custom');
+                }}
+                className="font-mono"
+                dir="ltr"
+              />
 
               <FormFieldInput
                 control={form.control}
                 name="keycloakUrl"
-                label="Identity Provider & SSO Endpoint:"
-                className="font-mono text-xs"
+                label={t('admin.settings.keycloakLabel')}
+                description={selectedEnv !== 'custom' ? t('admin.settings.presetHint') : undefined}
+                className="font-mono"
+                dir="ltr"
               />
 
-              <div className="p-3 rounded-lg border bg-slate-50 dark:bg-slate-900">
+              <div className="rounded-md border border-border p-3 space-y-2">
+                <span className="block text-xs font-semibold text-foreground px-2">
+                  {t('admin.settings.modesTitle')}
+                </span>
                 <FormFieldCheckbox
                   control={form.control}
                   name="mockEnabled"
-                  label="Offline Demo Fallback Mode"
-                  description="Enable demo catalog and order data generators when offline"
-                  className="text-red-600"
-                />
-              </div>
-
-              <div className="p-3 rounded-lg border bg-slate-50 dark:bg-slate-900">
-                <FormFieldCheckbox
-                  control={form.control}
-                  name="maintenanceMode"
-                  label="System Maintenance Mode"
-                  description="Temporarily restrict non-admin write operations for maintenance"
-                  className="text-red-600"
+                  label={t('admin.settings.mockLabel')}
+                  description={t('admin.settings.mockDescription')}
                 />
               </div>
             </CardContent>
           </Card>
 
           <div className="flex justify-end">
-            <Button type="submit" size="sm" className="bg-red-600 hover:bg-red-700 text-white gap-2 font-semibold cursor-pointer w-full sm:w-auto">
-              <Save className="h-4 w-4" /> Save System Settings
+            <Button type="submit" size="sm" className="gap-1.5 w-full sm:w-auto font-medium">
+              <Save className="h-4 w-4" aria-hidden="true" />
+              {t('admin.settings.save')}
             </Button>
           </div>
         </form>

@@ -339,7 +339,8 @@
       "tenants": "Tenants",
       "kyc": "KYC verification",
       "audit": "System audit",
-      "settings": "Settings"
+      "settings": "Settings",
+      "tenantDetail": "Organization profile"
     }
   },
   "header": {
@@ -1069,7 +1070,67 @@
           "download": "Download original PDF",
           "downloadStarted": "Download started: {{file}}"
         }
+      },
+      "detail": {
+        "backToDirectory": "Back to organizations",
+        "joined": "Registered",
+        "openKycQueue": "Open KYC queue",
+        "saveCredit": "Save credit parameters",
+        "notFound": {
+          "title": "Organization not found",
+          "description": "Organization {{id}} does not exist in the directory.",
+          "back": "Back to directory"
+        },
+        "credit": {
+          "caption": "Credit line and exposure of {{name}}",
+          "used": "Exposure (used)",
+          "available": "Available credit",
+          "utilization": "Utilization",
+          "terms": "Payment terms"
+        },
+        "form": {
+          "title": "Credit line governance",
+          "limitLabel": "Trade credit limit (PLN)",
+          "limitHelper": "Current exposure: {{used}} PLN · Available: {{available}} PLN",
+          "termsLabel": "Authorized payment terms",
+          "termsHelper": "Invoice settlement deferral applied by the billing service."
+        },
+        "registry": {
+          "title": "Tax registries & KYC dossier",
+          "iban": "Settlement bank account (IBAN)",
+          "krs": "KRS",
+          "regon": "REGON",
+          "submitted": "KYC application submitted",
+          "noApplication": "No KYC application on file — automated registry checks are unavailable."
+        },
+        "docs": {
+          "downloadAria": "Download document {{name}}"
+        }
       }
+    },
+    "settings": {
+      "title": "Platform settings",
+      "subtitle": "Environment selection, API connectivity endpoints and platform runtime modes.",
+      "envTitle": "Active environment",
+      "envDescription": "Determines which API gateway and identity provider endpoints the workspace connects to.",
+      "envGroupAria": "Select platform environment",
+      "env": {
+        "development": "Development (local)",
+        "staging": "Staging (pre-prod)",
+        "production": "Production (cloud)",
+        "custom": "Custom (manual URL)"
+      },
+      "endpointsTitle": "Connectivity endpoints",
+      "gatewayLabel": "API gateway base URL",
+      "keycloakLabel": "Identity provider (SSO) URL",
+      "presetHint": "Preset endpoint active — the manual URL applies in Custom mode only.",
+      "modesTitle": "Runtime modes",
+      "mockLabel": "Offline demo mode",
+      "mockDescription": "Serve demo catalog and order data generators when the backend is unreachable.",
+      "save": "Save settings",
+      "savedToast": "Connectivity settings saved.",
+      "gatewayRequired": "Gateway URL is required",
+      "keycloakRequired": "SSO provider URL is required"
     },
     "analytics": {
       "title": "Analytics",
