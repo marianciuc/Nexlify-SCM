@@ -1,14 +1,5 @@
+import { ChevronDown, Server, Building2, Check, Sliders, Radio } from 'lucide-react';
 import {useState} from 'react';
-import {
-    ChevronDown,
-    Server,
-    Building2,
-    Check,
-    RefreshCw,
-    Sliders,
-    Wifi,
-    Radio,
-} from 'lucide-react';
 import {toast} from 'sonner';
 
 import {Badge} from '@/components/ui/badge';
@@ -29,6 +20,7 @@ import {
     type EnvironmentType,
     type TenantContext,
 } from '@/service/env/environment-store';
+
 import {ManualEnvironmentModal} from './ManualEnvironmentModal';
 
 export function EnvironmentSwitcher() {

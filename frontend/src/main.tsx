@@ -1,8 +1,10 @@
 import {QueryClientProvider} from '@tanstack/react-query';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import {RouterProvider, createRouter} from '@tanstack/react-router';
+import {ThemeProvider} from 'next-themes';
 import {StrictMode} from 'react';
 import ReactDOM from 'react-dom/client';
+
 
 import {ErrorBoundary} from './components/ErrorBoundary';
 import {Toaster} from './components/ui/sonner';
@@ -34,36 +36,27 @@ declare module '@tanstack/react-router' {
 // Render the app
 const rootElement = document.getElementById('app');
 if (rootElement && !rootElement.innerHTML) {
-    // Initialize i18n before rendering the app
+    const renderApp = () => {
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(
+            <StrictMode>
+                <ErrorBoundary>
+                    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+                        <QueryClientProvider client={queryClient}>
+                            <RouterProvider router={router}/>
+                            {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false}/>}
+                            <Toaster/>
+                        </QueryClientProvider>
+                    </ThemeProvider>
+                </ErrorBoundary>
+            </StrictMode>
+        );
+    };
+
+    // Initialize i18n before rendering the app, falling back cleanly
     initI18n()
-        .then(() => {
-            const root = ReactDOM.createRoot(rootElement);
-            root.render(
-                <StrictMode>
-                    <ErrorBoundary>
-                        <QueryClientProvider client={queryClient}>
-                            <RouterProvider router={router}/>
-                            <ReactQueryDevtools initialIsOpen={false}/>
-                            <Toaster/>
-                        </QueryClientProvider>
-                    </ErrorBoundary>
-                </StrictMode>
-            );
-        })
-        .catch(() => {
-            // Render app even if i18n fails to initialize
-            const root = ReactDOM.createRoot(rootElement);
-            root.render(
-                <StrictMode>
-                    <ErrorBoundary>
-                        <QueryClientProvider client={queryClient}>
-                            <RouterProvider router={router}/>
-                            <Toaster/>
-                        </QueryClientProvider>
-                    </ErrorBoundary>
-                </StrictMode>
-            );
-        });
+        .then(renderApp)
+        .catch(renderApp);
 }
 
 // If you want to start measuring performance in your app, pass a function

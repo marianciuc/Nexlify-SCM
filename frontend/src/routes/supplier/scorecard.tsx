@@ -1,117 +1,132 @@
 import { createFileRoute } from '@tanstack/react-router';
-import {
-  Award,
-  ShieldCheck,
-  TrendingUp,
-  CheckCircle2,
-  Clock,
-  ThumbsUp,
-  AlertTriangle,
-} from 'lucide-react';
+import { Award } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/page-header';
+import { StatusBadge } from '@/components/status-badge';
+import { useLocale } from '@/hooks/useLocale';
 
 export const Route = createFileRoute('/supplier/scorecard')({
-  component: SupplierScorecardPage,
-  staticData: {
-    crumb: {
-      label: 'Supplier Scorecard',
-    },
-  },
+    component: SupplierScorecardPage,
+    staticData: { crumb: { label: 'nav.supplier.scorecard' } },
 });
 
+const FACTORS: { id: 'otif' | 'quality' | 'price' | 'leadTime'; weight: number; score: number; threshold: number; helper: 'avgDispatch' | 'zeroCriticalRma' | 'competitive' | 'leadTimeDays'; value: string }[] = [
+    { id: 'otif', weight: 40, score: 98.4, threshold: 95.0, helper: 'avgDispatch', value: '1.2d' },
+    { id: 'quality', weight: 30, score: 99.2, threshold: 0, helper: 'zeroCriticalRma', value: '0' },
+    { id: 'price', weight: 20, score: 96.8, threshold: 0, helper: 'competitive', value: 'top 5%' },
+    { id: 'leadTime', weight: 10, score: 99.5, threshold: 0, helper: 'leadTimeDays', value: '1.2' },
+];
+
 function SupplierScorecardPage() {
-  return (
-    <div className="space-y-6 p-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Award className="h-6 w-6 text-amber-600" />
-            Supplier Quality Scorecard & Reliability Rating
-          </h1>
-          <Badge variant="outline" className="text-amber-700 bg-amber-50 border-amber-200">
-            Enterprise SCM 2.0
-          </Badge>
-        </div>
-        <p className="text-sm text-muted-foreground mt-1">
-          Algorithmic multi-factor reliability index based on OTIF on-time performance, RMA quality acceptance, and SLA lead time adherence.
-        </p>
-      </div>
+    const { t } = useLocale();
+    const compositeScore = 98.4;
+    const deliveries = 420;
+    const period = 'Q3';
 
-      {/* Main Score Banner */}
-      <Card className="border-amber-200 bg-gradient-to-r from-amber-50 via-amber-100/40 to-emerald-50 dark:from-amber-950/20 dark:to-emerald-950/20 shadow-md">
-        <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-200/80 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-bold text-xs">
-              <ShieldCheck className="h-4 w-4 text-amber-700" /> Verified Gold Supplier Tier
+    return (
+        <div className="space-y-6 max-w-5xl mx-auto min-w-0">
+            <PageHeader
+                title={
+                    <span className="flex items-center gap-2">
+                        <Award className="h-5 w-5 text-primary" aria-hidden="true" />
+                        {t('supplier.scorecard.title')}
+                    </span>
+                }
+                subtitle={t('supplier.scorecard.subtitle')}
+                actions={
+                    <StatusBadge tone="success" label={`${compositeScore}/100 · ${t('supplier.scorecard.tierGold')}`} size="md" />
+                }
+            />
+
+            <div className="rounded-md border border-border bg-card p-6 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            {t('supplier.scorecard.compositeLabel')}
+                        </p>
+                        <div className="mt-1 flex items-baseline gap-3">
+                            <span className="text-4xl font-bold tabular-nums text-foreground">{compositeScore}</span>
+                            <span className="text-base font-medium text-muted-foreground">/ 100</span>
+                            <StatusBadge tone="success" label={t('supplier.scorecard.top5Percent')} size="sm" />
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2">
+                            {t('supplier.scorecard.basis', { count: deliveries, period })}
+                        </p>
+                    </div>
+                    <ProgressBar value={compositeScore} className="w-full sm:w-64 h-2" />
+                </div>
             </div>
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">
-              Composite Quality Score: 98.4 / 100
-            </h2>
-            <p className="text-xs text-slate-600 dark:text-slate-400 max-w-lg">
-              Calculated over 420 completed deliveries during the past 90 days. Top 5% performing supplier on the Nexlify B2B platform.
-            </p>
-          </div>
 
-          <div className="text-center bg-white dark:bg-slate-900 p-6 rounded-2xl border border-amber-200 shadow-sm shrink-0">
-            <div className="text-5xl font-mono font-black text-amber-600">98.4%</div>
-            <div className="text-xs font-semibold text-slate-500 uppercase mt-1">OTIF Rate (Q3)</div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 4 Factor Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="border-slate-200 dark:border-slate-800 shadow-2xs">
-          <CardHeader className="py-3 px-4">
-            <CardTitle className="text-xs uppercase font-semibold text-slate-500">
-              1. OTIF Adherence (40%)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4 pt-0">
-            <div className="text-2xl font-bold font-mono text-emerald-600">98.4%</div>
-            <p className="text-2xs text-slate-500 mt-1">Target threshold: 95.0%</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 shadow-2xs">
-          <CardHeader className="py-3 px-4">
-            <CardTitle className="text-xs uppercase font-semibold text-slate-500">
-              2. Quality Acceptance (30%)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4 pt-0">
-            <div className="text-2xl font-bold font-mono text-emerald-600">99.2%</div>
-            <p className="text-2xs text-slate-500 mt-1">Zero critical RMA recalls</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 shadow-2xs">
-          <CardHeader className="py-3 px-4">
-            <CardTitle className="text-xs uppercase font-semibold text-slate-500">
-              3. Price Index (20%)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4 pt-0">
-            <div className="text-2xl font-bold font-mono text-emerald-600">96.8%</div>
-            <p className="text-2xs text-slate-500 mt-1">Highly competitive</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200 dark:border-slate-800 shadow-2xs">
-          <CardHeader className="py-3 px-4">
-            <CardTitle className="text-xs uppercase font-semibold text-slate-500">
-              4. Lead Time SLA (10%)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4 pt-0">
-            <div className="text-2xl font-bold font-mono text-emerald-600">99.5%</div>
-            <p className="text-2xs text-slate-500 mt-1">Average dispatch: 1.2 days</p>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+            <section>
+                <h2 className="text-sm font-semibold text-foreground mb-3">
+                    {t('supplier.scorecard.factorsTitle')}
+                </h2>
+                <div className="rounded-md border border-border bg-card shadow-xs overflow-x-auto">
+                    <table className="w-full text-sm min-w-[560px]">
+                        <caption className="sr-only">{t('supplier.scorecard.factorsTitle')}</caption>
+                        <thead className="bg-muted/30 border-b border-border text-muted-foreground text-xs uppercase tracking-wider font-semibold">
+                            <tr>
+                                <th className="py-2.5 px-4 text-left">{t('supplier.scorecard.factorCol')}</th>
+                                <th className="py-2.5 px-4 text-right">{t('supplier.scorecard.weight')}</th>
+                                <th className="py-2.5 px-4 text-left">{t('supplier.scorecard.score')}</th>
+                                <th className="py-2.5 px-4 text-left">{t('supplier.scorecard.detail')}</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                            {FACTORS.map((f, idx) => (
+                                <tr key={f.id} className="hover:bg-muted/30 transition-colors">
+                                    <td className="py-2.5 px-4 font-medium text-foreground">
+                                        {idx + 1}. {t(`supplier.scorecard.factor.${f.id}`)}
+                                    </td>
+                                    <td className="py-2.5 px-4 text-right tabular-nums text-muted-foreground font-mono">
+                                        {f.weight}%
+                                    </td>
+                                    <td className="py-2.5 px-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-mono font-bold tabular-nums text-foreground">
+                                                {f.score}%
+                                            </span>
+                                            <div
+                                                className="flex-1 max-w-[120px] h-1.5 bg-muted rounded-full overflow-hidden"
+                                                role="progressbar"
+                                                aria-valuenow={f.score}
+                                                    aria-valuemin={0}
+                                                    aria-valuemax={100}
+                                                >
+                                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${f.score}%` }} />
+                                            </div>
+                                            {f.threshold > 0 && (
+                                                <span className="text-xs text-muted-foreground">
+                                                    {t('supplier.scorecard.threshold')}: {f.threshold}%
+                                                </span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="py-2.5 px-4 text-xs text-muted-foreground">
+                                        {t(`supplier.scorecard.helper.${f.helper}`, { value: f.value })}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    );
 }
+
+function ProgressBar({ value, className }: { value: number; className?: string }) {
+    return (
+        <div
+            className={`bg-muted rounded-full overflow-hidden ${className ?? ''}`}
+            role="progressbar"
+            aria-valuenow={Math.round(value)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+        >
+            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${value}%` }} />
+        </div>
+    );
+}
+
+export default SupplierScorecardPage;

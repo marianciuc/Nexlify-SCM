@@ -1,17 +1,15 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
+import { ArrowLeftRight, Plus, Warehouse, Truck, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
-import {
-  ArrowLeftRight,
-  Plus,
-  Warehouse,
-  Truck,
-  CheckCircle2,
-  Clock,
-  Building2,
-  AlertCircle,
-} from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
+import {
+  FormFieldSelect,
+  FormFieldNumber,
+} from '@/components/forms/common';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,8 +20,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Form } from '@/components/ui/form';
 
 export const Route = createFileRoute('/supplier/inventory/transfers')({
   component: WarehouseTransfersPage,
@@ -74,101 +71,168 @@ const INITIAL_TRANSFERS: TransferOrder[] = [
   },
 ];
 
+const transferSchema = z.object({
+  sourceHub: z.string().min(1, 'Source hub is required'),
+  destHub: z.string().min(1, 'Destination hub is required'),
+  sku: z.string().min(1, 'SKU is required'),
+  qty: z.number().int().min(1, 'Quantity must be at least 1'),
+});
+
+type TransferFormData = z.infer<typeof transferSchema>;
+
+const sourceHubOptions = [
+  { value: 'Central DC Warszawa (WH-WAW-01)', label: 'Central DC Warszawa (WH-WAW-01)' },
+  { value: 'Silesia Logistics Hub Katowice (WH-KTW-03)', label: 'Silesia Logistics Hub Katowice (WH-KTW-03)' },
+  { value: 'Port Logistics Hub Szczecin (WH-SZC-02)', label: 'Port Logistics Hub Szczecin (WH-SZC-02)' },
+];
+
+const destHubOptions = [
+  { value: 'Silesia Logistics Hub Katowice (WH-KTW-03)', label: 'Silesia Logistics Hub Katowice (WH-KTW-03)' },
+  { value: 'Central DC Warszawa (WH-WAW-01)', label: 'Central DC Warszawa (WH-WAW-01)' },
+  { value: 'Port Logistics Hub Szczecin (WH-SZC-02)', label: 'Port Logistics Hub Szczecin (WH-SZC-02)' },
+];
+
+const skuOptions = [
+  { value: 'SKU-PAL-01', label: 'SKU-PAL-01 (EPAL Pallets)' },
+  { value: 'SKU-STR-05', label: 'SKU-STR-05 (Stretch Film)' },
+  { value: 'SKU-HYD-02', label: 'SKU-HYD-02 (Pallet Trucks)' },
+];
+
 function WarehouseTransfersPage() {
   const [transfers, setTransfers] = useState<TransferOrder[]>(INITIAL_TRANSFERS);
   const [showModal, setShowModal] = useState(false);
 
-  const [sourceHub, setSourceHub] = useState('Central DC Warszawa (WH-WAW-01)');
-  const [destHub, setDestHub] = useState('Silesia Logistics Hub Katowice (WH-KTW-03)');
-  const [sku, setSku] = useState('SKU-PAL-01');
-  const [qty, setQty] = useState(150);
+  const form = useForm<TransferFormData>({
+    resolver: zodResolver(transferSchema),
+    defaultValues: {
+      sourceHub: 'Central DC Warszawa (WH-WAW-01)',
+      destHub: 'Silesia Logistics Hub Katowice (WH-KTW-03)',
+      sku: 'SKU-PAL-01',
+      qty: 150,
+    },
+  });
 
-  const handleCreateTransfer = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (data: TransferFormData) => {
     const newTrf: TransferOrder = {
       id: 'trf-' + Math.random().toString(36).substring(2, 7),
       transferNo: `TRF-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      sourceHub,
-      destinationHub: destHub,
-      sku,
-      productName: sku === 'SKU-PAL-01' ? 'EPAL Euro-Pallet Standard' : 'Warehouse Item',
-      quantity: qty,
+      sourceHub: data.sourceHub,
+      destinationHub: data.destHub,
+      sku: data.sku,
+      productName: data.sku === 'SKU-PAL-01' ? 'EPAL Euro-Pallet Standard' : 'Warehouse Item',
+      quantity: data.qty,
       carrier: 'Internal Hub Logistics Shuttle',
       status: 'DISPATCHED',
       eta: 'Tomorrow, 12:00',
     };
     setTransfers([newTrf, ...transfers]);
     setShowModal(false);
-    toast.success(`Transfer Order ${newTrf.transferNo} created: ${qty} units allocated!`);
+    form.reset();
+    toast.success(`Transfer Order ${newTrf.transferNo} scheduled from ${data.sourceHub} to ${data.destHub}!`);
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <ArrowLeftRight className="h-6 w-6 text-amber-600" />
-              Inter-Warehouse Stock Balancing & Transfers
-            </h1>
-            <Badge variant="outline" className="text-amber-700 bg-amber-50 border-amber-200">
-              Enterprise SCM 2.0
-            </Badge>
-          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <ArrowLeftRight className="h-6 w-6 text-amber-600" />
+            Inter-Warehouse Stock Transfers
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Rebalance inventory between Warsaw, Katowice, and Szczecin regional distribution hubs to avoid regional stockouts.
+            Rebalance wholesale inventory across multi-hub Polish fulfillment centers.
           </p>
         </div>
-
         <Button
-          className="bg-amber-600 hover:bg-amber-700 text-white gap-2 text-xs shadow-xs"
+          size="sm"
           onClick={() => setShowModal(true)}
+          className="bg-amber-600 hover:bg-amber-700 text-white gap-2 font-semibold shadow-xs cursor-pointer w-full sm:w-auto"
         >
-          <Plus className="h-4 w-4" /> New Inter-Warehouse Transfer
+          <Plus className="h-4 w-4" /> Create Transfer Order
         </Button>
       </div>
 
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card className="border-slate-200 dark:border-slate-800">
+          <CardHeader className="py-3 px-4 flex flex-row items-center justify-between">
+            <CardTitle className="text-xs uppercase font-bold text-slate-500">In Transit</CardTitle>
+            <Truck className="h-4 w-4 text-amber-600" />
+          </CardHeader>
+          <CardContent className="px-4 pb-3">
+            <div className="text-2xl font-mono font-bold text-amber-600">
+              {transfers.filter((t) => t.status === 'IN_TRANSIT').length}
+            </div>
+            <p className="text-2xs text-muted-foreground mt-0.5">Active highway shuttles</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200 dark:border-slate-800">
+          <CardHeader className="py-3 px-4 flex flex-row items-center justify-between">
+            <CardTitle className="text-xs uppercase font-bold text-slate-500">Units Moving</CardTitle>
+            <Warehouse className="h-4 w-4 text-slate-500" />
+          </CardHeader>
+          <CardContent className="px-4 pb-3">
+            <div className="text-2xl font-mono font-bold text-slate-900 dark:text-slate-100">
+              {transfers.reduce((acc, t) => acc + t.quantity, 0).toLocaleString()}
+            </div>
+            <p className="text-2xs text-muted-foreground mt-0.5">Physical items scheduled</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200 dark:border-slate-800">
+          <CardHeader className="py-3 px-4 flex flex-row items-center justify-between">
+            <CardTitle className="text-xs uppercase font-bold text-slate-500">Completed Transfers</CardTitle>
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+          </CardHeader>
+          <CardContent className="px-4 pb-3">
+            <div className="text-2xl font-mono font-bold text-emerald-600">
+              {transfers.filter((t) => t.status === 'RECEIVED').length}
+            </div>
+            <p className="text-2xs text-muted-foreground mt-0.5">Received into destination WMS</p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Transfers Table */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-        <CardContent className="p-0">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 dark:bg-slate-900 border-b text-slate-600 dark:text-slate-400">
+      <Card className="border-slate-200 dark:border-slate-800">
+        <CardHeader className="py-3 px-4 border-b">
+          <CardTitle className="text-sm font-semibold">Active & Recent Warehouse Reallocations</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0 overflow-x-auto">
+          <table className="w-full text-xs text-left min-w-[700px]">
+            <thead className="bg-slate-50 dark:bg-slate-900 border-b text-slate-500 font-semibold whitespace-nowrap">
               <tr>
                 <th className="py-3 px-4">Transfer #</th>
-                <th className="py-3 px-4">Item SKU</th>
                 <th className="py-3 px-4">Source Hub</th>
                 <th className="py-3 px-4">Destination Hub</th>
+                <th className="py-3 px-4">SKU / Item</th>
                 <th className="py-3 px-4 text-right">Quantity</th>
-                <th className="py-3 px-4">Internal Carrier</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4 text-right">ETA</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 whitespace-nowrap">
               {transfers.map((t) => (
                 <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/50">
-                  <td className="py-3 px-4 font-mono font-bold text-amber-700 dark:text-amber-400">
-                    {t.transferNo}
-                  </td>
+                  <td className="py-3 px-4 font-mono font-bold text-slate-900 dark:text-slate-100">{t.transferNo}</td>
+                  <td className="py-3 px-4">{t.sourceHub}</td>
+                  <td className="py-3 px-4">{t.destinationHub}</td>
                   <td className="py-3 px-4">
-                    <div className="font-semibold text-slate-800 dark:text-slate-200">{t.productName}</div>
-                    <div className="font-mono text-2xs text-slate-500">{t.sku}</div>
+                    <span className="font-mono font-bold block">{t.sku}</span>
+                    <span className="text-2xs text-slate-500">{t.productName}</span>
                   </td>
-                  <td className="py-3 px-4 text-slate-600 dark:text-slate-400">{t.sourceHub}</td>
-                  <td className="py-3 px-4 font-medium text-slate-900 dark:text-slate-100">{t.destinationHub}</td>
-                  <td className="py-3 px-4 font-mono font-bold text-right text-emerald-600">
-                    {t.quantity.toLocaleString()} pcs
-                  </td>
-                  <td className="py-3 px-4 text-slate-500">{t.carrier}</td>
+                  <td className="py-3 px-4 text-right font-mono font-bold">{t.quantity} pcs</td>
                   <td className="py-3 px-4">
                     <Badge
-                      variant="outline"
-                      className={`text-2xs ${
-                        t.status === 'RECEIVED'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          : 'bg-amber-50 text-amber-700 border-amber-200'
-                      }`}
+                      className={
+                        t.status === 'IN_TRANSIT'
+                          ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                          : t.status === 'RECEIVED'
+                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                          : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300'
+                      }
                     >
                       {t.status}
                     </Badge>
@@ -189,70 +253,55 @@ function WarehouseTransfersPage() {
               <ArrowLeftRight className="h-5 w-5" /> Schedule Inter-Warehouse Transfer
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleCreateTransfer} className="space-y-4 text-xs">
-            <div className="space-y-1">
-              <Label className="text-xs">Source Warehouse (Origin):</Label>
-              <select
-                value={sourceHub}
-                onChange={(e) => setSourceHub(e.target.value)}
-                className="w-full p-2 border rounded-md bg-white dark:bg-slate-900"
-              >
-                <option value="Central DC Warszawa (WH-WAW-01)">Central DC Warszawa (WH-WAW-01)</option>
-                <option value="Silesia Logistics Hub Katowice (WH-KTW-03)">Silesia Logistics Hub Katowice (WH-KTW-03)</option>
-                <option value="Port Logistics Hub Szczecin (WH-SZC-02)">Port Logistics Hub Szczecin (WH-SZC-02)</option>
-              </select>
-            </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-xs">
+              <FormFieldSelect
+                control={form.control}
+                name="sourceHub"
+                label="Source Warehouse (Origin):"
+                options={sourceHubOptions}
+              />
 
-            <div className="space-y-1">
-              <Label className="text-xs">Destination Facility:</Label>
-              <select
-                value={destHub}
-                onChange={(e) => setDestHub(e.target.value)}
-                className="w-full p-2 border rounded-md bg-white dark:bg-slate-900"
-              >
-                <option value="Silesia Logistics Hub Katowice (WH-KTW-03)">Silesia Logistics Hub Katowice (WH-KTW-03)</option>
-                <option value="Central DC Warszawa (WH-WAW-01)">Central DC Warszawa (WH-WAW-01)</option>
-                <option value="Port Logistics Hub Szczecin (WH-SZC-02)">Port Logistics Hub Szczecin (WH-SZC-02)</option>
-              </select>
-            </div>
+              <FormFieldSelect
+                control={form.control}
+                name="destHub"
+                label="Destination Facility:"
+                options={destHubOptions}
+              />
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs">SKU to Transfer:</Label>
-                <select
-                  value={sku}
-                  onChange={(e) => setSku(e.target.value)}
-                  className="w-full p-2 border rounded-md bg-white dark:bg-slate-900 font-mono"
-                >
-                  <option value="SKU-PAL-01">SKU-PAL-01 (EPAL Pallets)</option>
-                  <option value="SKU-STR-05">SKU-STR-05 (Stretch Film)</option>
-                  <option value="SKU-HYD-02">SKU-HYD-02 (Pallet Trucks)</option>
-                </select>
-              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <FormFieldSelect
+                  control={form.control}
+                  name="sku"
+                  label="SKU to Transfer:"
+                  options={skuOptions}
+                  className="font-mono"
+                />
 
-              <div className="space-y-1">
-                <Label className="text-xs">Quantity to Move:</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={qty}
-                  onChange={(e) => setQty(Number(e.target.value))}
-                  className="text-xs font-mono font-bold"
+                <FormFieldNumber
+                  control={form.control}
+                  name="qty"
+                  label="Quantity to Move:"
+                  min={1}
+                  step={1}
+                  className="font-bold"
                 />
               </div>
-            </div>
 
-            <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" size="sm" onClick={() => setShowModal(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
-                Dispatch Transfer Order
-              </Button>
-            </DialogFooter>
-          </form>
+              <DialogFooter className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowModal(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white cursor-pointer">
+                  Dispatch Transfer Order
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>
   );
 }
+
+export default WarehouseTransfersPage;

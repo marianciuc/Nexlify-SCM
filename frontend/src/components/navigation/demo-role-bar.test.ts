@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DEMO_ROLES } from './DemoRoleBar';
+
 import useAuthStore from '@/service/auth/auth-store';
 import useEnvironmentStore from '@/service/env/environment-store';
+
+import { DEMO_ROLES } from './DemoRoleBar';
 
 describe('DemoRoleBar configuration and role models', () => {
   beforeEach(() => {

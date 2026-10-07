@@ -4,6 +4,7 @@ import {useEffect, useState, useRef} from 'react';
 
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {getDefaultWorkspacePath} from '@/lib/workspace-routing';
 import useAuthStore from '@/service/auth/auth-store';
 
 export const Route = createFileRoute('/auth/callback')({
@@ -16,6 +17,7 @@ function AuthCallbackPage() {
     const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
     const [errorMessage, setErrorMessage] = useState<string>('');
     const exchangedRef = useRef(false);
+    const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         if (exchangedRef.current) return;
@@ -30,7 +32,7 @@ function AuthCallbackPage() {
 
                 if (error) {
                     setStatus('error');
-                    setErrorMessage(errorDescription || error || 'Authentication was denied by Keycloak');
+                    setErrorMessage(errorDescription || error || 'Authentication was denied');
                     return;
                 }
 
@@ -44,16 +46,19 @@ function AuthCallbackPage() {
                 await loginWithCode(code, redirectUri);
 
                 setStatus('success');
-                setTimeout(() => {
-                    navigate({to: '/supplier/dashboard'});
+                redirectTimerRef.current = setTimeout(() => {
+                    navigate({to: getDefaultWorkspacePath(useAuthStore.getState().userData)});
                 }, 800);
-            } catch (err: any) {
+            } catch (err: unknown) {
                 setStatus('error');
-                setErrorMessage(err?.message || 'Failed to exchange authorization code with Keycloak');
+                setErrorMessage(err instanceof Error ? err.message : 'Failed to complete authentication');
             }
         };
 
         processCallback();
+        return () => {
+            if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+        };
     }, [loginWithCode, navigate]);
 
     return (
@@ -66,12 +71,12 @@ function AuthCallbackPage() {
                         {status === 'error' && <AlertCircle className='w-6 h-6 text-rose-400' />}
                     </div>
                     <CardTitle className='text-xl font-bold tracking-tight'>
-                        {status === 'processing' && 'Authenticating with Keycloak IAM'}
+                        {status === 'processing' && 'Authenticating...'}
                         {status === 'success' && 'Authentication Successful'}
                         {status === 'error' && 'Authentication Error'}
                     </CardTitle>
                     <CardDescription className='text-slate-400 text-xs'>
-                        {status === 'processing' && 'Exchanging authorization code for secure Opaque Reference Token...'}
+                        {status === 'processing' && 'Verifying authentication credentials...'}
                         {status === 'success' && 'Session created. Redirecting to platform dashboard...'}
                         {status === 'error' && 'Unable to finalize authentication session with IAM provider.'}
                     </CardDescription>

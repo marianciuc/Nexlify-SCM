@@ -1,486 +1,896 @@
-import { createFileRoute, Link, Outlet, useChildMatches } from '@tanstack/react-router';
-import { useState, useMemo } from 'react';
-import {
-  Search,
-  Filter,
-  Layers,
-  LayoutGrid,
-  List,
-  ShoppingCart,
-  CheckCircle2,
-  AlertTriangle,
-  ArrowRight,
-  TrendingDown,
-  Building2,
-  Package,
-} from 'lucide-react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { Search, LayoutGrid, List, ShoppingCart, Package, SlidersHorizontal, Filter, X } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
 
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import {
+    CategoryHierarchyFilter,
+    BrandAndManufacturerFilter,
+    QuantityInput,
+} from '@/components/inventory';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useInventoryQuery, INITIAL_STOCK } from '@/hooks/useScmQueries';
+import { Input } from '@/components/ui/input';
+import { useLocale } from '@/hooks/useLocale';
+import {
+    useInventoryQuery,
+    useInventoryDataSourceQuery,
+    useCategoriesQuery,
+    useBrandsQuery,
+    useManufacturersQuery,
+    INITIAL_CATEGORIES,
+    INITIAL_BRANDS,
+    INITIAL_MANUFACTURERS,
+} from '@/hooks/useScmQueries';
+import { ENHANCED_CATALOG, type EnhancedStockItem } from '@/lib/demo-catalog';
 import { useCartStore } from '@/service/cart/cart-store';
-import type { StockItem } from '@/types/scm-domain';
 
 export const Route = createFileRoute('/buyer/catalog')({
-  component: BuyerCatalogPage,
-  staticData: {
-    crumb: {
-      label: 'B2B Catalog',
-    },
-  },
+    validateSearch: (search: Record<string, unknown>) => ({
+        q: typeof search.q === 'string' ? search.q : '',
+        category: typeof search.category === 'string' ? search.category : 'ALL',
+        brand: typeof search.brand === 'string' ? search.brand : 'ALL',
+        manufacturer: typeof search.manufacturer === 'string' ? search.manufacturer : 'ALL',
+        stock: typeof search.stock === 'string' ? search.stock : 'ALL',
+    }),
+    component: BuyerCatalogPage,
+    staticData: { crumb: { label: 'nav.buyer.catalog' } },
 });
 
-interface EnhancedStockItem extends StockItem {
-  moq: number;
-  weightKg: number;
-  volumeM3: number;
-  supplierName: string;
-  supplierNip: string;
-  leadTimeDays: number;
-  tieredPricing: { minQty: number; price: number; discountPercent: number }[];
-  certifications: string[];
-}
+const priceFormatter = new Intl.NumberFormat('pl-PL', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
+const normalizeSearch = (value: string) =>
+    value
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLocaleLowerCase();
 
-const ENHANCED_CATALOG: EnhancedStockItem[] = [
-  {
-    id: '1',
-    sku: 'SKU-PAL-01',
-    name: 'EPAL Euro-Pallet Standard (Pine Wood)',
-    category: 'Packaging & Cargo Units',
-    warehouse: 'Central DC Warszawa (WH-WAW-01)',
-    quantityAvailable: 1850,
-    quantityReserved: 100,
-    unit: 'pcs',
-    unitPrice: 120.0,
-    status: 'IN_STOCK',
-    moq: 20,
-    weightKg: 25.0,
-    volumeM3: 0.144,
-    supplierName: 'Drewnex Palety Sp. z o.o.',
-    supplierNip: '7822910483',
-    leadTimeDays: 1,
-    tieredPricing: [
-      { minQty: 20, price: 120.0, discountPercent: 0 },
-      { minQty: 100, price: 111.0, discountPercent: 7.5 },
-      { minQty: 500, price: 102.0, discountPercent: 15.0 },
-    ],
-    certifications: ['EPAL / UIC 435-2', 'ISPM 15 / IPPC (Heat Treated)'],
-  },
-  {
-    id: '2',
-    sku: 'SKU-STR-05',
-    name: 'Industrial Stretch Film 23mic (Roll 300m)',
-    category: 'Packaging Supplies',
-    warehouse: 'Central DC Warszawa (WH-WAW-01)',
-    quantityAvailable: 420,
-    quantityReserved: 40,
-    unit: 'rolls',
-    unitPrice: 411.25,
-    status: 'IN_STOCK',
-    moq: 5,
-    weightKg: 3.2,
-    volumeM3: 0.015,
-    supplierName: 'PlastChem Industrial Sp. k.',
-    supplierNip: '8942019485',
-    leadTimeDays: 2,
-    tieredPricing: [
-      { minQty: 5, price: 411.25, discountPercent: 0 },
-      { minQty: 25, price: 382.5, discountPercent: 7.0 },
-      { minQty: 100, price: 349.5, discountPercent: 15.0 },
-    ],
-    certifications: ['ISO 9001:2015', 'RoHS Compliant'],
-  },
-  {
-    id: '3',
-    sku: 'SKU-HYD-02',
-    name: 'Hydraulic Hand Pallet Truck 2.5t (Tandem PU)',
-    category: 'Material Handling Equipment',
-    warehouse: 'Port Logistics Hub Szczecin (WH-SZC-02)',
-    quantityAvailable: 18,
-    quantityReserved: 10,
-    unit: 'units',
-    unitPrice: 1420.05,
-    status: 'LOW_STOCK',
-    moq: 1,
-    weightKg: 78.0,
-    volumeM3: 0.45,
-    supplierName: 'Baltic Heavy Freight & Tools',
-    supplierNip: '8522619472',
-    leadTimeDays: 3,
-    tieredPricing: [
-      { minQty: 1, price: 1420.05, discountPercent: 0 },
-      { minQty: 5, price: 1335.0, discountPercent: 6.0 },
-      { minQty: 10, price: 1250.0, discountPercent: 12.0 },
-    ],
-    certifications: ['CE Marking', 'EN 1757-2 Safety Directive'],
-  },
-  {
-    id: '4',
-    sku: 'SKU-COL-09',
-    name: 'Insulated Thermobox 60L Pharma/Food Grade',
-    category: 'Cold Chain Equipment',
-    warehouse: 'Central DC Warszawa (WH-WAW-01)',
-    quantityAvailable: 850,
-    quantityReserved: 300,
-    unit: 'boxes',
-    unitPrice: 224.33,
-    status: 'IN_STOCK',
-    moq: 10,
-    weightKg: 4.8,
-    volumeM3: 0.08,
-    supplierName: 'Pomerania Foods & Pharma Packaging',
-    supplierNip: '5832918471',
-    leadTimeDays: 1,
-    tieredPricing: [
-      { minQty: 10, price: 224.33, discountPercent: 0 },
-      { minQty: 50, price: 206.38, discountPercent: 8.0 },
-      { minQty: 200, price: 190.68, discountPercent: 15.0 },
-    ],
-    certifications: ['HACCP Compliant', 'GDP Pharma Transport Certified'],
-  },
-];
+type ViewMode = 'table' | 'grid';
+type StockFilter = 'ALL' | 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
 
 function BuyerCatalogPage() {
-  const childMatches = useChildMatches();
-  if (childMatches.length > 0) {
-    return <Outlet />;
-  }
-  return <BuyerCatalogContent />;
+    return <BuyerCatalogContent />;
 }
 
 function BuyerCatalogContent() {
-  const { data: stockItems = INITIAL_STOCK } = useInventoryQuery();
-  const addItemToCart = useCartStore((s) => s.addItem);
+    const { t } = useLocale();
+    const routeSearch = Route.useSearch();
+    const navigate = Route.useNavigate();
+    const inventoryQuery = useInventoryQuery();
+    const { data: stockItems = [] } = inventoryQuery;
+    const { data: inventorySource = 'demo' } = useInventoryDataSourceQuery();
+    const { data: categories = INITIAL_CATEGORIES } = useCategoriesQuery();
+    const { data: brands = INITIAL_BRANDS } = useBrandsQuery();
+    const { data: manufacturers = INITIAL_MANUFACTURERS } = useManufacturersQuery();
+    const addItemToCart = useCartStore((s) => s.addItem);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
-  const [selectedStockStatus, setSelectedStockStatus] = useState<string>('ALL');
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [quickQuantities, setQuickQuantities] = useState<Record<string, number>>({});
+    const { q: searchTerm, category, brand, manufacturer, stock } = routeSearch;
+    const updateFilters = (patch: Partial<typeof routeSearch>) => {
+        void navigate({
+            search: (previous) => ({
+                q: previous.q ?? '',
+                category: previous.category ?? 'ALL',
+                brand: previous.brand ?? 'ALL',
+                manufacturer: previous.manufacturer ?? 'ALL',
+                stock: previous.stock ?? 'ALL',
+                ...patch,
+            }),
+            replace: true,
+        });
+    };
+    const setSearchTerm = (q: string) => updateFilters({ q });
+    const setSelectedCategoryId = (next: string) => updateFilters({ category: next });
+    const setSelectedBrandId = (next: string) => updateFilters({ brand: next });
+    const setSelectedManufacturerId = (next: string) => updateFilters({ manufacturer: next });
+    const setSelectedStockStatus = (next: string) => updateFilters({ stock: next });
 
-  const categories = useMemo(() => {
-    const set = new Set(ENHANCED_CATALOG.map((i) => i.category));
-    return ['ALL', ...Array.from(set)];
-  }, []);
+    const [viewMode, setViewMode] = useState<ViewMode>('table');
+    const [useCompactCatalog, setUseCompactCatalog] = useState(false);
+    const [showCategories, setShowCategories] = useState(false);
+    const [showMoreFilters, setShowMoreFilters] = useState(false);
+    const [quickQuantities, setQuickQuantities] = useState<Record<string, number>>({});
+    const cartLinesCount = useCartStore((s) => s.items.length);
 
-  const filteredItems = useMemo(() => {
-    return ENHANCED_CATALOG.filter((item) => {
-      const matchesSearch =
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.supplierName.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'ALL' || item.category === selectedCategory;
-      const matchesStock =
-        selectedStockStatus === 'ALL' ||
-        (selectedStockStatus === 'IN_STOCK' && item.quantityAvailable > 50) ||
-        (selectedStockStatus === 'LOW_STOCK' && item.quantityAvailable <= 50);
-      return matchesSearch && matchesCategory && matchesStock;
-    });
-  }, [searchTerm, selectedCategory, selectedStockStatus]);
+    useEffect(() => {
+        const media = window.matchMedia('(max-width: 1100px)');
+        const updateViewport = () => setUseCompactCatalog(media.matches);
+        updateViewport();
+        media.addEventListener('change', updateViewport);
+        return () => media.removeEventListener('change', updateViewport);
+    }, []);
+    const effectiveViewMode = useCompactCatalog ? 'grid' : viewMode;
 
-  const handleQuickAddToCart = (item: EnhancedStockItem) => {
-    const qty = quickQuantities[item.sku] || item.moq;
-    if (qty < item.moq) {
-      toast.error(`Minimal Order Quantity (MOQ) for ${item.sku} is ${item.moq} ${item.unit}`);
-      return;
-    }
-    addItemToCart(
-      {
-        sku: item.sku,
-        name: item.name,
-        category: item.category,
-        unitPrice: item.unitPrice,
-        moq: item.moq,
-        unit: item.unit,
-        vendorId: item.supplierNip,
-        vendorName: item.supplierName,
-        vendorNip: item.supplierNip,
-        weightKg: item.weightKg,
-        volumeM3: item.volumeM3,
-      },
-      qty
-    );
-    toast.success(`Added ${qty} ${item.unit} of ${item.name} to cart`);
-  };
+    // Merge enhanced catalog items with any new items created through the UI
+    const allCatalogItems = useMemo<EnhancedStockItem[]>(() => {
+        const map = new Map<string, EnhancedStockItem>();
+        if (inventorySource === 'demo') {
+            ENHANCED_CATALOG.forEach((item) => map.set(item.sku, item));
+        }
+        stockItems.forEach((si) => {
+            const existing = map.get(si.sku);
+            if (existing) {
+                map.set(si.sku, {
+                    ...existing,
+                    ...si,
+                    moq: si.minOrderQuantity ?? existing.moq,
+                    weightKg: si.weightKg ?? existing.weightKg,
+                    volumeM3: existing.volumeM3,
+                    supplierName: existing.supplierName,
+                    supplierNip: existing.supplierNip,
+                    leadTimeDays: existing.leadTimeDays,
+                    certifications: existing.certifications,
+                });
+            } else {
+                map.set(si.sku, {
+                    ...si,
+                    moq: si.minOrderQuantity ?? 1,
+                    weightKg: si.weightKg ?? 0,
+                    volumeM3: 0,
+                    supplierName: undefined,
+                    supplierNip: undefined,
+                    leadTimeDays: undefined,
+                    certifications: [],
+                });
+            }
+        });
+        return Array.from(map.values());
+    }, [stockItems, inventorySource]);
 
-  return (
-    <div className="space-y-6 p-6">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              B2B Product Catalog
-            </h1>
-            <Badge variant="outline" className="text-emerald-700 bg-emerald-50 border-emerald-200">
-              Screen P03
-            </Badge>
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            Explore wholesale inventory with personal contract tiered pricing, MOQ verification, and live warehouse availability.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link to="/buyer/cart">
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-2">
-              <ShoppingCart className="h-4 w-4" />
-              View Cart / Checkout
-            </Button>
-          </Link>
-        </div>
-      </div>
+    const filteredItems = useMemo(() => {
+        return allCatalogItems.filter((item) => {
+            const searchableFields = [
+                item.name,
+                item.sku,
+                item.category,
+                item.subcategory,
+                item.brand,
+                item.manufacturer,
+                item.supplierName,
+            ]
+                .filter((field): field is string => Boolean(field))
+                .map(normalizeSearch);
+            const terms = normalizeSearch(searchTerm).trim().split(/\s+/).filter(Boolean);
+            const matchesSearch =
+                terms.length === 0 ||
+                terms.every((term) => searchableFields.some((field) => field.includes(term)));
 
-      {/* Search and Filters Bar */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" aria-hidden="true" />
-          <Input
-            placeholder="Search SKU, product name, or supplier..."
-            aria-label="Search catalog by SKU, product name, or supplier"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 bg-slate-50 dark:bg-slate-950"
-          />
-        </div>
+            let matchesCategory = true;
+            if (category !== 'ALL') {
+                const directCatMatch = item.categoryId === category || item.category === category;
+                const subCatMatch = item.subcategoryId === category || item.subcategory === category;
+                const parentCategory =
+                    categories.find((c) => c.id === category || c.name === category);
+                const childMatch = parentCategory?.children?.some(
+                    (child) =>
+                        child.id === item.subcategoryId ||
+                        child.id === item.categoryId ||
+                        child.name === item.category ||
+                        child.name === item.subcategory
+                );
+                matchesCategory = Boolean(directCatMatch || subCatMatch || childMatch);
+            }
 
-        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-          {/* Category Filter */}
-          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg text-xs" role="group" aria-label="Filter by category">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setSelectedCategory(cat)}
-                aria-pressed={selectedCategory === cat}
-                className={`px-2.5 py-1.5 rounded-md font-medium transition-colors ${
-                  selectedCategory === cat
-                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                }`}
-              >
-                {cat === 'ALL' ? 'All Categories' : cat}
-              </button>
-            ))}
-          </div>
+            const matchesBrand =
+                brand === 'ALL' ||
+                item.brandId === brand ||
+                item.brand === brand ||
+                brands.find((b) => b.id === brand)?.name === item.brand;
 
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-1 border-l pl-2 border-slate-200 dark:border-slate-700" role="group" aria-label="View layout mode">
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
-              size="icon"
-              className="h-8 w-8 min-h-[32px] min-w-[32px]"
-              aria-label="Switch to grid layout view"
-              aria-pressed={viewMode === 'grid'}
-              onClick={() => setViewMode('grid')}
-            >
-              <LayoutGrid className="h-4 w-4" aria-hidden="true" />
-            </Button>
-            <Button
-              variant={viewMode === 'table' ? 'default' : 'ghost'}
-              size="icon"
-              className="h-8 w-8 min-h-[32px] min-w-[32px]"
-              aria-label="Switch to tabular layout view"
-              aria-pressed={viewMode === 'table'}
-              onClick={() => setViewMode('table')}
-            >
-              <List className="h-4 w-4" aria-hidden="true" />
-            </Button>
-          </div>
-        </div>
-      </div>
+            const matchesManufacturer =
+                manufacturer === 'ALL' ||
+                item.manufacturerId === manufacturer ||
+                item.manufacturer === manufacturer ||
+                manufacturers.find((m) => m.id === manufacturer)?.name === item.manufacturer;
 
-      {/* Product Display: Grid View */}
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredItems.map((item) => {
-            const currentQty = quickQuantities[item.sku] || item.moq;
-            return (
-              <Card
-                key={item.sku}
-                className="overflow-hidden border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow flex flex-col justify-between"
-              >
-                <div>
-                  <div className="h-40 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 p-4 flex flex-col justify-between">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-white/80 dark:bg-slate-950/80 text-slate-700 dark:text-slate-300">
-                        {item.sku}
-                      </span>
-                      <Badge
-                        variant={item.status === 'IN_STOCK' ? 'default' : 'destructive'}
-                        className={
-                          item.status === 'IN_STOCK'
-                            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-300 text-xs'
-                            : 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-300 text-xs'
-                        }
-                      >
-                        {item.status === 'IN_STOCK' ? (
-                          <CheckCircle2 className="h-3 w-3 mr-1 inline" aria-hidden="true" />
-                        ) : (
-                          <AlertTriangle className="h-3 w-3 mr-1 inline" aria-hidden="true" />
-                        )}
-                        <span className="tabular-nums font-semibold">{item.quantityAvailable}</span>&nbsp;{item.unit} available
-                      </Badge>
-                    </div>
+            const matchesStock =
+                stock === 'ALL' ||
+                (stock === 'IN_STOCK' && item.status === 'IN_STOCK') ||
+                (stock === 'LOW_STOCK' && item.status === 'LOW_STOCK') ||
+                (stock === 'OUT_OF_STOCK' && item.status === 'OUT_OF_STOCK');
 
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-slate-500" aria-hidden="true" />
-                      <span className="text-xs text-slate-600 dark:text-slate-400 font-medium truncate">
-                        {item.supplierName}
-                      </span>
-                    </div>
-                  </div>
+            return matchesSearch && matchesCategory && matchesBrand && matchesManufacturer && matchesStock;
+        });
+    }, [allCatalogItems, searchTerm, category, brand, manufacturer, stock, categories, brands, manufacturers]);
 
-                  <CardContent className="p-4 space-y-3">
-                    <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                      {item.category}
-                    </div>
-
-                    <Link
-                      to="/buyer/catalog/$sku"
-                      params={{ sku: item.sku }}
-                      className="text-base font-semibold text-slate-900 dark:text-slate-100 hover:text-emerald-600 transition-colors line-clamp-2"
-                    >
-                      {item.name}
-                    </Link>
-
-                    {/* Tiered Pricing Teaser */}
-                    <div className="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Base Wholesale:</span>
-                        <span className="text-sm font-bold tabular-nums text-slate-900 dark:text-slate-100">
-                          {item.unitPrice.toFixed(2)}&nbsp;PLN / {item.unit}
-                        </span>
-                      </div>
-                      {item.tieredPricing.length > 1 && item.tieredPricing[item.tieredPricing.length - 1] && (
-                        <div className="flex items-center justify-between text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                          <span className="flex items-center gap-1">
-                            <TrendingDown className="h-3 w-3" aria-hidden="true" />
-                            Up to {item.tieredPricing[item.tieredPricing.length - 1]!.discountPercent}% off:
-                          </span>
-                          <span className="tabular-nums font-semibold">
-                            {item.tieredPricing[item.tieredPricing.length - 1]!.price.toFixed(2)}&nbsp;PLN
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="text-xs text-slate-500 flex items-center justify-between">
-                      <span>MOQ: <strong className="tabular-nums">{item.moq}</strong> {item.unit}</span>
-                      <span>Lead Time: <strong className="tabular-nums">{item.leadTimeDays}d</strong> dispatch</span>
-                    </div>
-                  </CardContent>
-                </div>
-
-                {/* Card Footer with Quick Add & Details Link */}
-                <div className="p-4 pt-0 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 mt-2">
-                  <div className="w-20">
-                    <Input
-                      type="number"
-                      min={item.moq}
-                      step={item.moq}
-                      aria-label={`Order quantity for ${item.name}`}
-                      value={currentQty}
-                      onChange={(e) =>
-                        setQuickQuantities({
-                          ...quickQuantities,
-                          [item.sku]: Number(e.target.value),
-                        })
-                      }
-                      className="h-9 text-xs font-mono text-center tabular-nums"
-                    />
-                  </div>
-                  <Button
-                    size="sm"
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5"
-                    aria-label={`Add ${item.name} to cart`}
-                    onClick={() => handleQuickAddToCart(item)}
-                  >
-                    <ShoppingCart className="h-3.5 w-3.5" aria-hidden="true" />
-                    Add
-                  </Button>
-                  <Link to="/buyer/catalog/$sku" params={{ sku: item.sku }} aria-label={`View full details of ${item.name}`}>
-                    <Button size="icon" variant="outline" className="h-9 w-9" aria-label={`View full details of ${item.name}`}>
-                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                    </Button>
-                  </Link>
-                </div>
-              </Card>
+    const handleQuickAddToCart = (item: EnhancedStockItem) => {
+        if (!item.supplierNip) {
+            toast.error(t('buyer.catalog.errors.noSupplier'));
+            return;
+        }
+        const minimumQuantity = item.moq ?? 1;
+        const qty = quickQuantities[item.sku] || minimumQuantity;
+        if (qty < minimumQuantity) {
+            toast.error(
+                t('buyer.catalog.errors.moqBelow', {
+                    sku: item.sku,
+                    min: minimumQuantity,
+                    unit: item.unit,
+                })
             );
-          })}
-        </div>
-      ) : (
-        /* Table View */
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-x-auto shadow-2xs">
-          <table className="w-full text-left text-sm min-w-[750px]">
-            <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-medium">
-              <tr>
-                <th className="py-3 px-4">SKU / Item</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Supplier</th>
-                <th className="py-3 px-4">Warehouse</th>
-                <th className="py-3 px-4">Stock</th>
-                <th className="py-3 px-4">Base Price</th>
-                <th className="py-3 px-4">MOQ</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {filteredItems.map((item) => (
-                <tr key={item.sku} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                  <td className="py-3.5 px-4">
-                    <Link
-                      to="/buyer/catalog/$sku"
-                      params={{ sku: item.sku }}
-                      className="font-semibold text-slate-900 dark:text-slate-100 hover:text-emerald-600 transition-colors"
-                    >
-                      {item.name}
-                    </Link>
-                    <div className="font-mono text-xs text-slate-500">{item.sku}</div>
-                  </td>
-                  <td className="py-3.5 px-4 text-xs text-slate-600 dark:text-slate-400">{item.category}</td>
-                  <td className="py-3.5 px-4 text-xs font-medium text-slate-700 dark:text-slate-300">
-                    {item.supplierName}
-                  </td>
-                  <td className="py-3.5 px-4 text-xs text-slate-500">{item.warehouse}</td>
-                  <td className="py-3.5 px-4">
-                    <Badge variant="outline" className="text-xs tabular-nums font-semibold">
-                      {item.quantityAvailable}&nbsp;{item.unit}
-                    </Badge>
-                  </td>
-                  <td className="py-3.5 px-4 font-mono font-semibold tabular-nums text-slate-900 dark:text-slate-100">
-                    {item.unitPrice.toFixed(2)}&nbsp;PLN
-                  </td>
-                  <td className="py-3.5 px-4 text-xs tabular-nums text-slate-600 dark:text-slate-400">
-                    {item.moq}&nbsp;{item.unit}
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
+            return;
+        }
+        addItemToCart(
+            {
+                sku: item.sku,
+                name: item.name,
+                category: item.category,
+                unitPrice: item.unitPrice,
+                moq: minimumQuantity,
+                unit: item.unit,
+                vendorId: item.supplierNip || '',
+                vendorName: item.supplierName || '',
+                vendorNip: item.supplierNip || '',
+                weightKg: item.weightKg ?? 0,
+                volumeM3: item.volumeM3,
+            },
+            qty
+        );
+        toast.success(
+            t('buyer.catalog.actions.addedSuccess', { qty, unit: item.unit, name: item.name })
+        );
+    };
+
+    const handleClearFilters = () => {
+        updateFilters({ q: '', category: 'ALL', brand: 'ALL', manufacturer: 'ALL', stock: 'ALL' });
+    };
+
+    const activeFilterCount =
+        Number(category !== 'ALL') +
+        Number(brand !== 'ALL') +
+        Number(manufacturer !== 'ALL') +
+        Number(stock !== 'ALL');
+
+    if (inventoryQuery.isLoading) {
+        return (
+            <div className="space-y-3" aria-busy="true" role="status">
+                <h1 className="text-xl font-semibold">{t('common.loading')}</h1>
+                <div className="h-10 rounded-md bg-muted animate-pulse" />
+                <div className="h-64 rounded-md bg-muted animate-pulse" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-5 min-w-0">
+            {/* Page Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                        {t('buyer.pageTitle.catalog')}
+                    </h1>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                        {t('buyer.pageTitle.catalogSubtitle')}
+                    </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                        asChild
                         size="sm"
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 h-8 font-medium"
+                    >
+                        <Link
+                            to="/buyer/cart"
+                            aria-label={t('header.openCartAria', {
+                                count: cartLinesCount,
+                            })}
+                        >
+                            <ShoppingCart className="h-3.5 w-3.5" />
+                            <span>
+                                {t('header.cart')}
+                                {cartLinesCount > 0 ? ` · ${cartLinesCount}` : ''}
+                            </span>
+                        </Link>
+                    </Button>
+                </div>
+            </div>
+
+            {inventorySource === 'demo' && (
+                <p
+                    role="status"
+                    className="border-l-2 border-amber-500 pl-3 py-1 text-sm text-muted-foreground"
+                >
+                    {t('buyer.catalog.demoNotice')}
+                </p>
+            )}
+            {inventorySource === 'cached' && (
+                <p
+                    role="status"
+                    className="border-l-2 border-amber-500 pl-3 py-1 text-sm text-muted-foreground"
+                >
+                    {t('buyer.catalog.cachedNotice')}
+                </p>
+            )}
+
+            {/* Toolbar: search, filters, view toggle */}
+            <div className="flex flex-col gap-2.5 bg-card p-3 rounded-xl border border-border shadow-2xs sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <Button
                         variant="outline"
-                        className="text-xs gap-1"
-                        aria-label={`Add ${item.name} to cart`}
-                        onClick={() => handleQuickAddToCart(item)}
-                      >
-                        <ShoppingCart className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
-                        Add
-                      </Button>
-                      <Link to="/buyer/catalog/$sku" params={{ sku: item.sku }} aria-label={`View details of ${item.name}`}>
-                        <Button size="sm" variant="ghost" className="text-xs">
-                          Details <ArrowRight className="h-3 w-3 ml-1" aria-hidden="true" />
-                        </Button>
-                      </Link>
+                        size="sm"
+                        onClick={() => setShowCategories((v) => !v)}
+                        className="h-8 gap-1.5 text-xs border-border shrink-0"
+                        aria-expanded={showCategories}
+                    >
+                        <Filter className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">
+                            {showCategories
+                                ? t('buyer.catalog.categoriesHide')
+                                : t('buyer.catalog.categoriesToggle')}
+                        </span>
+                    </Button>
+
+                    <div className="relative flex-1 max-w-md min-w-[180px]">
+                        <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            aria-label={t('buyer.catalog.searchLabel')}
+                            placeholder={t('buyer.catalog.searchPlaceholder')}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-8 pr-7 bg-muted/30 text-xs h-8 border-border"
+                        />
+                        {searchTerm && (
+                            <button
+                                onClick={() => setSearchTerm('')}
+                                aria-label={t('buyer.catalog.clearSearch')}
+                                className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
+                            >
+                                <X className="h-3.5 w-3.5" />
+                            </button>
+                        )}
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                </div>
+
+                <div className="flex items-center gap-2 justify-between sm:justify-end shrink-0">
+                    <span className="text-xs text-muted-foreground font-medium">
+                        {t('buyer.catalog.found')}:{' '}
+                        <strong className="text-foreground font-mono tabular-nums">
+                            {filteredItems.length}
+                        </strong>
+                    </span>
+
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        aria-expanded={showMoreFilters}
+                        onClick={() => setShowMoreFilters((v) => !v)}
+                        className="h-8 gap-1.5 text-xs"
+                    >
+                        <SlidersHorizontal className="h-3.5 w-3.5" />
+                        <span>{t('buyer.catalog.moreFilters')}</span>
+                        {activeFilterCount > 0 && (
+                            <span className="rounded-full bg-primary px-1.5 text-primary-foreground">
+                                {activeFilterCount}
+                            </span>
+                        )}
+                    </Button>
+                    <div className="hidden min-[1101px]:flex items-center gap-1 border-l pl-2 border-border">
+                        <Button
+                            variant={effectiveViewMode === 'table' ? 'default' : 'ghost'}
+                            size="sm"
+                            className="h-8 px-2.5 gap-1 text-xs"
+                            onClick={() => setViewMode('table')}
+                            title={t('buyer.catalog.viewTableTitle')}
+                        >
+                            <List className="h-3.5 w-3.5" />
+                            <span className="hidden md:inline font-medium">
+                                {t('buyer.catalog.viewTable')}
+                            </span>
+                        </Button>
+                        <Button
+                            variant={effectiveViewMode === 'grid' ? 'default' : 'ghost'}
+                            size="sm"
+                            className="h-8 px-2.5 gap-1 text-xs"
+                            onClick={() => setViewMode('grid')}
+                            title={t('buyer.catalog.viewGridTitle')}
+                        >
+                            <LayoutGrid className="h-3.5 w-3.5" />
+                            <span className="hidden md:inline font-medium">
+                                {t('buyer.catalog.viewGrid')}
+                            </span>
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Brand & Manufacturer Dropdowns Filter */}
+            {showMoreFilters && (
+                <div className="rounded-lg border border-border p-3 space-y-3">
+                    <BrandAndManufacturerFilter
+                        brands={brands}
+                        manufacturers={manufacturers}
+                        selectedBrandId={brand}
+                        selectedManufacturerId={manufacturer}
+                        onSelectBrand={setSelectedBrandId}
+                        onSelectManufacturer={setSelectedManufacturerId}
+                        onClearAll={handleClearFilters}
+                        allowCreation={false}
+                    />
+                    <div
+                        className="flex flex-wrap gap-x-5 gap-y-2 text-sm"
+                        role="group"
+                        aria-label={t('buyer.catalog.filters.stockGroupLabel')}
+                    >
+                        {(
+                            [
+                                { id: 'ALL', label: t('buyer.catalog.filters.stockAll') },
+                                { id: 'IN_STOCK', label: t('buyer.catalog.filters.stockIn') },
+                                { id: 'LOW_STOCK', label: t('buyer.catalog.filters.stockLow') },
+                                { id: 'OUT_OF_STOCK', label: t('buyer.catalog.filters.stockOut') },
+                            ] as { id: StockFilter; label: string }[]
+                        ).map((status) => (
+                            <label key={status.id} className="inline-flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="stock-status"
+                                    checked={stock === status.id}
+                                    onChange={() => setSelectedStockStatus(status.id)}
+                                />
+                                {status.label}
+                            </label>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Main Layout: optional category sidebar + product content */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-5 items-start">
+                {showCategories && (
+                    <div className="lg:col-span-1 space-y-4">
+                        <CategoryHierarchyFilter
+                            categories={categories}
+                            selectedCategoryId={category}
+                            onSelectCategory={(id) => setSelectedCategoryId(id)}
+                            items={allCatalogItems}
+                            allowCreation={false}
+                        />
+                    </div>
+                )}
+
+                <div className={`${showCategories ? 'lg:col-span-3' : 'lg:col-span-4'} space-y-4 min-w-0`}>
+                    {/* Active Filter Chips */}
+                    {(category !== 'ALL' ||
+                        brand !== 'ALL' ||
+                        manufacturer !== 'ALL' ||
+                        stock !== 'ALL' ||
+                        searchTerm) && (
+                        <div className="flex flex-wrap items-center gap-2 text-xs">
+                            <span className="text-muted-foreground font-medium">
+                                {t('buyer.catalog.filters.activeFilters')}
+                            </span>
+                            {category !== 'ALL' && (
+                                <Badge variant="secondary" className="gap-1 border-border">
+                                    {t('buyer.catalog.filters.category')}:{' '}
+                                    {categories.find((c) => c.id === category)?.name || category}
+                                    <button
+                                        onClick={() => setSelectedCategoryId('ALL')}
+                                        aria-label={t('buyer.catalog.filters.removeCategory')}
+                                        className="hover:text-destructive ml-1"
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </button>
+                                </Badge>
+                            )}
+                            {brand !== 'ALL' && (
+                                <Badge variant="secondary" className="gap-1 border-border">
+                                    {t('buyer.catalog.filters.brand')}:{' '}
+                                    {brands.find((b) => b.id === brand)?.name || brand}
+                                    <button
+                                        onClick={() => setSelectedBrandId('ALL')}
+                                        aria-label={t('buyer.catalog.filters.removeBrand')}
+                                        className="hover:text-destructive ml-1"
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </button>
+                                </Badge>
+                            )}
+                            {manufacturer !== 'ALL' && (
+                                <Badge variant="secondary" className="gap-1 border-border">
+                                    {t('buyer.catalog.filters.manufacturer')}:{' '}
+                                    {manufacturers.find((m) => m.id === manufacturer)?.name || manufacturer}
+                                    <button
+                                        onClick={() => setSelectedManufacturerId('ALL')}
+                                        aria-label={t('buyer.catalog.filters.removeManufacturer')}
+                                        className="hover:text-destructive ml-1"
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </button>
+                                </Badge>
+                            )}
+                            {stock !== 'ALL' && (
+                                <Badge variant="secondary" className="gap-1 border-border">
+                                    {t('buyer.catalog.filters.stock')}:{' '}
+                                    {({
+                                        IN_STOCK: t('buyer.catalog.filters.stockIn'),
+                                        LOW_STOCK: t('buyer.catalog.filters.stockLow'),
+                                        OUT_OF_STOCK: t('buyer.catalog.filters.stockOut'),
+                                        ALL: t('buyer.catalog.filters.stockAll'),
+                                    } as Record<string, string>)[stock] || stock}
+                                    <button
+                                        onClick={() => setSelectedStockStatus('ALL')}
+                                        aria-label={t('buyer.catalog.filters.removeStock')}
+                                        className="hover:text-destructive ml-1"
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </button>
+                                </Badge>
+                            )}
+                            {searchTerm && (
+                                <Badge variant="secondary" className="gap-1 border-border">
+                                    {t('buyer.catalog.filters.search')}: "{searchTerm}"
+                                    <button
+                                        onClick={() => setSearchTerm('')}
+                                        aria-label={t('buyer.catalog.filters.clearSearch')}
+                                        className="hover:text-destructive ml-1"
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </button>
+                                </Badge>
+                            )}
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleClearFilters}
+                                className="h-6 px-1.5 text-xs text-muted-foreground hover:text-destructive"
+                            >
+                                {t('common.clearAll')}
+                            </Button>
+                        </div>
+                    )}
+
+                    {filteredItems.length === 0 ? (
+                        <div className="p-12 text-center bg-card rounded-xl border border-dashed border-border space-y-3">
+                            <Package className="h-10 w-10 mx-auto text-muted-foreground/60" />
+                            <h3 className="font-semibold text-foreground text-sm">
+                                {t('buyer.catalog.empty.title')}
+                            </h3>
+                            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                                {t('buyer.catalog.empty.description')}
+                            </p>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleClearFilters}
+                                className="text-xs h-8"
+                            >
+                                {t('buyer.catalog.empty.reset')}
+                            </Button>
+                        </div>
+                    ) : effectiveViewMode === 'table' ? (
+                        <CatalogTable
+                            items={filteredItems}
+                            quickQuantities={quickQuantities}
+                            setQuickQuantities={setQuickQuantities}
+                            onAdd={handleQuickAddToCart}
+                        />
+                    ) : (
+                        <CatalogGrid
+                            items={filteredItems}
+                            quickQuantities={quickQuantities}
+                            setQuickQuantities={setQuickQuantities}
+                            onAdd={handleQuickAddToCart}
+                        />
+                    )}
+                </div>
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
+}
+
+interface CatalogListProps {
+    items: EnhancedStockItem[];
+    quickQuantities: Record<string, number>;
+    setQuickQuantities: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+    onAdd: (item: EnhancedStockItem) => void;
+}
+
+function CatalogTable({ items, quickQuantities, setQuickQuantities, onAdd }: CatalogListProps) {
+    const { t } = useLocale();
+    return (
+        <div className="bg-card rounded-lg border border-border overflow-hidden">
+            <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm min-w-[760px]">
+                    <caption className="sr-only">{t('buyer.catalog.table.caption')}</caption>
+                    <thead className="bg-muted/40 text-muted-foreground font-semibold border-b border-border">
+                        <tr>
+                            <th className="p-3 w-40">{t('buyer.catalog.table.sku')}</th>
+                            <th className="p-3">{t('buyer.catalog.table.item')}</th>
+                            <th className="p-3">{t('buyer.catalog.table.brandMfr')}</th>
+                            <th className="p-3 text-right">{t('buyer.catalog.table.stock')}</th>
+                            <th className="p-3 text-right">{t('buyer.catalog.table.price')}</th>
+                            <th className="p-3 text-center w-20">{t('buyer.catalog.table.moq')}</th>
+                            <th className="p-3 text-center w-36">{t('buyer.catalog.table.qty')}</th>
+                            <th className="p-3 text-right w-28">
+                                {t('buyer.catalog.table.action')}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                        {items.map((item) => {
+                            const minimumQuantity = item.moq ?? 1;
+                            const currentQty = quickQuantities[item.sku] || minimumQuantity;
+                            return (
+                                <tr key={item.sku} className="hover:bg-muted/30 transition-colors">
+                                    <td className="p-3 font-mono">
+                                        <span className="font-bold text-foreground px-1.5 py-0.5 rounded bg-muted/60 border border-border inline-block">
+                                            {item.sku}
+                                        </span>
+                                        {item.leadTimeDays && (
+                                            <div className="text-[10px] text-muted-foreground mt-0.5">
+                                                {t('buyer.catalog.table.leadTime', {
+                                                    days: item.leadTimeDays,
+                                                })}
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="p-3">
+                                        <Link
+                                            to="/buyer/catalog/$sku"
+                                            params={{ sku: item.sku }}
+                                            search={(prev) => ({
+                                                q: prev.q ?? '',
+                                                category: prev.category ?? 'ALL',
+                                                brand: prev.brand ?? 'ALL',
+                                                manufacturer: prev.manufacturer ?? 'ALL',
+                                                stock: prev.stock ?? 'ALL',
+                                            })}
+                                            className="font-semibold text-foreground hover:text-primary transition-colors hover:underline block max-w-xs"
+                                        >
+                                            {item.name}
+                                        </Link>
+                                        <span className="text-[11px] text-muted-foreground mt-0.5 block truncate max-w-xs">
+                                            {item.category}
+                                            {item.subcategory ? ` › ${item.subcategory}` : ''}
+                                        </span>
+                                    </td>
+                                    <td className="p-3">
+                                        {item.brand && (
+                                            <div className="font-medium text-foreground">
+                                                {item.brand}
+                                            </div>
+                                        )}
+                                        {item.manufacturer && (
+                                            <div className="text-[11px] text-muted-foreground truncate max-w-[180px] mt-0.5">
+                                                {item.manufacturer}
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="p-3 text-right">
+                                        <div
+                                            className={
+                                                item.status === 'OUT_OF_STOCK'
+                                                    ? 'text-destructive'
+                                                    : item.status === 'LOW_STOCK'
+                                                        ? 'text-amber-700 dark:text-amber-400'
+                                                        : 'text-emerald-700 dark:text-emerald-400'
+                                            }
+                                        >
+                                            {item.status === 'OUT_OF_STOCK'
+                                                ? t('buyer.catalog.stock.out')
+                                                : item.status === 'LOW_STOCK'
+                                                    ? t('buyer.catalog.stock.low')
+                                                    : t('buyer.catalog.stock.in')}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground tabular-nums">
+                                            {item.quantityAvailable.toLocaleString('pl-PL')} {item.unit}
+                                        </div>
+                                    </td>
+                                    <td className="p-3 text-right">
+                                        <div className="font-bold text-foreground font-mono tabular-nums">
+                                            {priceFormatter.format(item.unitPrice)} PLN
+                                        </div>
+                                    </td>
+                                    <td className="p-3 text-center">
+                                        <span className="font-mono tabular-nums text-sm">
+                                            {item.moq ?? '—'}
+                                            {item.moq && (
+                                                <span className="text-xs text-muted-foreground">
+                                                    {' '}
+                                                    {item.unit}
+                                                </span>
+                                            )}
+                                        </span>
+                                    </td>
+                                    <td className="p-3 text-center">
+                                        <QuantityInput
+                                            value={currentQty}
+                                            minimum={minimumQuantity}
+                                            label={t('buyer.catalog.table.qtyLabel', {
+                                                name: item.name,
+                                                min: minimumQuantity,
+                                                unit: item.unit,
+                                            })}
+                                            onCommit={(value) =>
+                                                setQuickQuantities((prev) => ({
+                                                    ...prev,
+                                                    [item.sku]: value,
+                                                }))
+                                            }
+                                            className="h-8 w-20 mx-auto text-xs text-center font-mono tabular-nums bg-background"
+                                        />
+                                    </td>
+                                    <td className="p-3 text-right">
+                                        <Button
+                                            size="sm"
+                                            disabled={!item.supplierNip}
+                                            title={
+                                                !item.supplierNip
+                                                    ? t('buyer.catalog.actions.cannotAddTitle')
+                                                    : undefined
+                                            }
+                                            aria-label={
+                                                item.supplierNip
+                                                    ? t('buyer.catalog.actions.addToCartAria', {
+                                                          name: item.name,
+                                                      })
+                                                    : t('buyer.catalog.actions.cannotAdd', {
+                                                          name: item.name,
+                                                      })
+                                            }
+                                            onClick={() => onAdd(item)}
+                                            className="h-8 text-xs bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 font-medium whitespace-nowrap"
+                                        >
+                                            <ShoppingCart className="h-3.5 w-3.5" />
+                                            {t('buyer.catalog.actions.addToCart')}
+                                        </Button>
+                                        {!item.supplierNip && (
+                                            <span className="block mt-1 text-[10px] text-muted-foreground">
+                                                {t('buyer.catalog.actions.noSupplierNote')}
+                                            </span>
+                                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}
+
+function CatalogGrid({ items, quickQuantities, setQuickQuantities, onAdd }: CatalogListProps) {
+    const { t } = useLocale();
+    return (
+        <div className="grid grid-cols-1 min-[900px]:grid-cols-2 xl:grid-cols-3 gap-4">
+            {items.map((item) => {
+                const minimumQuantity = item.moq ?? 1;
+                const currentQty = quickQuantities[item.sku] || minimumQuantity;
+                return (
+                    <Card
+                        key={item.sku}
+                        className="overflow-hidden border border-border bg-card hover:shadow-md transition-all flex flex-col justify-between"
+                    >
+                        <div>
+                            <div className="p-3 border-b border-border bg-muted/20 flex items-center justify-between gap-2">
+                                <span className="font-mono text-xs font-semibold text-muted-foreground">
+                                    {item.sku}
+                                </span>
+                                <span
+                                    className={`text-xs font-mono tabular-nums ${
+                                        item.status === 'IN_STOCK'
+                                            ? 'text-emerald-700 dark:text-emerald-400'
+                                            : item.status === 'LOW_STOCK'
+                                                ? 'text-amber-700 dark:text-amber-400'
+                                                : 'text-destructive'
+                                    }`}
+                                >
+                                    {item.quantityAvailable.toLocaleString()} {item.unit}
+                                </span>
+                            </div>
+
+                            <CardContent className="p-3.5 space-y-2.5">
+                                <div>
+                                    <div className="text-[11px] text-muted-foreground font-medium truncate">
+                                        {item.category}
+                                        {item.subcategory ? ` › ${item.subcategory}` : ''}
+                                    </div>
+                                    <Link
+                                        to="/buyer/catalog/$sku"
+                                        params={{ sku: item.sku }}
+                                        search={(prev) => ({
+                                            q: prev.q ?? '',
+                                            category: prev.category ?? 'ALL',
+                                            brand: prev.brand ?? 'ALL',
+                                            manufacturer: prev.manufacturer ?? 'ALL',
+                                            stock: prev.stock ?? 'ALL',
+                                        })}
+                                        className="font-bold text-sm text-foreground hover:text-primary transition-colors line-clamp-2 mt-0.5 leading-snug"
+                                    >
+                                        {item.name}
+                                    </Link>
+                                </div>
+
+                                {item.manufacturer && (
+                                    <div className="text-[11px] text-muted-foreground truncate">
+                                        {item.manufacturer}
+                                    </div>
+                                )}
+
+                                <div className="pt-2 border-t border-border flex items-baseline justify-between">
+                                    <div>
+                                        <span className="text-lg font-extrabold text-foreground font-mono tabular-nums">
+                                            {priceFormatter.format(item.unitPrice)} PLN
+                                        </span>
+                                        <span className="text-xs text-muted-foreground ml-1">
+                                            / {item.unit}
+                                        </span>
+                                    </div>
+                                    <span className="text-[11px] font-mono tabular-nums text-muted-foreground">
+                                        MOQ: {item.moq ? `${item.moq} ${item.unit}` : '—'}
+                                    </span>
+                                </div>
+                            </CardContent>
+                        </div>
+
+                        <div className="p-3.5 pt-0 space-y-2">
+                            <div className="flex items-center gap-2">
+                                <QuantityInput
+                                    value={currentQty}
+                                    minimum={minimumQuantity}
+                                    label={t('buyer.catalog.table.qtyLabel', {
+                                        name: item.name,
+                                        min: minimumQuantity,
+                                        unit: item.unit,
+                                    })}
+                                    onCommit={(value) =>
+                                        setQuickQuantities((prev) => ({
+                                            ...prev,
+                                            [item.sku]: value,
+                                        }))
+                                    }
+                                    className="h-8 text-xs text-center w-24 font-mono tabular-nums bg-background"
+                                />
+                                <Button
+                                    size="sm"
+                                    disabled={!item.supplierNip}
+                                    title={
+                                        !item.supplierNip
+                                            ? t('buyer.catalog.actions.cannotAddTitle')
+                                            : undefined
+                                    }
+                                    aria-label={
+                                        item.supplierNip
+                                            ? t('buyer.catalog.actions.addToCartAria', {
+                                                  name: item.name,
+                                              })
+                                            : t('buyer.catalog.actions.cannotAdd', {
+                                                  name: item.name,
+                                              })
+                                    }
+                                    onClick={() => onAdd(item)}
+                                    className="h-8 flex-1 bg-primary hover:bg-primary/90 text-primary-foreground text-xs gap-1.5 font-medium"
+                                >
+                                    <ShoppingCart className="h-3.5 w-3.5" />
+                                    {t('buyer.catalog.actions.addToCart')}
+                                </Button>
+                            </div>
+                            {!item.supplierNip && (
+                                <p className="text-[10px] text-muted-foreground">
+                                    {t('buyer.catalog.actions.noSupplierNote')}
+                                </p>
+                            )}
+                            <Link
+                                to="/buyer/catalog/$sku"
+                                params={{ sku: item.sku }}
+                                search={(prev) => ({
+                                    q: prev.q ?? '',
+                                    category: prev.category ?? 'ALL',
+                                    brand: prev.brand ?? 'ALL',
+                                    manufacturer: prev.manufacturer ?? 'ALL',
+                                    stock: prev.stock ?? 'ALL',
+                                })}
+                                className="text-xs text-center block text-muted-foreground hover:text-foreground font-medium py-0.5 transition-colors"
+                            >
+                                {t('buyer.catalog.card.specLink')}
+                            </Link>
+                        </div>
+                    </Card>
+                );
+            })}
+        </div>
+    );
 }

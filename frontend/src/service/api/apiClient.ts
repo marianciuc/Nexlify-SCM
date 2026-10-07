@@ -36,7 +36,7 @@ const authAndEnvMiddleware: Middleware = {
 };
 
 const client = createClient<paths>({
-    baseUrl: typeof window !== 'undefined' ? useEnvironmentStore.getState().getBaseUrl() : 'http://localhost:8080',
+    baseUrl: typeof window !== 'undefined' ? useEnvironmentStore.getState().getBaseUrl() : 'http://localhost:8090',
 });
 
 client.use(authAndEnvMiddleware);

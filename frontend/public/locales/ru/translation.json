@@ -82,7 +82,38 @@
     "edit": "Редактировать",
     "add": "Добавить",
     "search": "Поиск",
-    "filter": "Фильтр"
+    "filter": "Фильтр",
+    "filters": "Фильтры",
+    "clear": "Очистить",
+    "clearAll": "Очистить все",
+    "apply": "Применить",
+    "close": "Закрыть",
+    "back": "Назад",
+    "next": "Далее",
+    "previous": "Назад",
+    "yes": "Да",
+    "no": "Нет",
+    "all": "Все",
+    "more": "Ещё",
+    "showMore": "Показать больше",
+    "showLess": "Показать меньше",
+    "actions": "Действия",
+    "details": "Детали",
+    "open": "Открыть",
+    "expand": "Развернуть",
+    "collapse": "Свернуть",
+    "sort": "Сортировка",
+    "select": "Выбрать",
+    "name": "Название",
+    "date": "Дата",
+    "status": "Статус",
+    "quantity": "Количество",
+    "price": "Цена",
+    "total": "Итого",
+    "saveDraft": "Сохранить черновик",
+    "days": "дн.",
+    "tons": "т",
+    "administrator": "администратор"
   },
   "forms": {
     "validation": {
@@ -152,7 +183,7 @@
     },
     "success": {
       "loginSuccessful": "Успешный вход! Добро пожаловать обратно",
-      "registrationSuccessful": "Успешная регистрация! Добро пожаловать в LogisticCommerce",
+      "registrationSuccessful": "Успешная регистрация! Добро пожаловать в Nexlify SCM",
       "logoutSuccessful": "Успешный выход. До встречи!",
       "sessionRefreshed": "Сессия успешно обновлена"
     },
@@ -180,7 +211,7 @@
         "insuranceCertificates": "Страховые сертификаты"
       },
       "dragDropFiles": "Перетащите файлы сюда или нажмите для выбора",
-      "maxFileSize": "Максимальный размер файла: 10МБ",
+      "maxFileSize": "Максимальный размер: 10 МБ",
       "allowedFormats": "Разрешенные форматы: PDF, JPG, PNG",
       "estimatedTime": "Ориентировочное время верификации: 2-3 рабочих дня",
       "contactSupport": "Связаться с поддержкой"
@@ -224,7 +255,7 @@
       "distributionCenter": "Распределительный центр",
       "regionalWarehouse": "Региональный склад",
       "localDepot": "Местное депо",
-      "specializedStorage": "Специализированное хранение",
+      "specializedStorage": "Специальное хранение",
       "crossDockFacility": "Кросс-док терминал"
     },
     "warehouseName": "Название склада",
@@ -235,5 +266,877 @@
     "capacityLimits": "Лимиты мощности",
     "assignManager": "Назначить менеджера",
     "operationalStaff": "Операционный персонал"
+  },
+  "workspace": {
+    "switcher": {
+      "label": "Сменить рабочее пространство",
+      "current": "Текущий: {{title}}",
+      "clickToChange": "Нажмите для смены вида",
+      "quickLinks": "Быстрый переход"
+    },
+    "buyer": {
+      "title": "Закупки",
+      "shortTitle": "Закупки",
+      "subtitle": "Каталог, корзина, заказы, счета и тендеры",
+      "role": "Покупатель"
+    },
+    "supplier": {
+      "title": "Поставщик",
+      "shortTitle": "Поставщик",
+      "subtitle": "Склад, комплектация, цены и тендерная биржа",
+      "role": "Поставщик"
+    },
+    "logistics": {
+      "title": "Логистика",
+      "shortTitle": "Логистика",
+      "subtitle": "Карта, маршруты, автопарк и накладные",
+      "role": "Диспетчер"
+    },
+    "admin": {
+      "title": "Администрирование",
+      "shortTitle": "Админ",
+      "subtitle": "Аналитика, верификация и аудит",
+      "role": "Администратор"
+    }
+  },
+  "nav": {
+    "sections": "Разделы рабочего пространства",
+    "buyer": {
+      "catalog": "Каталог",
+      "cart": "Корзина",
+      "orders": "Заказы",
+      "invoices": "Счета-фактуры",
+      "rfq": "Запросы цен (RFQ)",
+      "contracts": "Контракты и SLA",
+      "claims": "Возвраты и рекламации",
+      "settings": "Настройки"
+    },
+    "supplier": {
+      "dashboard": "Сводка",
+      "products": "Товары и остатки",
+      "warehouseMap": "Карта склада",
+      "transfers": "Перемещения",
+      "abcXyz": "Матрица ABC/XYZ",
+      "fulfillment": "Сборка заказов",
+      "pricing": "Цены и контракты",
+      "rfq": "Открытые RFQ",
+      "scorecard": "Качество",
+      "settings": "Настройки",
+      "skuDetail": "Карточка SKU"
+    },
+    "logistics": {
+      "map": "Карта транспорта",
+      "routes": "Маршруты",
+      "planner": "Планирование",
+      "fleet": "Автопарк",
+      "drivers": "Водители",
+      "ecmr": "Электронные накладные",
+      "settings": "Настройки",
+      "routeDetail": "Маршрут"
+    },
+    "admin": {
+      "analytics": "Аналитика",
+      "tenants": "Организации",
+      "kyc": "Верификация (KYC)",
+      "audit": "Системный аудит",
+      "settings": "Настройки"
+    }
+  },
+  "header": {
+    "skipToContent": "Перейти к основному содержимому",
+    "toggleSidebar": "Переключить боковое меню",
+    "cart": "Корзина",
+    "cartWithCount": "Корзина · {{count}}",
+    "cartAria": "Корзина покупок: {{count}} ед.",
+    "openCartAria": "Открыть корзину, {{count}} позиций",
+    "theme": "Тема оформления",
+    "themeLight": "Светлая",
+    "themeDark": "Тёмная",
+    "themeSystem": "Системная",
+    "language": "Выбор языка интерфейса",
+    "languageCurrent": "Текущий язык: {{name}}",
+    "notifications": "Уведомления",
+    "unreadCount": "{{count}} непрочтённых",
+    "noNotifications": "Нет новых уведомлений",
+    "markAllRead": "Отметить все как прочитанные",
+    "clearAll": "Очистить",
+    "connected": "Подключено",
+    "disconnected": "Нет соединения",
+    "userMenu": "Профиль пользователя: {{name}}",
+    "settingsAndCompany": "Настройки профиля и компании",
+    "activeOrg": "Активная организация",
+    "logout": "Выйти из системы",
+    "login": "Вход в систему"
+  },
+  "buyer": {
+    "home": {
+      "chooseWorkspace": "Выберите рабочее пространство",
+      "platformName": "Платформа управления цепочками поставок",
+      "platformDesc": "Откройте область, соответствующую вашей роли. Доступные функции зависят от прав аккаунта.",
+      "footerNote": "После входа вы увидите только области, доступные для вашего аккаунта."
+    },
+    "pageTitle": {
+      "catalog": "Каталог товаров",
+      "catalogSubtitle": "Поиск позиций и добавление нужного количества в заказ",
+      "cart": "Корзина",
+      "cartSubtitle": "Проверьте количество, минимальную партию и стоимость перед оформлением",
+      "orders": "Заказы",
+      "ordersSubtitle": "Жизненный цикл заявок, резервирование остатков и отслеживание отгрузок для {{tenant}}",
+      "invoices": "Счета-фактуры",
+      "invoicesSubtitle": "Суммы и статусы счетов из биллинга",
+      "rfq": "Запросы цен (RFQ)",
+      "rfqSubtitle": "Тендеры на закупку и управление предложениями",
+      "contracts": "Контракты и SLA",
+      "contractsSubtitle": "Долгосрочные обязательства по объёмам закупок, фиксированные шкалы скидок и автоматический контроль штрафов SLA",
+      "claims": "Претензии и рекламации (RMA)",
+      "claimsSubtitle": "Официальные рекламации по актам расхождений, возврат брака и корректировочные фактуры (Faktura Korygująca)",
+      "settings": "Настройки закупщика",
+      "settingsSubtitle": "Параметры вашего аккаунта покупателя",
+      "checkout": "Оформление заказа",
+      "productDetail": "Карточка товара"
+    },
+    "catalog": {
+      "demoNotice": "Демонстрационные данные: остатки и цены приведены для примера.",
+      "cachedNotice": "Показаны сохранённые данные каталога. Остатки могут быть неактуальны.",
+      "searchPlaceholder": "SKU, наименование, бренд, производитель или категория",
+      "searchLabel": "Поиск товаров",
+      "clearSearch": "Очистить поиск",
+      "categoriesToggle": "Категории",
+      "categoriesHide": "Скрыть категории",
+      "moreFilters": "Фильтры",
+      "viewTable": "Таблица",
+      "viewTableTitle": "Табличный вид (B2B сравнение)",
+      "viewGrid": "Сетка",
+      "viewGridTitle": "Карточки товаров",
+      "found": "Найдено",
+      "items": "товаров",
+      "empty": {
+        "title": "Товары не найдены",
+        "description": "По вашему запросу нет совпадений. Попробуйте изменить формулировку поиска или сбросить активные фильтры.",
+        "reset": "Сбросить фильтры"
+      },
+      "category": {
+        "title": "Категории продукции",
+        "searchPlaceholder": "Поиск категории...",
+        "all": "Все категории"
+      },
+      "filters": {
+        "activeFilters": "Активные фильтры:",
+        "category": "Категория",
+        "brand": "Бренд",
+        "manufacturer": "Завод",
+        "stock": "Наличие",
+        "search": "Поиск",
+        "removeCategory": "Удалить фильтр категории",
+        "removeBrand": "Удалить фильтр бренда",
+        "removeManufacturer": "Удалить фильтр завода",
+        "removeStock": "Удалить фильтр наличия",
+        "clearSearch": "Очистить поисковый запрос",
+        "stockAll": "Любое наличие",
+        "stockIn": "В наличии",
+        "stockLow": "Мало на складе",
+        "stockOut": "Нет в наличии",
+        "stockGroupLabel": "Наличие товара"
+      },
+      "table": {
+        "caption": "Каталог товаров и условий закупки",
+        "sku": "SKU / Артикул",
+        "item": "Наименование и категория",
+        "brandMfr": "Бренд / Изготовитель",
+        "stock": "Наличие",
+        "price": "Цена нетто",
+        "moq": "MOQ",
+        "qty": "Партия",
+        "action": "Действие",
+        "leadTime": "Срок: {{days}} дн.",
+        "qtyLabel": "Количество {{name}}, минимум {{min}} {{unit}}"
+      },
+      "card": {
+        "specLink": "Спецификация и скидки от объёма →"
+      },
+      "stock": {
+        "in": "В наличии",
+        "low": "Мало",
+        "out": "Нет в наличии"
+      },
+      "errors": {
+        "noSupplier": "Для этой позиции поставщик пока не указан. Добавление в заказ недоступно.",
+        "moqBelow": "Минимальное количество для {{sku}}: {{min}} {{unit}}"
+      },
+      "actions": {
+        "addToCart": "Добавить",
+        "addToCartAria": "Добавить {{name}} в корзину",
+        "cannotAdd": "Нельзя добавить {{name}}: не указан поставщик",
+        "cannotAddTitle": "У товара не указан поставщик, добавить его в заказ нельзя",
+        "noSupplierNote": "Поставщик не указан",
+        "addedSuccess": "Добавлено в корзину: {{qty}} {{unit}} ({{name}})"
+      }
+    },
+    "cart": {
+      "title": "Оптовая корзина закупок",
+      "subtitle": "Проверьте количество, минимальную партию и стоимость перед оформлением.",
+      "clearAll": "Очистить всю корзину",
+      "empty": {
+        "title": "Ваша оптовая корзина пуста",
+        "description": "Выберите необходимые позиции в каталоге, проверьте скидки от объёма и добавьте товары для оформления закупки.",
+        "goToCatalog": "Перейти в B2B Каталог"
+      },
+      "vendor": {
+        "title": "Поставщик",
+        "remove": "Удалить поставку от {{name}}",
+        "removeVendorConfirmTitle": "Удалить поставку целиком?",
+        "removeVendorConfirmDesc": "Вы уверены, что хотите удалить все позиции поставщика {{name}} из текущего заказа?",
+        "removeVendorConfirmAction": "Удалить поставку",
+        "removeVendorConfirmCancel": "Отмена",
+        "removedSuccess": "Пакет позиций от поставщика \"{{name}}\" удалён"
+      },
+      "item": {
+        "priceLabel": "Цена",
+        "batchWeight": "Вес партии",
+        "moq": "MOQ",
+        "removeAria": "Удалить {{name}} из корзины",
+        "removeTitle": "Удалить позицию",
+        "decreaseAria": "Уменьшить количество {{name}}",
+        "decreaseTitle": "Уменьшить на 1",
+        "decreaseMinTitle": "Минимум: {{min}} {{unit}}",
+        "increaseAria": "Увеличить количество {{name}}",
+        "increaseTitle": "Увеличить на 1",
+        "qtyLabel": "Количество {{name}}, минимум {{min}} {{unit}}",
+        "subtotal": "Сумма нетто"
+      },
+      "vendorFooter": {
+        "shipmentWeight": "Вес отгрузки",
+        "net": "Нетто",
+        "vat": "НДС (23%)",
+        "gross": "Брутто"
+      },
+      "summary": {
+        "title": "Сводка оптового заказа",
+        "lines": "Всего позиций:",
+        "linesValue": "{{count}} строк",
+        "totalUnits": "Общий объём:",
+        "units": "{{count}} ед.",
+        "unitsShort": "ед.",
+        "cargoWeight": "Вес груза:",
+        "weightValue": "{{tons}} т ({{kg}} кг)",
+        "shipments": "Поставок в наряде:",
+        "shipmentsValue": "{{count}} отдельных заказа",
+        "net": "Сумма нетто:",
+        "vat": "НДС (23% PL):",
+        "total": "Итого к оплате:",
+        "credit": "Торговый кредит Net-30 доступен при подтверждении заказа для верифицированных организаций.",
+        "checkout": "Перейти к оформлению",
+        "backToCatalog": "Вернуться в каталог товаров"
+      },
+      "confirmClear": {
+        "title": "Очистить всю оптовую корзину?",
+        "description": "Все позиции от всех поставщиков будут удалены из вашего текущего наряда. Это действие нельзя отменить.",
+        "confirm": "Очистить корзину",
+        "cancel": "Отмена",
+        "success": "Оптовая корзина успешно очищена"
+      }
+    },
+    "orders": {
+      "title": "Заказы",
+      "subtitle": "Жизненный цикл заявок, резервирование остатков и отслеживание отгрузок для {{tenant}}",
+      "createOrder": "Создать наряд (PO)",
+      "filters": {
+        "all": "Все заказы",
+        "submitted": "Поданы",
+        "reserved": "Резерв склада",
+        "paid": "Оплачены",
+        "shipped": "В пути",
+        "completed": "Доставлены"
+      },
+      "status": {
+        "DRAFT": "Черновик",
+        "SUBMITTED": "Подан",
+        "RESERVED": "Резерв",
+        "AWAITING_PAYMENT": "Ожидает оплаты",
+        "PAID": "Оплачен",
+        "IN_PROCESSING": "В обработке",
+        "SHIPPED": "Отгружен",
+        "DELIVERED": "Доставлен",
+        "COMPLETED": "Завершён",
+        "CANCELLED_OUT_OF_STOCK": "Отменён (нет остатков)",
+        "PAYMENT_FAILED": "Ошибка оплаты",
+        "DISPUTED": "Спор",
+        "CANCELLED": "Отменён"
+      },
+      "table": {
+        "number": "Номер",
+        "customer": "Заказчик",
+        "destination": "Пункт доставки",
+        "amount": "Сумма брутто",
+        "status": "Статус",
+        "actions": "Действия",
+        "advance": "Далее",
+        "advanceTitle": "Продвинуть статус",
+        "details": "Детали"
+      },
+      "create": {
+        "title": "Создать заказ",
+        "subtitle": "Укажите адрес доставки, заказчика и позиции заявки",
+        "customerLabel": "Заказчик / Юрлицо",
+        "customerPlaceholder": "Silesia Distribution Sp. z o.o.",
+        "destinationLabel": "Пункт доставки",
+        "destinationPlaceholder": "Логистический центр (Ramp 4)",
+        "itemsTitle": "Позиции заказа ({{count}})",
+        "addItem": "Добавить позицию",
+        "itemName": "Наименование",
+        "itemSku": "Артикул",
+        "qty": "Количество",
+        "unitPrice": "Цена за ед.",
+        "lineTotal": "Сумма",
+        "removeItem": "Удалить позицию",
+        "totalLabel": "Расчётная сумма брутто:",
+        "cancel": "Отмена",
+        "submit": "Создать заказ ({{count}} поз.)",
+        "submitShort": "Создать заказ",
+        "errors": {
+          "skuRequired": "Артикул обязателен",
+          "nameRequired": "Наименование обязательно",
+          "qtyMin": "Минимум 1",
+          "priceMin": "Цена должна быть больше 0",
+          "customerRequired": "Укажите заказчика",
+          "destinationRequired": "Укажите пункт доставки",
+          "minOneItem": "Нужна хотя бы одна позиция"
+        }
+      }
+    },
+    "invoices": {
+      "netAmount": "Сумма нетто",
+      "netHint": "Без учёта НДС",
+      "vatAmount": "Выделенный НДС 23% (MPP)",
+      "vatHint": "По данным выставленных счетов",
+      "grossDebt": "Общая задолженность (Брутто)",
+      "grossHint": "Итоговая сумма к расчёту",
+      "issuedInvoices": "Выставленные счета (Faktury VAT)",
+      "empty": "Счетов пока нет",
+      "paid": "Оплачен",
+      "unpaid": "К оплате",
+      "overdue": "Просрочен",
+      "unknown": "Неизвестно",
+      "table": {
+        "number": "Номер фактуры",
+        "buyer": "Покупатель и NIP",
+        "net": "Нетто",
+        "vat": "НДС (23%)",
+        "gross": "Брутто",
+        "dueDate": "Срок оплаты",
+        "status": "Статус"
+      }
+    },
+    "productDetail": {
+      "backToCatalog": "Назад в каталог",
+      "loading": "Загружаем товар…",
+      "error": "Не удалось загрузить товар. Попробуйте обновить страницу.",
+      "notFound": "Товар с артикулом {{sku}} не найден в каталоге.",
+      "category": "Категория",
+      "brand": "Бренд",
+      "manufacturer": "Изготовитель",
+      "dimensions": "Размеры",
+      "unitWeight": "Вес единицы",
+      "warehouse": "Склад",
+      "available": "Доступно",
+      "moq": "Минимальная партия (MOQ)",
+      "supplier": "Поставщик",
+      "purchase": "Закупка",
+      "perUnit": "за {{unit}}",
+      "qtyLabel": "Количество",
+      "qtyAriaLabel": "Количество {{name}}, минимум {{min}} {{unit}}",
+      "moqHint": "Минимальный заказ: {{min}} {{unit}}",
+      "addToCart": "Добавить в корзину",
+      "noSupplier": "Поставщик не указан — позицию нельзя включить в заказ.",
+      "unavailable": "Позиция временно недоступна.",
+      "moqError": "Минимальное количество: {{min}} {{unit}}",
+      "addedSuccess": "Добавлено в корзину: {{qty}} {{unit}}"
+    },
+    "contracts": {
+      "demoNotice": "Демонстрационные данные соглашений. Действия по созданию и скачиванию договоров пока недоступны.",
+      "print": "Печать",
+      "volumeProgress": "Прогресс исполнения объёмных обязательств (цель: {{target}} {{unit}})",
+      "units": "шт.",
+      "discount": "Согласованная скидка",
+      "discountOf": "от прайса",
+      "slaLeadTime": "Гарантия SLA (lead time)",
+      "leadTimeMax": "До {{days}} раб. дней",
+      "slaPenalty": "Неустойка SLA",
+      "penaltyPerDay": "{{percent}}% авто-кредит/день задержки",
+      "validity": "Срок действия",
+      "status": {
+        "active": "Активен",
+        "pendingRenewal": "Требует продления",
+        "completed": "Завершён"
+      }
+    },
+    "claims": {
+      "reportCta": "Заявить расхождение (RMA)",
+      "modalTitle": "Оформление акта рекламации (RMA)",
+      "modalDesc": "Подача официального акта о расхождении по качеству или количеству. Уведомление будет направлено поставщику с переводом заказа в арбитраж.",
+      "settlementUnderReview": "На рассмотрении (ожидание Faktura Koryguująca)",
+      "submitSuccess": "Акт рекламации подан",
+      "submit": "Подать рекламацию (RMA)",
+      "reasons": {
+        "DAMAGED_CARGO": "Повреждение груза / бой упаковки при разгрузке",
+        "MISSING_QUANTITY": "Недостача / нехватка мест по накладной WZ",
+        "QUALITY_DEFECT": "Производственный брак / несоответствие спецификации",
+        "WRONG_ITEM": "Пересортица / несоответствие артикула (SKU)"
+      },
+      "form": {
+        "orderLabel": "Заказ на закупку (PO)",
+        "reasonLabel": "Категория расхождения",
+        "amountLabel": "Требуемая компенсация (PLN)",
+        "notesLabel": "Детальное описание и доказательства",
+        "notesPlaceholder": "Опишите повреждения упаковки, сорванные пломбы, нехватку паллет или фотофиксацию при разгрузке..."
+      },
+      "table": {
+        "claimNumber": "Акт RMA №",
+        "orderNumber": "Заказ PO",
+        "supplier": "Поставщик",
+        "reason": "Суть расхождения",
+        "amount": "Сумма компенсации",
+        "date": "Дата акта",
+        "status": "Статус",
+        "settlement": "Решение"
+      },
+      "status": {
+        "approved": "Кредит-нота утверждена",
+        "underReview": "На рассмотрении"
+      }
+    },
+    "requests": {
+      "createCta": "Создать тендер RFQ",
+      "createCtaFirst": "Создать первый RFQ",
+      "mockNotice": "Демонстрационные данные. Включите рабочий режим для просмотра данных организации.",
+      "errorTitle": "Не удалось загрузить тендеры",
+      "errorDesc": "Проверьте подключение и повторите запрос.",
+      "retry": "Повторить",
+      "loading": "Загружаем тендеры…",
+      "filterAll": "Все тендеры",
+      "evaluateBids": "Оценить предложения ({{count}})",
+      "targetBudget": "Целевой бюджет",
+      "itemsCount": "Требуемый объём",
+      "itemsCountValue": "{{count}} позиций",
+      "deadline": "Срок поставки",
+      "deadlineNotSet": "Срок не указан",
+      "bidsReceived": "предложений получено",
+      "kpi": {
+        "open": "Открытые тендеры",
+        "openHint": "Ожидают предложений поставщиков",
+        "review": "На рассмотрении / Есть оферты",
+        "reviewHint": "Готовы к сравнительному анализу",
+        "awarded": "Успешно акцептованы",
+        "awardedHint": "Конвертированы в рабочие заказы PO"
+      },
+      "empty": {
+        "none": "Тендеров пока нет",
+        "filtered": "Нет тендеров с выбранным статусом",
+        "desc": "Создайте запрос котировок, чтобы пригласить поставщиков к участию."
+      },
+      "status": {
+        "DRAFT": "Черновик",
+        "OPEN": "Открыт",
+        "EVALUATION": "Есть предложения",
+        "AWARDED": "Присуждён",
+        "CLOSED": "Закрыт"
+      },
+      "bidStatus": {
+        "PENDING": "Ожидает решения",
+        "ACCEPTED": "Принято",
+        "REJECTED": "Отклонено"
+      },
+      "detail": {
+        "crumb": "Анализ тендера",
+        "backToList": "Все RFQ",
+        "supplierFallback": "Поставщик",
+        "notFound": "Тендер не найден",
+        "summaryHeading": "Параметры запроса",
+        "budget": "Бюджет",
+        "deliveryAddress": "Адрес доставки",
+        "deadline": "Срок подачи",
+        "notSpecified": "Не указан",
+        "bidsCount": "{{count}} предложений",
+        "itemsHeading": "Запрошенные позиции ({{count}})",
+        "noSpec": "В запросе нет спецификации.",
+        "itemCol": "Позиция",
+        "qtyCol": "Количество",
+        "substitutesCol": "Эквиваленты",
+        "substitutesAllowed": "Допускаются",
+        "substitutesNotAllowed": "Не допускаются",
+        "bidsHeading": "Предложения ({{count}})",
+        "noBidsYet": "Поставщики ещё не прислали предложения.",
+        "supplierCol": "Поставщик",
+        "amountCol": "Сумма",
+        "leadTimeCol": "Поставка",
+        "leadTimeDays": "{{days}} дн.",
+        "paymentTermsCol": "Условия оплаты",
+        "statusCol": "Статус",
+        "award": "Выбрать",
+        "awarded": "Выбрано",
+        "pricesByItem": "Цены по позициям",
+        "alternative": "эквивалент",
+        "itemFallback": "Позиция",
+        "noLineBreakdown": "Поставщик не передал разбивку по позициям.",
+        "noCategory": "Без категории",
+        "awardConfirmTitle": "Выбрать предложение?",
+        "awardConfirmDesc": "Тендер будет отмечен как присуждённый поставщику {{supplier}} на сумму {{amount}} {{currency}}. Заказ оформляется отдельно.",
+        "awardConfirm": "Подтвердить выбор",
+        "awardError": "Не удалось выбрать предложение."
+      }
+    }
+  },
+  "logistics": {
+    "routes": {
+      "title": "Маршруты доставки",
+      "subtitle": "Транспортные коридоры: расстояние, время и CO₂ по рейсам",
+      "openPlanner": "Планировщик маршрутов",
+      "openRoute": "Открыть маршрут",
+      "col": {
+        "code": "Код",
+        "corridor": "Коридор",
+        "vehicleDriver": "Транспорт и водитель",
+        "distanceTime": "Расстояние / время",
+        "stops": "Точек",
+        "co2": "CO₂"
+      },
+      "status": {
+        "inTransit": "В пути",
+        "planned": "Запланирован",
+        "completed": "Завершён"
+      }
+    },
+    "routeDetail": {
+      "backToList": "К списку маршрутов",
+      "vehicle": "Транспорт",
+      "driver": "Водитель",
+      "distance": "Расстояние",
+      "duration": "Расчётное время",
+      "stops": "Остановки",
+      "co2": "Выбросы CO₂",
+      "notFoundTitle": "Маршрут не найден",
+      "notFoundBody": "Запись могла быть удалена или ссылка устарела."
+    },
+    "fleet": {
+      "title": "Автопарк",
+      "subtitle": "Парк транспорта, грузоподъёмность и техническое состояние",
+      "actions": {
+        "addVehicle": "Добавить транспорт",
+        "passport": "Паспорт ТС",
+        "passportAria": "Открыть паспорт транспортного средства"
+      },
+      "searchLabel": "Поиск транспорта",
+      "searchPlaceholder": "Номер, модель или водитель…",
+      "searchClear": "Очистить поиск",
+      "clearAll": "Сбросить фильтры",
+      "filter": {
+        "ariaLabel": "Фильтр по типу транспорта",
+        "all": "Все",
+        "heavy": "Тягачи",
+        "medium": "Фургоны"
+      },
+      "stats": {
+        "total": "Всего ТС",
+        "totalHelper": "в автопарке",
+        "active": "В рейсах",
+        "activeHelper": "сейчас в пути",
+        "depot": "На базе",
+        "depotHelper": "готовы к рейсу",
+        "maintenance": "В ремонте",
+        "maintenanceHelper": "плановое ТО",
+        "payload": "Грузоподъёмность",
+        "volumeHelper": "объём"
+      },
+      "table": {
+        "plate": "Номер",
+        "model": "Модель",
+        "type": "Тип",
+        "driver": "Водитель",
+        "payload": "Загрузка",
+        "volume": "Объём",
+        "inspection": "ТО до",
+        "status": "Статус"
+      },
+      "status": {
+        "active": "В рейсе",
+        "depot": "На базе",
+        "maintenance": "В ремонте"
+      },
+      "payloadAria": "Загрузка относительно грузоподъёмности",
+      "empty": {
+        "title": "Транспорт не найден",
+        "subtitle": "Измените фильтры или очистите поиск"
+      }
+    }
+  },
+  "admin": {
+    "users": {
+      "title": "Организации",
+      "subtitle": "Контрагенты, роли и кредитные лимиты",
+      "actions": {
+        "newEntity": "Новая организация",
+        "kycQueue": "Очередь KYC",
+        "configure": "Настроить",
+        "configureAria": "Настроить организацию",
+        "moreAria": "Другие действия"
+      },
+      "bulk": {
+        "exportKyc": "Экспорт KYC",
+        "adjustCredit": "Скорректировать лимит",
+        "clear": "Снять выделение",
+        "selectAll": "Выбрать все",
+        "selectOne": "Выбрать организацию"
+      },
+      "bulkActionsLabel": "Действия с выбранными",
+      "selectedCount": "Выбрано: {{count}}",
+      "cashOnly": "Без кредитного лимита",
+      "clearAll": "Сбросить фильтры",
+      "searchLabel": "Поиск организаций",
+      "searchPlaceholder": "Название или NIP…",
+      "searchClear": "Очистить поиск",
+      "filter": {
+        "ariaLabel": "Фильтр по роли",
+        "all": "Все",
+        "buyer": "Покупатели",
+        "supplier": "Поставщики",
+        "carrier": "Перевозчики"
+      },
+      "table": {
+        "name": "Организация",
+        "nip": "NIP",
+        "role": "Роль",
+        "kyc": "KYC",
+        "creditLimit": "Кредитный лимит",
+        "exposure": "Использование",
+        "joined": "В системе с"
+      },
+      "kyc": {
+        "verified": "Верифицирован",
+        "pending": "На проверке",
+        "rejected": "Отклонён",
+        "notSubmitted": "Не подан"
+      },
+      "role": {
+        "buyer": "Покупатель",
+        "supplier": "Поставщик",
+        "carrier": "Перевозчик"
+      },
+      "utilizationAria": "{{name}}: использование кредитного лимита {{pct}}%",
+      "empty": {
+        "title": "Организации не найдены",
+        "subtitle": "Измените фильтры или очистите поиск"
+      }
+    },
+    "analytics": {
+      "title": "Аналитика",
+      "subtitle": "Ключевые метрики площадки: {{tenant}}",
+      "refresh": "Обновить",
+      "refreshed": "Метрики обновлены",
+      "otif": "OTIF",
+      "leadTime": "Средний lead time",
+      "throughput": "Пропускная способность",
+      "savings": "Экономия затрат",
+      "toSlaTarget": "до цели SLA",
+      "fasterThan": " быстрее",
+      "activeCorridors": "активных коридоров",
+      "vrpReverseAuctions": "VRP + обратные аукционы",
+      "otifTrendTitle": "Динамика OTIF",
+      "trendPeriod": "Период",
+      "trendOnTime": "В срок",
+      "trendInFull": "В полном объёме",
+      "trendDelayed": "Опоздания",
+      "trendOtif": "OTIF",
+      "corridorsTitle": "Коридоры",
+      "corridor": "Коридор",
+      "distance": "Расстояние",
+      "actual": "Факт",
+      "target": "Цель",
+      "load": "Загрузка",
+      "statusOptimal": "Оптимально",
+      "statusAttention": "Требует внимания",
+      "abcTitle": "ABC-классификация",
+      "abcClass": "Класс",
+      "abcProfile": "Профиль",
+      "abcShare": "Доля выручки",
+      "abcExamples": "Примеры SKU",
+      "abcA": "A",
+      "abcADesc": "Высокая стоимость, ежедневный контроль",
+      "abcB": "B",
+      "abcBDesc": "Средняя стоимость, контроль раз в неделю",
+      "abcC": "C",
+      "abcCDesc": "Длинный хвост, периодический контроль",
+      "warehouseTurnover": "Оборачиваемость складов",
+      "warehouse": "Склад",
+      "turnover": "Оборачиваемость",
+      "daysOnHand": "Дней запаса"
+    }
+  },
+  "supplier": {
+    "products": {
+      "title": "Товары и остатки",
+      "subtitle": "Реестр SKU: остатки, цены и логистические атрибуты",
+      "emptyDesc": "Нет SKU, соответствующих текущим фильтрам.",
+      "filters": {
+        "searchLabel": "Поиск SKU",
+        "searchPlaceholder": "SKU или название…",
+        "searchChip": "Поиск",
+        "categoryPlaceholder": "Категория",
+        "allCategories": "Все категории",
+        "categoryChip": "Категория",
+        "brandChip": "Бренд",
+        "manufacturerChip": "Производитель",
+        "allItems": "Все товары",
+        "activeLabel": "Только активные",
+        "clearAll": "Сбросить всё"
+      },
+      "actions": {
+        "addSku": "Добавить SKU",
+        "manage": "Управление",
+        "manageAria": "Открыть управление реестром",
+        "reserve10": "Резерв 10 шт.",
+        "reserveAria": "Зарезервировать 10 штук",
+        "addBrand": "Добавить бренд",
+        "addCategory": "Добавить категорию",
+        "addManufacturer": "Добавить производителя"
+      },
+      "table": {
+        "skuBrand": "SKU / бренд",
+        "nameClass": "Название и класс",
+        "logistics": "Логистика",
+        "warehouse": "Склад",
+        "available": "Доступно",
+        "reserved": "Резерв",
+        "price": "Цена",
+        "unit": "шт."
+      },
+      "warehouse": {
+        "capacity": "Загрузка",
+        "filled": "заполнено {{pct}}%",
+        "used": "{{used}} из {{total}} палето-мест",
+        "pallets": "палето-мест",
+        "coldChainLabel": "Холодовая цепь",
+        "tempLabel": "Температура"
+      }
+    },
+    "orders": {
+      "title": "Сборка заказов",
+      "subtitle": "Очередь комплектации по клиентам и окнам доставки",
+      "filters": {
+        "ariaLabel": "Фильтр по статусу сборки",
+        "all": "Все",
+        "pending": "Ожидают сборки",
+        "readyForDispatch": "Готовы к отправке"
+      },
+      "table": {
+        "orderNumber": "Заказ",
+        "customerDelivery": "Клиент и доставка",
+        "items": "Позиции",
+        "total": "Сумма",
+        "status": "Статус",
+        "action": "Действие"
+      },
+      "itemsUnit": "поз.",
+      "fulfillAction": "Собрать",
+      "actionAria": "Перейти к сборке заказа",
+      "empty": "В этом статусе заказов нет"
+    },
+    "dashboard": {
+      "welcome": "Добро пожаловать, {{name}}",
+      "verifiedSupplier": "Проверенный поставщик",
+      "activeContext": "Активный контекст",
+      "openOrdersQueue": "Открыть очередь заказов",
+      "kpi": {
+        "gmv": "GMV за месяц",
+        "vsLastMonth": "к прошлому месяцу",
+        "activeOrders": "Активные заказы",
+        "warehouseFill": "Загрузка склада",
+        "otif": "OTIF",
+        "aboveSla": "выше SLA",
+        "targetSla": "цель {{pct}}"
+      },
+      "pipeline": {
+        "title": "Воронка заказов",
+        "subtitle": "От подтверждения до доставки",
+        "submitted": "Подтверждён",
+        "reserved": "Резерв",
+        "paid": "Оплачен",
+        "shipped": "Отгружен",
+        "completed": "Завершён"
+      },
+      "recentOrders": {
+        "title": "Последние заказы",
+        "subtitle": "Свежие подтверждения"
+      },
+      "allOrders": "Все заказы",
+      "fleet": {
+        "title": "Транспорт на маршрутах",
+        "subtitle": "Рейсы текущего дня",
+        "inTransit": "в пути",
+        "planned": "запланирован"
+      },
+      "routeMap": "Карта маршрутов"
+    },
+    "scorecard": {
+      "title": "Качество поставок",
+      "subtitle": "Сводный балл и факторы оценки",
+      "tierGold": "Gold",
+      "top5Percent": "Топ-5% площадки",
+      "compositeLabel": "Сводный балл",
+      "basis": "На основе {{count}} доставок за {{period}}",
+      "factorsTitle": "Факторы оценки",
+      "factorCol": "Фактор",
+      "weight": "Вес",
+      "score": "Балл",
+      "detail": "Детали",
+      "threshold": "порог",
+      "factor": {
+        "otif": "OTIF — в срок и полностью",
+        "quality": "Качество (RMA)",
+        "price": "Ценовая конкурентность",
+        "leadTime": "Сроки выполнения"
+      },
+      "helper": {
+        "avgDispatch": "средняя сборка {{value}}",
+        "zeroCriticalRma": "критических RMA: {{value}}",
+        "competitive": "{{value}} ниже медианы",
+        "leadTimeDays": "lead time {{value}} дн."
+      }
+    },
+    "sku": {
+      "title": "Карточка SKU",
+      "backToCatalog": "К списку товаров",
+      "activeInWms": "Активен в WMS",
+      "save": "Сохранить",
+      "saved": "Изменения по {{sku}} сохранены",
+      "tab": {
+        "bins": "Ячейки",
+        "batches": "Партии",
+        "specs": "Характеристики"
+      },
+      "binsTitle": "Размещение по складам",
+      "bins": {
+        "warehouse": "Склад",
+        "aisleRack": "Ряд / стеллаж",
+        "binCode": "Ячейка",
+        "available": "Доступно",
+        "reserved": "Резерв"
+      },
+      "batchesTitle": "Партии и контроль качества",
+      "batches": {
+        "lot": "Партия",
+        "mfg": "Изготовлено",
+        "exp": "Годен до",
+        "qty": "Кол-во",
+        "qc": "QC",
+        "approved": "Одобрено"
+      },
+      "specsTitle": "Основные параметры",
+      "specs": {
+        "name": "Наименование",
+        "price": "Базовая цена",
+        "priceHelper": "Текущая цена:",
+        "moq": "MOQ"
+      }
+    }
   }
 }

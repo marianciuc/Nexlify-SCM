@@ -1,18 +1,16 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useState } from 'react';
 import {
   ChevronLeft,
-  ShieldAlert,
   Gavel,
   CheckCircle2,
-  Building2,
-  FileText,
+  Clock,
+  XCircle,
 } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { useClaimsQuery, useResolveClaimMutation } from '@/hooks/useScmQueries';
 
 export const Route = createFileRoute('/admin/system-audit/disputes')({
   component: AdminDisputesArbitrationPage,
@@ -23,40 +21,16 @@ export const Route = createFileRoute('/admin/system-audit/disputes')({
   },
 });
 
-interface Dispute {
-  id: string;
-  claimNo: string;
-  buyerName: string;
-  supplierName: string;
-  amountPln: number;
-  reason: string;
-  status: 'IN_ARBITRATION' | 'RESOLVED_CREDIT_ISSUED';
-}
-
-const DISPUTES: Dispute[] = [
-  {
-    id: 'dsp-01',
-    claimNo: 'RMA-2026-004',
-    buyerName: 'Pomerania Foods Sp. k.',
-    supplierName: 'PlastChem Industrial Sp. k.',
-    amountPln: 822.5,
-    reason: 'Punctured packaging rolls rejected upon delivery dock inspection',
-    status: 'IN_ARBITRATION',
-  },
-];
-
 function AdminDisputesArbitrationPage() {
-  const [disputes, setDisputes] = useState<Dispute[]>(DISPUTES);
+  const { data: claims = [] } = useClaimsQuery();
+  const resolveMutation = useResolveClaimMutation();
 
-  const handleResolve = (id: string) => {
-    setDisputes(
-      disputes.map((d) => (d.id === id ? { ...d, status: 'RESOLVED_CREDIT_ISSUED' } : d))
-    );
-    toast.success('Arbitration decision: Forced Faktura Korygująca credit note issued to Buyer.');
+  const handleResolve = async (claimId: string, decision: 'APPROVED' | 'REJECTED') => {
+    await resolveMutation.mutateAsync({ claimId, decision });
   };
 
   return (
-    <div className="space-y-6 p-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
         <Link
@@ -76,51 +50,69 @@ function AdminDisputesArbitrationPage() {
           Platform B2B Disputes & RMA Arbitration
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Binding administrative resolution for cargo discrepancy and damages when supplier and buyer fail to reach consensus.
+          Binding administrative resolution for cargo discrepancies and damages when supplier and buyer fail to reach consensus.
         </p>
       </div>
 
       <div className="space-y-4">
-        {disputes.map((d) => (
-          <Card key={d.id} className="border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-            <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b py-3 px-5 flex flex-row items-center justify-between">
+        {claims.map((claim) => (
+          <Card key={claim.id} className="border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b py-3 px-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <span className="font-mono text-xs font-bold text-red-600">{d.claimNo}</span>
+                <span className="font-mono text-xs font-bold text-red-600">{claim.claimNumber}</span>
                 <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 ml-2">
-                  {d.buyerName} vs {d.supplierName}
+                  Order Ref: {claim.orderNumber} • Supplier: {claim.supplierName}
                 </span>
               </div>
               <Badge
                 className={
-                  d.status === 'RESOLVED_CREDIT_ISSUED'
+                  claim.status === 'APPROVED_CREDIT_NOTE'
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200 text-xs'
                     : 'bg-amber-50 text-amber-700 border-amber-200 text-xs'
                 }
               >
-                {d.status}
+                {claim.status === 'APPROVED_CREDIT_NOTE' ? (
+                  <CheckCircle2 className="h-3 w-3 mr-1 inline" />
+                ) : (
+                  <Clock className="h-3 w-3 mr-1 inline" />
+                )}
+                {claim.status}
               </Badge>
             </CardHeader>
             <CardContent className="p-6 space-y-4 text-xs">
               <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-900 p-3 rounded-xl">
-                <span>Disputed Value:</span>
+                <span>Disputed Compensation Value:</span>
                 <span className="font-mono font-bold text-slate-900 dark:text-slate-100 text-sm">
-                  {d.amountPln.toFixed(2)} PLN
+                  {claim.claimAmountPln.toFixed(2)} PLN
                 </span>
               </div>
 
               <p className="text-slate-600 dark:text-slate-300">
-                <strong>Discrepancy:</strong> {d.reason}
+                <strong>Discrepancy Details:</strong> {claim.reason}
               </p>
 
-              {d.status === 'IN_ARBITRATION' && (
-                <div className="flex justify-end pt-2">
+              <div className="text-2xs text-muted-foreground">
+                Reported Date: {claim.reportedDate} • Settlement: {claim.settlementType}
+              </div>
+
+              {claim.status === 'PENDING_SUPPLIER' && (
+                <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
                   <Button
                     size="sm"
-                    className="bg-red-600 hover:bg-red-700 text-white gap-1.5 text-xs font-semibold"
-                    onClick={() => handleResolve(d.id)}
+                    variant="outline"
+                    className="border-slate-300 text-slate-700 gap-1.5 text-xs font-semibold w-full sm:w-auto"
+                    onClick={() => handleResolve(claim.id, 'REJECTED')}
+                  >
+                    <XCircle className="h-3.5 w-3.5 text-slate-500" />
+                    Reject Discrepancy
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-red-600 hover:bg-red-700 text-white gap-1.5 text-xs font-semibold w-full sm:w-auto"
+                    onClick={() => handleResolve(claim.id, 'APPROVED')}
                   >
                     <Gavel className="h-3.5 w-3.5" />
-                    Enforce Immediate Credit Note to Buyer
+                    Enforce Forced Credit Note to Buyer
                   </Button>
                 </div>
               )}

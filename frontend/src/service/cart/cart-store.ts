@@ -14,6 +14,11 @@ export interface CartItem {
   vendorNip: string;
   weightKg: number;
   volumeM3: number;
+  brand?: string;
+  brandCode?: string;
+  manufacturer?: string;
+  manufacturerCountry?: string;
+  dimensions?: string;
 }
 
 export interface VendorCartGroup {
@@ -44,36 +49,7 @@ interface CartStore {
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
-      items: [
-        {
-          sku: 'SKU-PAL-01',
-          name: 'EPAL Euro-Pallet Standard (Pine)',
-          category: 'Packaging & Cargo Units',
-          unitPrice: 120.0,
-          quantity: 50,
-          moq: 20,
-          unit: 'pcs',
-          vendorId: 'ven-drewnex-01',
-          vendorName: 'Drewnex Palety Sp. z o.o.',
-          vendorNip: '7822910483',
-          weightKg: 25.0,
-          volumeM3: 0.144,
-        },
-        {
-          sku: 'SKU-STR-05',
-          name: 'Industrial Stretch Film 23mic (Roll 300m)',
-          category: 'Packaging Supplies',
-          unitPrice: 411.25,
-          quantity: 10,
-          moq: 5,
-          unit: 'rolls',
-          vendorId: 'ven-plastchem-02',
-          vendorName: 'PlastChem Industrial Sp. k.',
-          vendorNip: '8942019485',
-          weightKg: 3.2,
-          volumeM3: 0.015,
-        },
-      ],
+      items: [],
 
       addItem: (item, quantity = item.moq || 1) => {
         set((state) => {

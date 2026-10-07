@@ -1,15 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { ChevronLeft, Tag, Building2, CheckCircle2, Save } from 'lucide-react';
 import { useState } from 'react';
-import {
-  ChevronLeft,
-  Tag,
-  Building2,
-  Calendar,
-  CheckCircle2,
-  TrendingDown,
-  ShieldCheck,
-  Save,
-} from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +13,7 @@ export const Route = createFileRoute('/supplier/pricing/$contractId')({
   component: PricingContractDetailPage,
   staticData: {
     crumb: {
-      label: 'Contract Details',
+      label: 'Условия контракта',
     },
   },
 });
@@ -32,94 +23,114 @@ function PricingContractDetailPage() {
 
   const [contractPrice, setContractPrice] = useState(102.0);
   const [minOrderQty, setMinOrderQty] = useState(50);
-  const [paymentTerms, setPaymentTerms] = useState('Net 30 Days');
+  const [paymentTerms, setPaymentTerms] = useState('Отсрочка 30 дней (Net 30)');
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success(`Contract ${contractId} updated and synced with Order Service!`);
+    toast.success(`Контракт ${contractId} обновлен и синхронизирован с сервисом заказов!`);
   };
 
   return (
-    <div className="space-y-6 p-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <Link
             to="/supplier/pricing"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            <ChevronLeft className="h-4 w-4" /> Back to Pricing Contracts
+            <ChevronLeft className="h-4 w-4" /> Назад к ценовым контрактам
           </Link>
-          <div className="flex items-center gap-3 mt-2">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-              Contract Terms: <span className="font-mono text-amber-600">{contractId}</span>
+          <div className="flex flex-wrap items-center gap-3 mt-2">
+            <h1 className="text-2xl font-bold text-foreground">
+              Условия контракта: <span className="font-mono text-primary">{contractId}</span>
             </h1>
-            <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
-              Active Agreement
+            <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-xs">
+              Действующее соглашение
             </Badge>
           </div>
         </div>
 
         <Button
-          className="bg-amber-600 hover:bg-amber-700 text-white gap-2 text-xs font-semibold"
+          size="sm"
+          className="w-full sm:w-auto gap-2 font-semibold"
           onClick={handleSave}
         >
-          <Save className="h-4 w-4" /> Save Contract Amendments
+          <Save className="h-4 w-4" /> Сохранить изменения контракта
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Buyer Identity */}
-        <Card className="border-slate-200 dark:border-slate-800">
+        <Card className="border-border">
           <CardHeader className="py-3 px-5 border-b">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-amber-600" /> Contract Counterparty
+              <Building2 className="h-4 w-4 text-primary" /> Контрагент по договору
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 space-y-3 text-xs">
             <div>
-              <span className="text-slate-500 block">Buyer Legal Entity:</span>
-              <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">
+              <span className="text-muted-foreground block">Юридическое лицо покупателя:</span>
+              <span className="font-bold text-foreground text-sm">
                 Baltic Retail Group Sp. z o.o.
               </span>
             </div>
             <div>
-              <span className="text-slate-500 block">Tax Identification:</span>
-              <span className="font-mono font-bold text-slate-700 dark:text-slate-300">NIP: 8522619472</span>
+              <span className="text-muted-foreground block">Налоговый номер:</span>
+              <span className="font-mono font-bold text-foreground">NIP: 8522619472</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Verified Status:</span>
-              <span className="text-emerald-600 font-semibold flex items-center gap-1">
-                <CheckCircle2 className="h-3.5 w-3.5" /> Approved VIES / Trade Credit Active
+              <span className="text-muted-foreground block">Статус верификации:</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Подтвержден VIES / Лимит торгового кредита активен
               </span>
             </div>
           </CardContent>
         </Card>
 
         {/* Contracted SKU */}
-        <Card className="border-slate-200 dark:border-slate-800">
+        <Card className="border-border">
           <CardHeader className="py-3 px-5 border-b">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Tag className="h-4 w-4 text-amber-600" /> Contracted Product & Price
+              <Tag className="h-4 w-4 text-primary" /> Контрактная номенклатура и цена
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 space-y-3 text-xs">
             <div>
-              <span className="text-slate-500 block">Covered Product SKU:</span>
-              <span className="font-mono font-bold text-amber-600">SKU-PAL-01 (EPAL Euro-Pallets)</span>
+              <span className="text-muted-foreground block">Позиция по контракту (SKU):</span>
+              <span className="font-mono font-bold text-primary">SKU-PAL-01 (Европаллеты EPAL)</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Standard Catalog List Price:</span>
-              <span className="font-mono line-through text-slate-500">120.00 PLN / unit</span>
+              <span className="text-muted-foreground block">Базовая цена по общему каталогу:</span>
+              <span className="font-mono line-through text-muted-foreground">120.00 PLN / шт.</span>
             </div>
             <div className="space-y-1 pt-1">
-              <Label className="text-xs">Contract Locked Price (PLN):</Label>
+              <Label className="text-xs">Фиксированная цена контракта (PLN без НДС):</Label>
               <Input
                 type="number"
                 value={contractPrice}
                 onChange={(e) => setContractPrice(Number(e.target.value))}
-                className="font-mono font-bold text-emerald-600 text-sm"
+                className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm"
               />
+            </div>
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="space-y-1">
+                <Label className="text-2xs text-muted-foreground">Минимальная партия (MOQ):</Label>
+                <Input
+                  type="number"
+                  value={minOrderQty}
+                  onChange={(e) => setMinOrderQty(Number(e.target.value))}
+                  className="font-mono text-xs"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-2xs text-muted-foreground">Условия оплаты:</Label>
+                <Input
+                  value={paymentTerms}
+                  onChange={(e) => setPaymentTerms(e.target.value)}
+                  className="text-xs"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -127,3 +138,5 @@ function PricingContractDetailPage() {
     </div>
   );
 }
+
+export default PricingContractDetailPage;

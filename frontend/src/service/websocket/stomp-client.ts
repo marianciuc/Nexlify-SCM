@@ -1,7 +1,9 @@
 import { Client, type IMessage } from '@stomp/stompjs';
 import { toast } from 'sonner';
-import { useNotificationStore } from './notification-store';
+
 import useEnvironmentStore from '@/service/env/environment-store';
+
+import { useNotificationStore } from './notification-store';
 
 class StompWebSocketService {
     private client: Client | null = null;
@@ -12,13 +14,13 @@ class StompWebSocketService {
         if (this.client && this.client.active) return;
 
         const { getBaseUrl } = useEnvironmentStore.getState();
-        // Extract host/port from baseUrl or default to 8080/8086
-        let wsUrl = 'ws://localhost:8080/ws/connect';
+        // Extract host/port from baseUrl or default to 8090/8086
+        let wsUrl = 'ws://localhost:8090/ws/connect';
         try {
             const parsed = new URL(getBaseUrl());
             wsUrl = `ws://${parsed.host}/ws/connect`;
         } catch {
-            wsUrl = 'ws://localhost:8080/ws/connect';
+            wsUrl = 'ws://localhost:8090/ws/connect';
         }
 
         const token = localStorage.getItem('access_token');
@@ -28,11 +30,7 @@ class StompWebSocketService {
             connectHeaders: {
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
-            debug: (str) => {
-                if (import.meta.env.DEV) {
-                    // console.debug('[STOMP]', str);
-                }
-            },
+            debug: () => undefined,
             reconnectDelay: 10000,
             heartbeatIncoming: 15000,
             heartbeatOutgoing: 15000,

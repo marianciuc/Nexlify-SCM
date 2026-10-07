@@ -12,6 +12,8 @@ export interface CreateOrderPayload {
     supplierId?: string;
     deliveryAddress: string;
     deliveryCity: string;
+    requestedDeliveryDate?: string;
+    notes?: string;
     currency?: string;
     incoterms?: string;
     paymentTerms?: string;

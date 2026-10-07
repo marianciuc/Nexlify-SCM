@@ -17,225 +17,216 @@ import {
     Grid,
     Boxes,
     Award,
-    FileSpreadsheet,
     Route as RouteIcon,
-    Sparkles,
     UserCheck,
     FileCheck,
     Activity,
-    AlertTriangle,
-} from 'lucide-react';
+    } from 'lucide-react';
 import React from 'react';
 
-import {MenuItemType, type Item} from './types';
+import { MenuItemType, type Item } from './types';
 
 // ==========================================
-// 1. BUYER WORKSPACE (P03 - P08, P20 + Enterprise 2.0)
+// BUYER WORKSPACE
 // ==========================================
 export const buyerMenu: Item[] = [
     {
-        title: 'B2B Catalog',
+        title: 'nav.buyer.catalog',
         url: '/buyer/catalog',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Package, {size: 16}),
+        icon: React.createElement(Package, { size: 16 }),
     },
     {
-        title: 'Shopping Cart',
+        title: 'nav.buyer.cart',
         url: '/buyer/cart',
         type: MenuItemType.ITEM,
-        icon: React.createElement(ShoppingCart, {size: 16}),
+        icon: React.createElement(ShoppingCart, { size: 16 }),
     },
     {
-        title: 'My Orders',
+        title: 'nav.buyer.orders',
         url: '/buyer/orders',
         type: MenuItemType.ITEM,
-        icon: React.createElement(ListChecks, {size: 16}),
+        icon: React.createElement(ListChecks, { size: 16 }),
     },
     {
-        title: 'Invoices (VAT)',
+        title: 'nav.buyer.invoices',
         url: '/buyer/invoices',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Receipt, {size: 16}),
+        icon: React.createElement(Receipt, { size: 16 }),
     },
     {
-        title: 'Procurement RFQs',
+        title: 'nav.buyer.rfq',
         url: '/buyer/requests',
         type: MenuItemType.ITEM,
-        icon: React.createElement(FileQuestion, {size: 16}),
+        icon: React.createElement(FileQuestion, { size: 16 }),
     },
     {
-        title: 'SLA Contracts',
+        title: 'nav.buyer.contracts',
         url: '/buyer/contracts',
         type: MenuItemType.ITEM,
-        icon: React.createElement(FileText, {size: 16}),
+        icon: React.createElement(FileText, { size: 16 }),
     },
     {
-        title: 'RMA Claims',
+        title: 'nav.buyer.claims',
         url: '/buyer/claims',
         type: MenuItemType.ITEM,
-        icon: React.createElement(ShieldAlert, {size: 16}),
+        icon: React.createElement(ShieldAlert, { size: 16 }),
     },
     {
-        title: 'Buyer Settings',
+        title: 'nav.buyer.settings',
         url: '/buyer/settings',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Settings, {size: 16}),
+        icon: React.createElement(Settings, { size: 16 }),
     },
 ];
 
 // ==========================================
-// 2. SUPPLIER WORKSPACE (P09 - P12, P19 + Enterprise 2.0)
+// SUPPLIER WORKSPACE
 // ==========================================
 export const supplierMenu: Item[] = [
     {
-        title: 'Supplier Dashboard',
+        title: 'nav.supplier.dashboard',
         url: '/supplier/dashboard',
         type: MenuItemType.ITEM,
-        icon: React.createElement(LayoutDashboard, {size: 16}),
+        icon: React.createElement(LayoutDashboard, { size: 16 }),
     },
     {
-        title: 'SKU & Inventory',
+        title: 'nav.supplier.products',
         url: '/supplier/products',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Package, {size: 16}),
+        icon: React.createElement(Package, { size: 16 }),
     },
     {
-        title: 'Stock Transfers',
+        title: 'nav.supplier.warehouseMap',
+        url: '/supplier/inventory/map',
+        type: MenuItemType.ITEM,
+        icon: React.createElement(MapPin, { size: 16 }),
+    },
+    {
+        title: 'nav.supplier.transfers',
         url: '/supplier/inventory/transfers',
         type: MenuItemType.ITEM,
-        icon: React.createElement(ArrowLeftRight, {size: 16}),
+        icon: React.createElement(ArrowLeftRight, { size: 16 }),
     },
     {
-        title: 'ABC/XYZ Matrix',
+        title: 'nav.supplier.abcXyz',
         url: '/supplier/inventory/abc-xyz',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Grid, {size: 16}),
+        icon: React.createElement(Grid, { size: 16 }),
     },
     {
-        title: 'Fulfillment Queue',
+        title: 'nav.supplier.fulfillment',
         url: '/supplier/orders',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Boxes, {size: 16}),
+        icon: React.createElement(Boxes, { size: 16 }),
     },
     {
-        title: 'Pricing Contracts',
+        title: 'nav.supplier.pricing',
         url: '/supplier/pricing',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Target, {size: 16}),
+        icon: React.createElement(Target, { size: 16 }),
     },
     {
-        title: 'Open RFQ Board',
+        title: 'nav.supplier.rfq',
         url: '/supplier/bids/board',
         type: MenuItemType.ITEM,
-        icon: React.createElement(FileText, {size: 16}),
+        icon: React.createElement(FileText, { size: 16 }),
     },
     {
-        title: 'Quality Scorecard',
+        title: 'nav.supplier.scorecard',
         url: '/supplier/scorecard',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Award, {size: 16}),
+        icon: React.createElement(Award, { size: 16 }),
     },
     {
-        title: 'EDI & Peppol Hub',
-        url: '/supplier/edi',
-        type: MenuItemType.ITEM,
-        icon: React.createElement(FileSpreadsheet, {size: 16}),
-    },
-    {
-        title: 'Supplier Settings',
+        title: 'nav.supplier.settings',
         url: '/supplier/settings',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Settings, {size: 16}),
+        icon: React.createElement(Settings, { size: 16 }),
     },
 ];
 
 // ==========================================
-// 3. LOGISTICS WORKSPACE (P13 - P15 + Enterprise 2.0)
+// LOGISTICS WORKSPACE
 // ==========================================
 export const logisticsMenu: Item[] = [
     {
-        title: 'Live GPS Map',
+        title: 'nav.logistics.map',
         url: '/logistics/map',
         type: MenuItemType.ITEM,
-        icon: React.createElement(MapPin, {size: 16}),
+        icon: React.createElement(MapPin, { size: 16 }),
     },
     {
-        title: 'Freight Routes',
+        title: 'nav.logistics.routes',
         url: '/logistics/routes',
         type: MenuItemType.ITEM,
-        icon: React.createElement(RouteIcon, {size: 16}),
+        icon: React.createElement(RouteIcon, { size: 16 }),
     },
     {
-        title: 'VRP Route Planner',
+        title: 'nav.logistics.planner',
         url: '/logistics/routes/planner',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Sparkles, {size: 16}),
+        icon: React.createElement(RouteIcon, { size: 16 }),
     },
     {
-        title: 'Fleet & Vehicles',
+        title: 'nav.logistics.fleet',
         url: '/logistics/fleet',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Truck, {size: 16}),
+        icon: React.createElement(Truck, { size: 16 }),
     },
     {
-        title: 'Drivers Registry',
+        title: 'nav.logistics.drivers',
         url: '/logistics/drivers',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Users, {size: 16}),
+        icon: React.createElement(Users, { size: 16 }),
     },
     {
-        title: 'e-CMR Consignments',
+        title: 'nav.logistics.ecmr',
         url: '/logistics/ecmr',
         type: MenuItemType.ITEM,
-        icon: React.createElement(FileCheck, {size: 16}),
+        icon: React.createElement(FileCheck, { size: 16 }),
     },
     {
-        title: 'TMS Settings',
+        title: 'nav.logistics.settings',
         url: '/logistics/settings',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Settings, {size: 16}),
+        icon: React.createElement(Settings, { size: 16 }),
     },
 ];
 
 // ==========================================
-// 4. ADMIN WORKSPACE (P16 - P18 + Enterprise 2.0)
+// ADMIN WORKSPACE
 // ==========================================
 export const adminMenu: Item[] = [
     {
-        title: 'Global Analytics',
+        title: 'nav.admin.analytics',
         url: '/admin/analytics',
         type: MenuItemType.ITEM,
-        icon: React.createElement(BarChart3, {size: 16}),
+        icon: React.createElement(BarChart3, { size: 16 }),
     },
     {
-        title: 'Tenants Directory',
+        title: 'nav.admin.tenants',
         url: '/admin/users',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Users, {size: 16}),
+        icon: React.createElement(Users, { size: 16 }),
     },
     {
-        title: 'KYC Queue',
+        title: 'nav.admin.kyc',
         url: '/admin/users/verification',
         type: MenuItemType.ITEM,
-        icon: React.createElement(UserCheck, {size: 16}),
+        icon: React.createElement(UserCheck, { size: 16 }),
     },
     {
-        title: 'System Audit & Saga',
+        title: 'nav.admin.audit',
         url: '/admin/system-audit',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Activity, {size: 16}),
+        icon: React.createElement(Activity, { size: 16 }),
     },
     {
-        title: 'Kafka DLT Inspector',
-        url: '/admin/system-audit/kafka-dlt',
-        type: MenuItemType.ITEM,
-        icon: React.createElement(AlertTriangle, {size: 16}),
-    },
-    {
-        title: 'Platform Settings',
+        title: 'nav.admin.settings',
         url: '/admin/settings',
         type: MenuItemType.ITEM,
-        icon: React.createElement(Settings, {size: 16}),
+        icon: React.createElement(Settings, { size: 16 }),
     },
 ];
 

@@ -82,60 +82,91 @@
     "edit": "Edit",
     "add": "Add",
     "search": "Search",
-    "filter": "Filter"
+    "filter": "Filter",
+    "filters": "Filters",
+    "clear": "Clear",
+    "clearAll": "Clear all",
+    "apply": "Apply",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Back",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "more": "More",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "actions": "Actions",
+    "details": "Details",
+    "open": "Open",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "sort": "Sort",
+    "select": "Select",
+    "name": "Name",
+    "date": "Date",
+    "status": "Status",
+    "quantity": "Quantity",
+    "price": "Price",
+    "total": "Total",
+    "saveDraft": "Save draft",
+    "days": "d",
+    "tons": "t",
+    "administrator": "administrator"
   },
   "forms": {
     "validation": {
       "required": "This field is required",
-      "email": "Please enter a valid email",
-      "minLength": "Minimum {{count}} characters required"
+      "email": "Enter a valid email",
+      "minLength": "Minimum {{count}} characters"
     }
   },
   "auth": {
-    "login": "Login",
-    "register": "Register",
-    "logout": "Logout",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
     "email": "Email",
     "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "contactNumber": "Contact Number",
+    "confirmPassword": "Confirm password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "contactNumber": "Contact phone",
     "country": "Country",
     "companyTaxId": "Company Tax ID",
-    "companyName": "Company Name",
-    "businessType": "Business Type",
+    "companyName": "Company name",
+    "businessType": "Business type",
     "timezone": "Timezone",
-    "rememberMe": "Remember Me",
-    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
     "signInTitle": "Sign in to your account",
     "signUpTitle": "Create your account",
-    "createAccount": "Enter your details to create your account",
+    "createAccount": "Enter your details to create an account",
     "enterCredentials": "Enter your credentials to access your account",
-    "alreadyHaveAccount": "Already have an account? Sign in",
-    "dontHaveAccount": "Don't have an account? Sign up",
-    "loginAs": "Login as",
+    "alreadyHaveAccount": "Already have an account? Log in",
+    "dontHaveAccount": "No account? Sign up",
+    "loginAs": "Log in as",
     "selectRole": "Select your role",
-    "dataProcessingConsent": "I agree to the processing of my personal data",
+    "dataProcessingConsent": "I consent to the processing of my personal data",
     "emailPlaceholder": "Enter your email",
     "passwordPlaceholder": "Enter your password",
     "confirmPasswordPlaceholder": "Confirm your password",
     "firstNamePlaceholder": "Enter your first name",
     "lastNamePlaceholder": "Enter your last name",
-    "contactNumberPlaceholder": "Enter your contact number",
+    "contactNumberPlaceholder": "Enter contact phone",
     "countryPlaceholder": "Enter your country",
-    "companyTaxIdPlaceholder": "Enter company tax ID",
+    "companyTaxIdPlaceholder": "Enter company Tax ID",
     "companyNamePlaceholder": "Enter company name",
     "businessTypePlaceholder": "Select business type",
     "roles": {
       "customer": "Customer",
-      "orderManager": "Order Manager",
-      "warehouseManager": "Warehouse Manager",
-      "departmentManager": "Department Manager",
-      "manager": "Main Manager",
-      "unverifiedManager": "Unverified Manager",
+      "orderManager": "Order manager",
+      "warehouseManager": "Warehouse manager",
+      "departmentManager": "Department manager",
+      "manager": "Senior manager",
+      "unverifiedManager": "Unverified manager",
       "supplier": "Supplier",
-      "logistician": "Logistics Operator",
+      "logistician": "Logistics operator",
       "carrier": "Carrier",
       "admin": "Administrator"
     },
@@ -143,56 +174,56 @@
       "invalidCredentials": "Invalid email or password",
       "emailRequired": "Email is required",
       "passwordRequired": "Password is required",
-      "emailInvalid": "Please enter a valid email",
-      "passwordTooShort": "Password must be at least 6 characters",
-      "passwordsDontMatch": "Passwords don't match",
-      "networkError": "Network error. Please try again.",
-      "sessionExpired": "Your session has expired. Please log in again.",
-      "registrationFailed": "Registration failed. Please try again."
+      "emailInvalid": "Enter a valid email",
+      "passwordTooShort": "Password must contain at least 6 characters",
+      "passwordsDontMatch": "Passwords do not match",
+      "networkError": "Network error. Please try again",
+      "sessionExpired": "Your session has expired. Please sign in again",
+      "registrationFailed": "Registration failed. Please try again"
     },
     "success": {
-      "loginSuccessful": "Login successful! Welcome back.",
-      "registrationSuccessful": "Registration successful! Welcome to LogisticCommerce.",
-      "logoutSuccessful": "Successfully logged out. See you soon!",
-      "sessionRefreshed": "Session refreshed successfully."
+      "loginSuccessful": "Signed in. Welcome back",
+      "registrationSuccessful": "Registration complete. Welcome to Nexlify SCM",
+      "logoutSuccessful": "Signed out. See you soon",
+      "sessionRefreshed": "Session refreshed successfully"
     },
     "verification": {
-      "title": "Company Verification",
+      "title": "Company verification",
       "subtitle": "Your company is being verified",
       "status": {
-        "pendingDocuments": "Waiting for documents",
+        "pendingDocuments": "Pending documents",
         "documentsSubmitted": "Documents submitted",
         "underReview": "Under review",
         "additionalInfoRequired": "Additional information required",
         "approved": "Approved",
         "rejected": "Rejected"
       },
-      "uploadDocuments": "Upload Documents",
-      "requiredDocuments": "Required Documents",
+      "uploadDocuments": "Upload documents",
+      "requiredDocuments": "Required documents",
       "documentTypes": {
-        "businessRegistration": "Business Registration Certificate",
-        "taxRegistration": "Tax Registration Certificate",
-        "articlesOfIncorporation": "Articles of Incorporation",
-        "authorizedRepresentativeId": "Authorized Representative ID",
-        "importExportLicense": "Import/Export License",
-        "industryPermits": "Industry-specific Permits",
-        "bankAccountVerification": "Bank Account Verification",
-        "insuranceCertificates": "Insurance Certificates"
+        "businessRegistration": "Business registration certificate",
+        "taxRegistration": "Tax registration certificate",
+        "articlesOfIncorporation": "Articles of incorporation",
+        "authorizedRepresentativeId": "Authorized representative ID",
+        "importExportLicense": "Import/export license",
+        "industryPermits": "Industry permits",
+        "bankAccountVerification": "Bank account verification",
+        "insuranceCertificates": "Insurance certificates"
       },
-      "dragDropFiles": "Drag and drop files here, or click to select",
-      "maxFileSize": "Maximum file size: 10MB",
+      "dragDropFiles": "Drag and drop files here or click to choose",
+      "maxFileSize": "Maximum file size: 10 MB",
       "allowedFormats": "Allowed formats: PDF, JPG, PNG",
       "estimatedTime": "Estimated verification time: 2-3 business days",
-      "contactSupport": "Contact Support"
+      "contactSupport": "Contact support"
     }
   },
   "employee": {
-    "title": "Employee Management",
-    "createEmployee": "Create Employee",
-    "teamOverview": "Team Overview",
-    "roleAssignment": "Role Assignment",
-    "accessControl": "Access Control",
-    "invite": "Invite Employee",
+    "title": "Employee management",
+    "createEmployee": "Create employee",
+    "teamOverview": "Team overview",
+    "roleAssignment": "Role assignment",
+    "accessControl": "Access control",
+    "invite": "Invite employee",
     "invitationSent": "Invitation sent successfully",
     "employeeCreated": "Employee account created",
     "selectRole": "Select employee role",
@@ -206,34 +237,906 @@
     }
   },
   "warehouse": {
-    "title": "Warehouse Management",
-    "createWarehouse": "Create Warehouse",
-    "warehouseList": "Warehouse Directory",
-    "warehouseSettings": "Warehouse Settings",
-    "locationManagement": "Location Management",
-    "staffAssignment": "Staff Assignment",
-    "performanceAnalytics": "Performance Analytics",
-    "basicInfo": "Basic Information",
-    "locationDetails": "Location Details",
-    "capacityConfiguration": "Capacity Configuration",
-    "equipmentSetup": "Equipment Setup",
-    "integrationSetup": "Integration Setup",
-    "operationalTesting": "Operational Testing",
-    "goLive": "Go Live",
+    "title": "Warehouse management",
+    "createWarehouse": "Create warehouse",
+    "warehouseList": "Warehouse directory",
+    "warehouseSettings": "Warehouse settings",
+    "locationManagement": "Location management",
+    "staffAssignment": "Staff assignment",
+    "performanceAnalytics": "Performance analytics",
+    "basicInfo": "Basic information",
+    "locationDetails": "Location details",
+    "capacityConfiguration": "Capacity configuration",
+    "equipmentSetup": "Equipment setup",
+    "integrationSetup": "Integration setup",
+    "operationalTesting": "Operational testing",
+    "goLive": "Go live",
     "types": {
-      "distributionCenter": "Distribution Center",
-      "regionalWarehouse": "Regional Warehouse",
-      "localDepot": "Local Depot",
-      "specializedStorage": "Specialized Storage",
-      "crossDockFacility": "Cross-Dock Facility"
+      "distributionCenter": "Distribution center",
+      "regionalWarehouse": "Regional warehouse",
+      "localDepot": "Local depot",
+      "specializedStorage": "Specialized storage",
+      "crossDockFacility": "Cross-dock facility"
     },
-    "warehouseName": "Warehouse Name",
-    "warehouseType": "Warehouse Type",
+    "warehouseName": "Warehouse name",
+    "warehouseType": "Warehouse type",
     "address": "Address",
-    "gpsCoordinates": "GPS Coordinates",
-    "storageZones": "Storage Zones",
-    "capacityLimits": "Capacity Limits",
-    "assignManager": "Assign Manager",
-    "operationalStaff": "Operational Staff"
+    "gpsCoordinates": "GPS coordinates",
+    "storageZones": "Storage zones",
+    "capacityLimits": "Capacity limits",
+    "assignManager": "Assign manager",
+    "operationalStaff": "Operational staff"
+  },
+  "workspace": {
+    "switcher": {
+      "label": "Switch workspace",
+      "current": "Current: {{title}}",
+      "clickToChange": "Click to switch view",
+      "quickLinks": "Quick links"
+    },
+    "buyer": {
+      "title": "Procurement",
+      "shortTitle": "Procurement",
+      "subtitle": "Catalog, cart, orders, invoices and RFQ tenders",
+      "role": "Buyer"
+    },
+    "supplier": {
+      "title": "Supplier",
+      "shortTitle": "Supplier",
+      "subtitle": "Warehouse, fulfillment, pricing and tender board",
+      "role": "Supplier"
+    },
+    "logistics": {
+      "title": "Logistics",
+      "shortTitle": "Logistics",
+      "subtitle": "Fleet map, routes, vehicles and e-CMR",
+      "role": "Dispatcher"
+    },
+    "admin": {
+      "title": "Administration",
+      "shortTitle": "Admin",
+      "subtitle": "Analytics, KYC verification and event audit",
+      "role": "Administrator"
+    }
+  },
+  "nav": {
+    "sections": "Workspace sections",
+    "buyer": {
+      "catalog": "Catalog",
+      "cart": "Cart",
+      "orders": "Orders",
+      "invoices": "Invoices",
+      "rfq": "RFQ tenders",
+      "contracts": "Contracts & SLA",
+      "claims": "Returns & claims",
+      "settings": "Settings"
+    },
+    "supplier": {
+      "dashboard": "Dashboard",
+      "products": "Products & stock",
+      "warehouseMap": "Warehouse map",
+      "transfers": "Stock transfers",
+      "abcXyz": "ABC/XYZ matrix",
+      "fulfillment": "Order picking",
+      "pricing": "Pricing & contracts",
+      "rfq": "Open RFQs",
+      "scorecard": "Quality scorecard",
+      "settings": "Settings",
+      "skuDetail": "SKU card"
+    },
+    "logistics": {
+      "map": "Fleet map",
+      "routes": "Routes",
+      "planner": "Route planner",
+      "fleet": "Fleet",
+      "drivers": "Drivers",
+      "ecmr": "e-CMR waybills",
+      "settings": "Settings",
+      "routeDetail": "Route"
+    },
+    "admin": {
+      "analytics": "Analytics",
+      "tenants": "Tenants",
+      "kyc": "KYC verification",
+      "audit": "System audit",
+      "settings": "Settings"
+    }
+  },
+  "header": {
+    "skipToContent": "Skip to main content",
+    "toggleSidebar": "Toggle sidebar",
+    "cart": "Cart",
+    "cartWithCount": "Cart · {{count}}",
+    "cartAria": "Shopping cart: {{count}} units",
+    "openCartAria": "Open cart, {{count}} items",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "language": "Interface language",
+    "languageCurrent": "Current language: {{name}}",
+    "notifications": "Notifications",
+    "unreadCount": "{{count}} unread",
+    "noNotifications": "No new notifications",
+    "markAllRead": "Mark all as read",
+    "clearAll": "Clear",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "userMenu": "User profile: {{name}}",
+    "settingsAndCompany": "Profile & company settings",
+    "activeOrg": "Active organization",
+    "logout": "Sign out",
+    "login": "Sign in"
+  },
+  "buyer": {
+    "home": {
+      "chooseWorkspace": "Choose a workspace",
+      "platformName": "Supply chain management platform",
+      "platformDesc": "Open the area that matches your role. Available features depend on your account permissions.",
+      "footerNote": "After signing in, you will see only the areas available for your account."
+    },
+    "pageTitle": {
+      "catalog": "Catalog",
+      "catalogSubtitle": "Search items and add the right quantity to your order",
+      "cart": "Cart",
+      "cartSubtitle": "Verify quantities, MOQ and pricing before checkout",
+      "orders": "Orders",
+      "ordersSubtitle": "Purchase order lifecycle, stock reservation and shipment tracking for {{tenant}}",
+      "invoices": "Invoices",
+      "invoicesSubtitle": "Invoice amounts and statuses from billing",
+      "rfq": "RFQ tenders",
+      "rfqSubtitle": "Procurement tenders and offer management",
+      "contracts": "Contracts & SLA",
+      "contractsSubtitle": "Long-term volume commitments, fixed discount ladders and automatic SLA penalty control",
+      "claims": "Returns & RMA",
+      "claimsSubtitle": "Official discrepancy claims, return of defective goods and corrective invoices",
+      "settings": "Buyer settings",
+      "settingsSubtitle": "Your buyer account preferences",
+      "checkout": "Checkout",
+      "productDetail": "Product detail"
+    },
+    "catalog": {
+      "demoNotice": "Demo data: stock and prices are shown for illustration.",
+      "cachedNotice": "Showing cached catalog data. Stock may be out of date.",
+      "searchPlaceholder": "SKU, name, brand, manufacturer or category",
+      "searchLabel": "Search items",
+      "clearSearch": "Clear search",
+      "categoriesToggle": "Categories",
+      "categoriesHide": "Hide categories",
+      "moreFilters": "Filters",
+      "viewTable": "Table",
+      "viewTableTitle": "Table view (B2B comparison)",
+      "viewGrid": "Grid",
+      "viewGridTitle": "Product cards",
+      "found": "Found",
+      "items": "items",
+      "empty": {
+        "title": "No items found",
+        "description": "No matches for your search. Try adjusting the wording or a cached result.",
+        "reset": "Reset filters"
+      },
+      "category": {
+        "title": "Product categories",
+        "searchPlaceholder": "Search category...",
+        "all": "All categories"
+      },
+      "filters": {
+        "activeFilters": "Active filters:",
+        "category": "Category",
+        "brand": "Brand",
+        "manufacturer": "Manufacturer",
+        "stock": "Stock",
+        "search": "Search",
+        "removeCategory": "Remove category filter",
+        "removeBrand": "Remove brand filter",
+        "removeManufacturer": "Remove manufacturer filter",
+        "removeStock": "Remove stock filter",
+        "clearSearch": "Clear search query",
+        "stockAll": "Any stock",
+        "stockIn": "In stock",
+        "stockLow": "Low stock",
+        "stockOut": "Out of stock",
+        "stockGroupLabel": "Stock status"
+      },
+      "table": {
+        "caption": "Catalog items and procurement terms",
+        "sku": "SKU",
+        "item": "Item & category",
+        "brandMfr": "Brand / Manufacturer",
+        "stock": "Stock",
+        "price": "Net price",
+        "moq": "MOQ",
+        "qty": "Batch",
+        "action": "Action",
+        "leadTime": "Lead: {{days}} d.",
+        "qtyLabel": "Quantity {{name}}, minimum {{min}} {{unit}}"
+      },
+      "card": {
+        "specLink": "Specification & volume discounts →"
+      },
+      "stock": {
+        "in": "In stock",
+        "low": "Low",
+        "out": "Out of stock"
+      },
+      "errors": {
+        "noSupplier": "No supplier is set for this item. Adding to order is not available.",
+        "moqBelow": "Minimum quantity for {{sku}}: {{min}} {{unit}}"
+      },
+      "actions": {
+        "addToCart": "Add",
+        "addToCartAria": "Add {{name}} to cart",
+        "cannotAdd": "Cannot add {{name}}: supplier missing",
+        "cannotAddTitle": "No supplier assigned to this item, cannot add to order",
+        "noSupplierNote": "No supplier",
+        "addedSuccess": "Added to cart: {{qty}} {{unit}} ({{name}})"
+      }
+    },
+    "cart": {
+      "title": "Wholesale procurement cart",
+      "subtitle": "Verify quantities, MOQ and pricing before checkout.",
+      "clearAll": "Clear entire cart",
+      "empty": {
+        "title": "Your wholesale cart is empty",
+        "description": "Browse the catalog, review volume discounts and add items to your procurement order.",
+        "goToCatalog": "Go to catalog"
+      },
+      "vendor": {
+        "title": "Supplier",
+        "remove": "Remove delivery from {{name}}",
+        "removeVendorConfirmTitle": "Remove entire delivery?",
+        "removeVendorConfirmDesc": "Are you sure you want to remove all items from supplier {{name}} from the current order?",
+        "removeVendorConfirmAction": "Remove delivery",
+        "removeVendorConfirmCancel": "Cancel",
+        "removedSuccess": "Items from supplier \"{{name}}\" removed"
+      },
+      "item": {
+        "priceLabel": "Price",
+        "batchWeight": "Batch weight",
+        "moq": "MOQ",
+        "removeAria": "Remove {{name}} from cart",
+        "removeTitle": "Remove item",
+        "decreaseAria": "Decrease quantity of {{name}}",
+        "decreaseTitle": "Decrease by 1",
+        "decreaseMinTitle": "Minimum: {{min}} {{unit}}",
+        "increaseAria": "Increase quantity of {{name}}",
+        "increaseTitle": "Increase by 1",
+        "qtyLabel": "Quantity {{name}}, minimum {{min}} {{unit}}",
+        "subtotal": "Net subtotal"
+      },
+      "vendorFooter": {
+        "shipmentWeight": "Shipment weight",
+        "net": "Net",
+        "vat": "VAT (23%)",
+        "gross": "Gross"
+      },
+      "summary": {
+        "title": "Order summary",
+        "lines": "Total lines:",
+        "linesValue": "{{count}} lines",
+        "totalUnits": "Total units:",
+        "units": "{{count}} units",
+        "unitsShort": "u",
+        "cargoWeight": "Cargo weight:",
+        "weightValue": "{{tons}} t ({{kg}} kg)",
+        "shipments": "Shipments in order:",
+        "shipmentsValue": "{{count}} separate orders",
+        "net": "Net amount:",
+        "vat": "VAT (23% PL):",
+        "total": "Total to pay:",
+        "credit": "Net-30 trade credit is available for verified organizations on order confirmation.",
+        "checkout": "Proceed to checkout",
+        "backToCatalog": "Back to catalog"
+      },
+      "confirmClear": {
+        "title": "Clear entire wholesale cart?",
+        "description": "All items from all suppliers will be removed from your current order. This action cannot be undone.",
+        "confirm": "Clear cart",
+        "cancel": "Cancel",
+        "success": "Wholesale cart cleared"
+      }
+    },
+    "orders": {
+      "title": "Orders",
+      "subtitle": "Purchase order lifecycle, stock reservation and shipment tracking for {{tenant}}",
+      "createOrder": "Create PO",
+      "filters": {
+        "all": "All orders",
+        "submitted": "Submitted",
+        "reserved": "Stock reserved",
+        "paid": "Paid",
+        "shipped": "Shipped",
+        "completed": "Delivered"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "SUBMITTED": "Submitted",
+        "RESERVED": "Reserved",
+        "AWAITING_PAYMENT": "Awaiting payment",
+        "PAID": "Paid",
+        "IN_PROCESSING": "In processing",
+        "SHIPPED": "Shipped",
+        "DELIVERED": "Delivered",
+        "COMPLETED": "Completed",
+        "CANCELLED_OUT_OF_STOCK": "Cancelled (no stock)",
+        "PAYMENT_FAILED": "Payment failed",
+        "DISPUTED": "Disputed",
+        "CANCELLED": "Cancelled"
+      },
+      "table": {
+        "number": "Order #",
+        "customer": "Customer",
+        "destination": "Destination",
+        "amount": "Gross amount",
+        "status": "Status",
+        "actions": "Actions",
+        "advance": "Next",
+        "advanceTitle": "Advance status",
+        "details": "Details"
+      },
+      "create": {
+        "title": "Create order",
+        "subtitle": "Set the delivery destination, customer and line items",
+        "customerLabel": "Customer / Ordering party",
+        "customerPlaceholder": "Silesia Distribution Sp. z o.o.",
+        "destinationLabel": "Delivery destination",
+        "destinationPlaceholder": "Logistics center (Ramp 4)",
+        "itemsTitle": "Order line items ({{count}})",
+        "addItem": "Add item",
+        "itemName": "Item name",
+        "itemSku": "SKU",
+        "qty": "Quantity",
+        "unitPrice": "Unit price",
+        "lineTotal": "Line total",
+        "removeItem": "Remove item",
+        "totalLabel": "Calculated gross total:",
+        "cancel": "Cancel",
+        "submit": "Create order ({{count}})",
+        "submitShort": "Create order",
+        "errors": {
+          "skuRequired": "SKU is required",
+          "nameRequired": "Item name is required",
+          "qtyMin": "Minimum 1",
+          "priceMin": "Price must be positive",
+          "customerRequired": "Customer is required",
+          "destinationRequired": "Delivery destination is required",
+          "minOneItem": "At least one item is required"
+        }
+      }
+    },
+    "invoices": {
+      "netAmount": "Net total",
+      "netHint": "VAT exclusive",
+      "vatAmount": "VAT 23% (MPP)",
+      "vatHint": "Per issued invoices",
+      "grossDebt": "Total debt (Gross)",
+      "grossHint": "Final settlement amount",
+      "issuedInvoices": "Issued invoices (Faktury VAT)",
+      "empty": "No invoices yet",
+      "paid": "Paid",
+      "unpaid": "Unpaid",
+      "overdue": "Overdue",
+      "unknown": "Unknown",
+      "table": {
+        "number": "Invoice #",
+        "buyer": "Buyer & NIP",
+        "net": "Net",
+        "vat": "VAT (23%)",
+        "gross": "Gross",
+        "dueDate": "Due date",
+        "status": "Status"
+      }
+    },
+    "productDetail": {
+      "backToCatalog": "Back to catalog",
+      "loading": "Loading item...",
+      "error": "Failed to load item. Try refreshing the page.",
+      "notFound": "Item with SKU {{sku}} was not found in the catalog.",
+      "category": "Category",
+      "brand": "Brand",
+      "manufacturer": "Manufacturer",
+      "dimensions": "Dimensions",
+      "unitWeight": "Unit weight",
+      "warehouse": "Warehouse",
+      "available": "Available",
+      "moq": "Minimum order (MOQ)",
+      "supplier": "Supplier",
+      "purchase": "Purchase",
+      "perUnit": "per {{unit}}",
+      "qtyLabel": "Quantity",
+      "qtyAriaLabel": "Quantity {{name}}, minimum {{min}} {{unit}}",
+      "moqHint": "Minimum order: {{min}} {{unit}}",
+      "addToCart": "Add to cart",
+      "noSupplier": "No supplier assigned — this item cannot be added to an order.",
+      "unavailable": "Item is temporarily unavailable.",
+      "moqError": "Minimum quantity: {{min}} {{unit}}",
+      "addedSuccess": "Added to cart: {{qty}} {{unit}}"
+    },
+    "contracts": {
+      "demoNotice": "Demo contract data. Create and download actions are not yet available.",
+      "print": "Print",
+      "volumeProgress": "Volume commitment progress (target: {{target}} {{unit}})",
+      "units": "u",
+      "discount": "Agreed discount",
+      "discountOf": "off list",
+      "slaLeadTime": "SLA lead time",
+      "leadTimeMax": "Up to {{days}} business days",
+      "slaPenalty": "SLA penalty",
+      "penaltyPerDay": "{{percent}}% auto-credit/day of delay",
+      "validity": "Validity",
+      "status": {
+        "active": "Active",
+        "pendingRenewal": "Pending renewal",
+        "completed": "Completed"
+      }
+    },
+    "claims": {
+      "reportCta": "Report discrepancy (RMA)",
+      "modalTitle": "File an RMA claim",
+      "modalDesc": "File an official quality or quantity discrepancy. The supplier will be notified and the order moved to arbitration.",
+      "settlementUnderReview": "Under review (awaiting corrective invoice)",
+      "submitSuccess": "RMA claim submitted",
+      "submit": "Submit RMA claim",
+      "reasons": {
+        "DAMAGED_CARGO": "Damaged cargo / broken packaging at unloading",
+        "MISSING_QUANTITY": "Missing quantity per delivery note",
+        "QUALITY_DEFECT": "Manufacturing defect / specification mismatch",
+        "WRONG_ITEM": "Wrong SKU / mixed lot"
+      },
+      "form": {
+        "orderLabel": "Purchase order (PO)",
+        "reasonLabel": "Discrepancy category",
+        "amountLabel": "Compensation requested (PLN)",
+        "notesLabel": "Detailed description and evidence",
+        "notesPlaceholder": "Describe packaging damage, broken seals, missing pallets or photographic evidence captured at unloading..."
+      },
+      "table": {
+        "claimNumber": "RMA #",
+        "orderNumber": "PO",
+        "supplier": "Supplier",
+        "reason": "Reason",
+        "amount": "Compensation",
+        "date": "Filed",
+        "status": "Status",
+        "settlement": "Resolution"
+      },
+      "status": {
+        "approved": "Credit note approved",
+        "underReview": "Under review"
+      }
+    },
+    "requests": {
+      "createCta": "Create RFQ",
+      "createCtaFirst": "Create your first RFQ",
+      "mockNotice": "Demo data. Switch to live mode to view your organization data.",
+      "errorTitle": "Failed to load tenders",
+      "errorDesc": "Check your connection and try again.",
+      "retry": "Retry",
+      "loading": "Loading tenders…",
+      "filterAll": "All tenders",
+      "evaluateBids": "Review bids ({{count}})",
+      "targetBudget": "Target budget",
+      "itemsCount": "Items required",
+      "itemsCountValue": "{{count}} items",
+      "deadline": "Deadline",
+      "deadlineNotSet": "No deadline",
+      "bidsReceived": "bids received",
+      "kpi": {
+        "open": "Open tenders",
+        "openHint": "Awaiting supplier bids",
+        "review": "Under review / bids received",
+        "reviewHint": "Ready for comparative analysis",
+        "awarded": "Successfully awarded",
+        "awardedHint": "Converted into live POs"
+      },
+      "empty": {
+        "none": "No tenders yet",
+        "filtered": "No tenders with selected status",
+        "desc": "Create a request for quotation to invite suppliers."
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "OPEN": "Open",
+        "EVALUATION": "Bids received",
+        "AWARDED": "Awarded",
+        "CLOSED": "Closed"
+      },
+      "bidStatus": {
+        "PENDING": "Pending decision",
+        "ACCEPTED": "Accepted",
+        "REJECTED": "Rejected"
+      },
+      "detail": {
+        "crumb": "Tender analysis",
+        "backToList": "All RFQs",
+        "supplierFallback": "Supplier",
+        "notFound": "Tender not found",
+        "summaryHeading": "Request parameters",
+        "budget": "Budget",
+        "deliveryAddress": "Delivery address",
+        "deadline": "Deadline",
+        "notSpecified": "Not specified",
+        "bidsCount": "{{count}} bids",
+        "itemsHeading": "Requested items ({{count}})",
+        "noSpec": "No specification in this request.",
+        "itemCol": "Item",
+        "qtyCol": "Quantity",
+        "substitutesCol": "Substitutes",
+        "substitutesAllowed": "Allowed",
+        "substitutesNotAllowed": "Not allowed",
+        "bidsHeading": "Bids ({{count}})",
+        "noBidsYet": "Suppliers have not submitted any bids yet.",
+        "supplierCol": "Supplier",
+        "amountCol": "Amount",
+        "leadTimeCol": "Delivery",
+        "leadTimeDays": "{{days}} d",
+        "paymentTermsCol": "Payment terms",
+        "statusCol": "Status",
+        "award": "Award",
+        "awarded": "Awarded",
+        "pricesByItem": "Prices by line item",
+        "alternative": "alternative",
+        "itemFallback": "Item",
+        "noLineBreakdown": "Supplier did not provide a per-item breakdown.",
+        "noCategory": "No category",
+        "awardConfirmTitle": "Award this bid?",
+        "awardConfirmDesc": "The tender will be marked as awarded to {{supplier}} for {{amount}} {{currency}}. The order is created separately.",
+        "awardConfirm": "Confirm award",
+        "awardError": "Failed to award the bid."
+      }
+    }
+  },
+  "logistics": {
+    "routes": {
+      "title": "Delivery routes",
+      "subtitle": "Transport corridors, distance, time and CO₂ per trip",
+      "openPlanner": "Route planner",
+      "openRoute": "Open route",
+      "col": {
+        "code": "Code",
+        "corridor": "Corridor",
+        "vehicleDriver": "Vehicle & driver",
+        "distanceTime": "Distance / time",
+        "stops": "Stops",
+        "co2": "CO₂"
+      },
+      "status": {
+        "inTransit": "In transit",
+        "planned": "Planned",
+        "completed": "Completed"
+      }
+    },
+    "routeDetail": {
+      "backToList": "Back to routes",
+      "vehicle": "Vehicle",
+      "driver": "Driver",
+      "distance": "Distance",
+      "duration": "Estimated time",
+      "stops": "Stops",
+      "co2": "CO₂ emissions",
+      "notFoundTitle": "Route not found",
+      "notFoundBody": "The record may have been deleted or the link is outdated."
+    },
+    "fleet": {
+      "title": "Fleet",
+      "subtitle": "Vehicles, load capacity and technical condition",
+      "actions": {
+        "addVehicle": "Add vehicle",
+        "passport": "Vehicle passport",
+        "passportAria": "Open vehicle passport"
+      },
+      "searchLabel": "Search vehicles",
+      "searchPlaceholder": "Plate, model or driver…",
+      "searchClear": "Clear search",
+      "clearAll": "Clear filters",
+      "filter": {
+        "ariaLabel": "Filter by vehicle type",
+        "all": "All",
+        "heavy": "Heavy trucks",
+        "medium": "Medium vans"
+      },
+      "stats": {
+        "total": "Vehicles",
+        "totalHelper": "in fleet",
+        "active": "On road",
+        "activeHelper": "active now",
+        "depot": "At depot",
+        "depotHelper": "ready for dispatch",
+        "maintenance": "Maintenance",
+        "maintenanceHelper": "scheduled service",
+        "payload": "Payload",
+        "volumeHelper": "capacity"
+      },
+      "table": {
+        "plate": "Plate",
+        "model": "Model",
+        "type": "Type",
+        "driver": "Driver",
+        "payload": "Load",
+        "volume": "Volume",
+        "inspection": "Service due",
+        "status": "Status"
+      },
+      "status": {
+        "active": "On road",
+        "depot": "At depot",
+        "maintenance": "In maintenance"
+      },
+      "payloadAria": "Load relative to payload capacity",
+      "empty": {
+        "title": "No vehicles found",
+        "subtitle": "Adjust the filters or clear the search"
+      }
+    }
+  },
+  "admin": {
+    "users": {
+      "title": "Organizations",
+      "subtitle": "Counterparties, roles and credit lines",
+      "actions": {
+        "newEntity": "New organization",
+        "kycQueue": "KYC queue",
+        "configure": "Configure",
+        "configureAria": "Configure organization",
+        "moreAria": "More actions"
+      },
+      "bulk": {
+        "exportKyc": "Export KYC",
+        "adjustCredit": "Adjust credit line",
+        "clear": "Clear selection",
+        "selectAll": "Select all",
+        "selectOne": "Select organization"
+      },
+      "bulkActionsLabel": "Actions for selected",
+      "selectedCount": "Selected: {{count}}",
+      "cashOnly": "No credit line",
+      "clearAll": "Clear filters",
+      "searchLabel": "Search organizations",
+      "searchPlaceholder": "Name or NIP…",
+      "searchClear": "Clear search",
+      "filter": {
+        "ariaLabel": "Filter by role",
+        "all": "All",
+        "buyer": "Buyers",
+        "supplier": "Suppliers",
+        "carrier": "Carriers"
+      },
+      "table": {
+        "name": "Organization",
+        "nip": "NIP",
+        "role": "Role",
+        "kyc": "KYC",
+        "creditLimit": "Credit line",
+        "exposure": "Exposure",
+        "joined": "Joined"
+      },
+      "kyc": {
+        "verified": "Verified",
+        "pending": "Pending audit",
+        "rejected": "Rejected",
+        "notSubmitted": "Not submitted"
+      },
+      "role": {
+        "buyer": "Buyer",
+        "supplier": "Supplier",
+        "carrier": "Carrier"
+      },
+      "utilizationAria": "{{name}}: credit utilization {{pct}}%",
+      "empty": {
+        "title": "No organizations found",
+        "subtitle": "Adjust the filters or clear the search"
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Platform KPIs for {{tenant}}",
+      "refresh": "Refresh",
+      "refreshed": "Metrics refreshed",
+      "otif": "OTIF",
+      "leadTime": "Avg lead time",
+      "throughput": "Throughput",
+      "savings": "Cost savings",
+      "toSlaTarget": "to SLA target",
+      "fasterThan": " faster",
+      "activeCorridors": "active corridors",
+      "vrpReverseAuctions": "VRP + reverse auctions",
+      "otifTrendTitle": "OTIF trend",
+      "trendPeriod": "Period",
+      "trendOnTime": "On time",
+      "trendInFull": "In full",
+      "trendDelayed": "Delayed",
+      "trendOtif": "OTIF",
+      "corridorsTitle": "Corridors",
+      "corridor": "Corridor",
+      "distance": "Distance",
+      "actual": "Actual",
+      "target": "Target",
+      "load": "Load",
+      "statusOptimal": "Optimal",
+      "statusAttention": "Attention",
+      "abcTitle": "ABC classification",
+      "abcClass": "Class",
+      "abcProfile": "Profile",
+      "abcShare": "Revenue share",
+      "abcExamples": "Example SKUs",
+      "abcA": "A",
+      "abcADesc": "High value, tight control, daily review",
+      "abcB": "B",
+      "abcBDesc": "Medium value, weekly review",
+      "abcC": "C",
+      "abcCDesc": "Long tail, periodic review",
+      "warehouseTurnover": "Warehouse turnover",
+      "warehouse": "Warehouse",
+      "turnover": "Turnover",
+      "daysOnHand": "Days on hand"
+    }
+  },
+  "supplier": {
+    "products": {
+      "title": "Products & stock",
+      "subtitle": "SKU registry with stock, prices and logistics attributes",
+      "emptyDesc": "No SKUs match the current filters.",
+      "filters": {
+        "searchLabel": "Search SKUs",
+        "searchPlaceholder": "SKU or name…",
+        "searchChip": "Search",
+        "categoryPlaceholder": "Category",
+        "allCategories": "All categories",
+        "categoryChip": "Category",
+        "brandChip": "Brand",
+        "manufacturerChip": "Manufacturer",
+        "allItems": "All items",
+        "activeLabel": "Active only",
+        "clearAll": "Clear all"
+      },
+      "actions": {
+        "addSku": "Add SKU",
+        "manage": "Manage",
+        "manageAria": "Open registry management",
+        "reserve10": "Reserve 10 pcs",
+        "reserveAria": "Reserve 10 pieces",
+        "addBrand": "Add brand",
+        "addCategory": "Add category",
+        "addManufacturer": "Add manufacturer"
+      },
+      "table": {
+        "skuBrand": "SKU / brand",
+        "nameClass": "Name & class",
+        "logistics": "Logistics",
+        "warehouse": "Warehouse",
+        "available": "Available",
+        "reserved": "Reserved",
+        "price": "Price",
+        "unit": "unit"
+      },
+      "warehouse": {
+        "capacity": "Capacity",
+        "filled": "{{pct}}% full",
+        "used": "{{used}} of {{total}} pallet places",
+        "pallets": "pallet places",
+        "coldChainLabel": "Cold chain",
+        "tempLabel": "Temperature"
+      }
+    },
+    "orders": {
+      "title": "Order picking",
+      "subtitle": "Fulfillment queue by customer and delivery window",
+      "filters": {
+        "ariaLabel": "Filter by fulfillment status",
+        "all": "All",
+        "pending": "Awaiting picking",
+        "readyForDispatch": "Ready for dispatch"
+      },
+      "table": {
+        "orderNumber": "Order",
+        "customerDelivery": "Customer & delivery",
+        "items": "Items",
+        "total": "Total",
+        "status": "Status",
+        "action": "Action"
+      },
+      "itemsUnit": "items",
+      "fulfillAction": "Pick",
+      "actionAria": "Open fulfillment for order",
+      "empty": "No orders in this status"
+    },
+    "dashboard": {
+      "welcome": "Welcome, {{name}}",
+      "verifiedSupplier": "Verified supplier",
+      "activeContext": "Active context",
+      "openOrdersQueue": "Open order queue",
+      "kpi": {
+        "gmv": "GMV this month",
+        "vsLastMonth": "vs last month",
+        "activeOrders": "Active orders",
+        "warehouseFill": "Warehouse load",
+        "otif": "OTIF",
+        "aboveSla": "above SLA",
+        "targetSla": "target {{pct}}"
+      },
+      "pipeline": {
+        "title": "Order pipeline",
+        "subtitle": "From confirmation to delivery",
+        "submitted": "Submitted",
+        "reserved": "Reserved",
+        "paid": "Paid",
+        "shipped": "Shipped",
+        "completed": "Completed"
+      },
+      "recentOrders": {
+        "title": "Recent orders",
+        "subtitle": "Latest confirmations"
+      },
+      "allOrders": "All orders",
+      "fleet": {
+        "title": "Vehicles on routes",
+        "subtitle": "Today's trips",
+        "inTransit": "in transit",
+        "planned": "planned"
+      },
+      "routeMap": "Route map"
+    },
+    "scorecard": {
+      "title": "Quality scorecard",
+      "subtitle": "Composite score and evaluation factors",
+      "tierGold": "Gold",
+      "top5Percent": "Top 5% on platform",
+      "compositeLabel": "Composite score",
+      "basis": "Based on {{count}} deliveries in {{period}}",
+      "factorsTitle": "Evaluation factors",
+      "factorCol": "Factor",
+      "weight": "Weight",
+      "score": "Score",
+      "detail": "Detail",
+      "threshold": "threshold",
+      "factor": {
+        "otif": "OTIF — on time in full",
+        "quality": "Quality (RMA)",
+        "price": "Price competitiveness",
+        "leadTime": "Lead time"
+      },
+      "helper": {
+        "avgDispatch": "avg dispatch {{value}}",
+        "zeroCriticalRma": "critical RMA: {{value}}",
+        "competitive": "{{value}} below median",
+        "leadTimeDays": "lead time {{value}} days"
+      }
+    },
+    "sku": {
+      "title": "SKU card",
+      "backToCatalog": "Back to products",
+      "activeInWms": "Active in WMS",
+      "save": "Save",
+      "saved": "Changes for {{sku}} saved",
+      "tab": {
+        "bins": "Bins",
+        "batches": "Batches",
+        "specs": "Specifications"
+      },
+      "binsTitle": "Placement across warehouses",
+      "bins": {
+        "warehouse": "Warehouse",
+        "aisleRack": "Aisle / rack",
+        "binCode": "Bin",
+        "available": "Available",
+        "reserved": "Reserved"
+      },
+      "batchesTitle": "Batches & QC",
+      "batches": {
+        "lot": "Batch",
+        "mfg": "Manufactured",
+        "exp": "Expires",
+        "qty": "Qty",
+        "qc": "QC",
+        "approved": "Approved"
+      },
+      "specsTitle": "Core parameters",
+      "specs": {
+        "name": "Name",
+        "price": "Base price",
+        "priceHelper": "Current price:",
+        "moq": "MOQ"
+      }
+    }
   }
 }

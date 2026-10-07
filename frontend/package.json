@@ -3,12 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3000",
-    "dev:with-i18n": "concurrently \"pnpm watch:locale-types\" \"vite --port 3000\"",
-    "start": "vite --port 3000",
+    "dev": "vite --host 0.0.0.0 --port 3000",
+    "dev:with-i18n": "concurrently \"pnpm watch:locale-types\" \"vite --host 0.0.0.0 --port 3000\"",
+    "start": "vite --host 0.0.0.0 --port 3000",
     "build": "pnpm validate:locale && pnpm generate:locale-types && vite build && tsc",
     "serve": "vite preview",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "generate:types": "openapi-ts",
     "generate:paths": "openapi-typescript http://localhost:8888/v3/api-docs/aggregated --output src/types/api.ts --alphabetize --enum --default-non-nullable --export-type --root-types --generate-path-params",
     "generate:locale-types": "node scripts/generate-translation-types.cjs",
@@ -22,6 +23,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-checkbox": "^1.3.2",
     "@radix-ui/react-collapsible": "^1.1.11",
@@ -69,6 +71,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
+    "@playwright/test": "^1.63.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
     "@types/node": "^24.0.15",

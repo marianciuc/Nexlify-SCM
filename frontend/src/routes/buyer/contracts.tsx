@@ -1,203 +1,205 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
-import {
-  FileText,
-  ShieldCheck,
-  Building2,
-  Calendar,
-  AlertTriangle,
-  TrendingDown,
-  CheckCircle2,
-  Download,
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { FileText, Building2, Printer } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/page-header';
+import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { useLocale } from '@/hooks/useLocale';
 
 export const Route = createFileRoute('/buyer/contracts')({
-  component: BuyerContractsPage,
-  staticData: {
-    crumb: {
-      label: 'Framework Contracts',
-    },
-  },
+    component: BuyerContractsPage,
+    staticData: { crumb: { label: 'nav.buyer.contracts' } },
 });
 
 interface FrameworkContract {
-  id: string;
-  contractNumber: string;
-  supplierName: string;
-  supplierNip: string;
-  productCategory: string;
-  volumeCommittedUnits: number;
-  volumeFulfilledUnits: number;
-  contractDiscountPercent: number;
-  validFrom: string;
-  validTo: string;
-  slaMaxLeadTimeDays: number;
-  slaPenaltyPerDayPercent: number;
-  status: 'ACTIVE' | 'PENDING_RENEWAL' | 'COMPLETED';
+    id: string;
+    contractNumber: string;
+    supplierName: string;
+    supplierNip: string;
+    productCategory: string;
+    volumeCommittedUnits: number;
+    volumeFulfilledUnits: number;
+    contractDiscountPercent: number;
+    validFrom: string;
+    validTo: string;
+    slaMaxLeadTimeDays: number;
+    slaPenaltyPerDayPercent: number;
+    status: 'ACTIVE' | 'PENDING_RENEWAL' | 'COMPLETED';
 }
 
 const CONTRACTS_DATA: FrameworkContract[] = [
-  {
-    id: 'cntr-01',
-    contractNumber: 'B2B-SLA-2026-0019',
-    supplierName: 'Drewnex Palety Sp. z o.o.',
-    supplierNip: '7822910483',
-    productCategory: 'Packaging & Cargo Units (EPAL)',
-    volumeCommittedUnits: 10000,
-    volumeFulfilledUnits: 7500,
-    contractDiscountPercent: 18.5,
-    validFrom: '2026-01-01',
-    validTo: '2026-12-31',
-    slaMaxLeadTimeDays: 2,
-    slaPenaltyPerDayPercent: 0.5,
-    status: 'ACTIVE',
-  },
-  {
-    id: 'cntr-02',
-    contractNumber: 'B2B-SLA-2026-0044',
-    supplierName: 'PlastChem Industrial Sp. k.',
-    supplierNip: '8942019485',
-    productCategory: 'Stretch Film & Packaging Supplies',
-    volumeCommittedUnits: 2500,
-    volumeFulfilledUnits: 2350,
-    contractDiscountPercent: 15.0,
-    validFrom: '2026-03-01',
-    validTo: '2026-09-30',
-    slaMaxLeadTimeDays: 3,
-    slaPenaltyPerDayPercent: 0.75,
-    status: 'PENDING_RENEWAL',
-  },
+    {
+        id: 'cntr-01',
+        contractNumber: 'B2B-SLA-2026-0019',
+        supplierName: 'Drewnex Palety Sp. z o.o.',
+        supplierNip: '7822910483',
+        productCategory: 'Packaging & Cargo Units (EPAL)',
+        volumeCommittedUnits: 10000,
+        volumeFulfilledUnits: 7500,
+        contractDiscountPercent: 18.5,
+        validFrom: '2026-01-01',
+        validTo: '2026-12-31',
+        slaMaxLeadTimeDays: 2,
+        slaPenaltyPerDayPercent: 0.5,
+        status: 'ACTIVE',
+    },
+    {
+        id: 'cntr-02',
+        contractNumber: 'B2B-SLA-2026-0044',
+        supplierName: 'PlastChem Industrial Sp. k.',
+        supplierNip: '8942019485',
+        productCategory: 'Stretch Film & Packaging Supplies',
+        volumeCommittedUnits: 2500,
+        volumeFulfilledUnits: 2350,
+        contractDiscountPercent: 15.0,
+        validFrom: '2026-03-01',
+        validTo: '2026-09-30',
+        slaMaxLeadTimeDays: 3,
+        slaPenaltyPerDayPercent: 0.75,
+        status: 'PENDING_RENEWAL',
+    },
 ];
 
+const STATUS_META: Record<FrameworkContract['status'], { tone: 'success' | 'warning' | 'neutral'; labelKey: string }> = {
+    ACTIVE:          { tone: 'success', labelKey: 'buyer.contracts.status.active' },
+    PENDING_RENEWAL: { tone: 'warning', labelKey: 'buyer.contracts.status.pendingRenewal' },
+    COMPLETED:       { tone: 'neutral', labelKey: 'buyer.contracts.status.completed' },
+};
+
 function BuyerContractsPage() {
-  const [contracts] = useState<FrameworkContract[]>(CONTRACTS_DATA);
+    const { t } = useLocale();
+    const contracts = CONTRACTS_DATA;
 
-  return (
-    <div className="space-y-6 p-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <FileText className="h-6 w-6 text-emerald-600" />
-              Framework Agreements & SLA Contracts
-            </h1>
-            <Badge variant="outline" className="text-emerald-700 bg-emerald-50 border-emerald-200">
-              Enterprise SCM 2.0
-            </Badge>
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            Long-term procurement volume commitments, fixed preferential B2B price tiers, and automated SLA penalty tracking.
-          </p>
+    return (
+        <div className="space-y-6 max-w-7xl mx-auto min-w-0">
+            <PageHeader
+                title={
+                    <span className="flex items-center gap-2">
+                        <FileText className="h-5 w-5 text-primary" />
+                        {t('buyer.pageTitle.contracts')}
+                    </span>
+                }
+                subtitle={t('buyer.pageTitle.contractsSubtitle')}
+            />
+
+            <p
+                role="status"
+                className="border-l-2 border-amber-500 pl-3 py-1 text-sm text-muted-foreground"
+            >
+                {t('buyer.contracts.demoNotice')}
+            </p>
+
+            <div className="space-y-6">
+                {contracts.map((c) => {
+                    const fulfillmentProgress = Math.round((c.volumeFulfilledUnits / c.volumeCommittedUnits) * 100);
+                    const meta = STATUS_META[c.status];
+                    return (
+                        <Card key={c.id} className="border-border shadow-2xs overflow-hidden bg-card">
+                            <CardHeader className="bg-muted/40 border-b border-border py-3 px-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <Building2 className="h-5 w-5 text-primary shrink-0" />
+                                    <div className="min-w-0">
+                                        <span className="font-mono text-xs font-bold text-muted-foreground block">
+                                            {c.contractNumber}
+                                        </span>
+                                        <h3 className="text-base font-semibold text-foreground truncate">
+                                            {c.supplierName}
+                                        </h3>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3">
+                                    <StatusBadge tone={meta.tone} label={t(meta.labelKey as any)} />
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="gap-1 h-8"
+                                        onClick={() => window.print()}
+                                    >
+                                        <Printer className="h-3.5 w-3.5" />
+                                        {t('buyer.contracts.print')}
+                                    </Button>
+                                </div>
+                            </CardHeader>
+
+                            <CardContent className="p-6 space-y-6">
+                                <div className="space-y-2">
+                                    <div className="flex justify-between text-xs">
+                                        <span className="font-semibold text-foreground">
+                                            {t('buyer.contracts.volumeProgress', {
+                                                target: c.volumeCommittedUnits.toLocaleString('pl-PL'),
+                                                unit: t('buyer.contracts.units'),
+                                            })}
+                                        </span>
+                                        <span className="font-mono font-bold text-primary">
+                                            {c.volumeFulfilledUnits.toLocaleString('pl-PL')} {t('buyer.contracts.units')} ({fulfillmentProgress}%)
+                                        </span>
+                                    </div>
+
+                                    <div
+                                        className="w-full bg-muted rounded-full h-3 overflow-hidden"
+                                        role="progressbar"
+                                        aria-valuenow={fulfillmentProgress}
+                                        aria-valuemin={0}
+                                        aria-valuemax={100}
+                                    >
+                                        <div
+                                            className="bg-primary h-full rounded-full transition-all duration-500"
+                                            style={{ width: `${fulfillmentProgress}%` }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-muted/40 p-4 rounded-xl border border-border text-xs">
+                                    <Term
+                                        label={t('buyer.contracts.discount')}
+                                        value={`-${c.contractDiscountPercent}% ${t('buyer.contracts.discountOf')}`}
+                                        tone="success"
+                                    />
+                                    <Term
+                                        label={t('buyer.contracts.slaLeadTime')}
+                                        value={t('buyer.contracts.leadTimeMax', {
+                                            days: c.slaMaxLeadTimeDays,
+                                        })}
+                                    />
+                                    <Term
+                                        label={t('buyer.contracts.slaPenalty')}
+                                        value={t('buyer.contracts.penaltyPerDay', {
+                                            percent: c.slaPenaltyPerDayPercent,
+                                        })}
+                                        tone="warning"
+                                    />
+                                    <Term
+                                        label={t('buyer.contracts.validity')}
+                                        value={`${c.validFrom} → ${c.validTo}`}
+                                        tone="muted"
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
+            </div>
         </div>
-
-        <Button
-          className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 text-xs shadow-xs"
-          onClick={() => toast.info('Initiated new Framework Contract draft request')}
-        >
-          Draft New SLA Agreement
-        </Button>
-      </div>
-
-      {/* Contract Cards */}
-      <div className="space-y-6">
-        {contracts.map((c) => {
-          const fulfillmentProgress = Math.round((c.volumeFulfilledUnits / c.volumeCommittedUnits) * 100);
-          return (
-            <Card key={c.id} className="border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-              <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b py-3 px-5 flex flex-row items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Building2 className="h-5 w-5 text-emerald-600" />
-                  <div>
-                    <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300">
-                      {c.contractNumber}
-                    </span>
-                    <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-                      {c.supplierName}
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <Badge
-                    variant={c.status === 'ACTIVE' ? 'default' : 'secondary'}
-                    className={
-                      c.status === 'ACTIVE'
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : 'bg-amber-50 text-amber-700 border-amber-200'
-                    }
-                  >
-                    {c.status}
-                  </Badge>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-8 gap-1 text-xs"
-                    onClick={() => toast.success(`Downloaded signed SLA contract: ${c.contractNumber}`)}
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    PDF
-                  </Button>
-                </div>
-              </CardHeader>
-
-              <CardContent className="p-6 space-y-6">
-                {/* Volume Progress Bar */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs">
-                    <span className="font-semibold text-slate-700 dark:text-slate-300">
-                      Volume Commitment Fulfillment Progress (Target: {c.volumeCommittedUnits.toLocaleString()} units)
-                    </span>
-                    <span className="font-mono font-bold text-emerald-600">
-                      {c.volumeFulfilledUnits.toLocaleString()} units ({fulfillmentProgress}%)
-                    </span>
-                  </div>
-
-                  <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden">
-                    <div
-                      className="bg-emerald-600 h-full rounded-full transition-all duration-500"
-                      style={{ width: `${fulfillmentProgress}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                {/* Terms Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 dark:bg-slate-900 p-4 rounded-xl text-xs">
-                  <div>
-                    <span className="text-slate-500 block">Negotiated Discount:</span>
-                    <span className="font-mono font-bold text-emerald-600 text-sm">
-                      -{c.contractDiscountPercent}% Off List
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block">SLA Lead Time:</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      Max {c.slaMaxLeadTimeDays} business days
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block">SLA Penalty Clause:</span>
-                    <span className="font-semibold text-amber-600">
-                      {c.slaPenaltyPerDayPercent}% auto-credit/day late
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block">Contract Term:</span>
-                    <span className="font-mono text-slate-700 dark:text-slate-300">
-                      {c.validFrom} ➔ {c.validTo}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
-  );
+    );
 }
+
+function Term({ label, value, tone = 'default' }: { label: string; value: string; tone?: 'default' | 'success' | 'warning' | 'muted' }) {
+    const valueClass =
+        tone === 'success'
+            ? 'font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm'
+            : tone === 'warning'
+                ? 'font-semibold text-amber-600 dark:text-amber-400'
+                : tone === 'muted'
+                    ? 'font-mono text-muted-foreground'
+                    : 'font-semibold text-foreground';
+    return (
+        <div>
+            <span className="text-muted-foreground block">{label}</span>
+            <span className={valueClass}>{value}</span>
+        </div>
+    );
+}
+
+export default BuyerContractsPage;

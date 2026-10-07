@@ -1,6 +1,7 @@
 import {describe, it, expect, beforeEach} from 'vitest';
 
 import {SecurityScope} from '@/types/api';
+
 import useAuthStore from './auth-store';
 
 describe('auth-store unit tests', () => {

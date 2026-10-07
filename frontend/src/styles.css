@@ -201,3 +201,30 @@ code, kbd, samp, pre {
         scroll-behavior: auto !important;
     }
 }
+
+/* Premium Tactile Utilities */
+.glass-panel {
+    background-color: color-mix(in oklch, var(--card) 85%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+}
+
+.interactive-card {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .interactive-card:hover {
+        transform: translateY(-2px);
+    }
+    .interactive-card:active {
+        transform: translateY(0);
+    }
+}
+
+.metric-number {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+}
+

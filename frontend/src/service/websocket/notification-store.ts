@@ -22,26 +22,8 @@ interface NotificationState {
 }
 
 export const useNotificationStore = create<NotificationState>((set) => ({
-    notifications: [
-        {
-            id: 'init-1',
-            title: 'Saga Order Reserved',
-            message: 'Order ORD-2026-0891 passed multi-warehouse inventory reservation.',
-            type: 'ORDER',
-            timestamp: new Date().toLocaleTimeString(),
-            read: false,
-            referenceId: 'ORD-2026-0891',
-        },
-        {
-            id: 'init-2',
-            title: 'GraphHopper Route Generated',
-            message: 'Optimal heavy-truck corridor calculated for Warszawa ➔ Wrocław (342 km).',
-            type: 'LOGISTICS',
-            timestamp: new Date(Date.now() - 3600000).toLocaleTimeString(),
-            read: false,
-        },
-    ],
-    unreadCount: 2,
+    notifications: [],
+    unreadCount: 0,
     isConnected: false,
 
     addNotification: (notification) =>
@@ -52,17 +34,25 @@ export const useNotificationStore = create<NotificationState>((set) => ({
                 timestamp: new Date().toLocaleTimeString(),
                 read: false,
             };
+            const notifications = [newNotif, ...state.notifications].slice(0, 100);
             return {
-                notifications: [newNotif, ...state.notifications],
-                unreadCount: state.unreadCount + 1,
+                notifications,
+                unreadCount: notifications.filter((item) => !item.read).length,
             };
         }),
 
     markAsRead: (id) =>
-        set((state) => ({
-            notifications: state.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
-            unreadCount: Math.max(0, state.unreadCount - 1),
-        })),
+        set((state) => {
+            const notification = state.notifications.find((item) => item.id === id);
+            if (!notification || notification.read) return state;
+
+            return {
+                notifications: state.notifications.map((item) =>
+                    item.id === id ? { ...item, read: true } : item
+                ),
+                unreadCount: Math.max(0, state.unreadCount - 1),
+            };
+        }),
 
     markAllAsRead: () =>
         set((state) => ({

@@ -1,17 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { Grid } from 'lucide-react';
 import { useState } from 'react';
-import {
-  Grid,
-  TrendingUp,
-  Package,
-  Layers,
-  ShieldAlert,
-  CheckCircle2,
-  AlertTriangle,
-} from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const Route = createFileRoute('/supplier/inventory/abc-xyz')({
@@ -74,6 +66,7 @@ const ABC_ITEMS: AbcItem[] = [
 
 function AbcXyzAnalysisPage() {
   const [selectedQuadrant, setSelectedQuadrant] = useState<string>('ALL');
+  const [selectedWarehouse, setSelectedWarehouse] = useState<string>('ALL');
 
   const filtered = ABC_ITEMS.filter((i) => {
     if (selectedQuadrant === 'ALL') return true;
@@ -81,7 +74,7 @@ function AbcXyzAnalysisPage() {
   });
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -98,6 +91,51 @@ function AbcXyzAnalysisPage() {
             Dual-axis classification: Value contribution (ABC) vs Demand predictability & variation coefficient (XYZ).
           </p>
         </div>
+
+        {/* Warehouse Filter */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          {[
+            { id: 'ALL', label: 'All Distribution Hubs' },
+            { id: 'WAW', label: 'Warszawa DC-01' },
+            { id: 'KTW', label: 'Katowice DC-02' },
+          ].map((wh) => (
+            <button
+              key={wh.id}
+              onClick={() => setSelectedWarehouse(wh.id)}
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+                selectedWarehouse === wh.id
+                  ? 'bg-amber-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              }`}
+            >
+              {wh.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* KPI Distribution Summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <Card className="p-4 border-slate-200 dark:border-slate-800">
+          <span className="text-xs text-muted-foreground">Class A (Top Revenue)</span>
+          <div className="text-xl font-bold font-mono text-emerald-600 mt-1">62.5%</div>
+          <span className="text-2xs text-slate-500">1 SKU • Strict JIT buffer</span>
+        </Card>
+        <Card className="p-4 border-slate-200 dark:border-slate-800">
+          <span className="text-xs text-muted-foreground">Class B (Steady Secondary)</span>
+          <div className="text-xl font-bold font-mono text-blue-600 mt-1">30.1%</div>
+          <span className="text-2xs text-slate-500">2 SKUs • Weekly automated PO</span>
+        </Card>
+        <Card className="p-4 border-slate-200 dark:border-slate-800">
+          <span className="text-xs text-muted-foreground">Class C (Sporadic / Bulky)</span>
+          <div className="text-xl font-bold font-mono text-amber-600 mt-1">7.4%</div>
+          <span className="text-2xs text-slate-500">1 SKU • Order on confirmation</span>
+        </Card>
+        <Card className="p-4 border-slate-200 dark:border-slate-800">
+          <span className="text-xs text-muted-foreground">Class X (Predictable Demand)</span>
+          <div className="text-xl font-bold font-mono text-slate-900 dark:text-slate-100 mt-1">80.6%</div>
+          <span className="text-2xs text-slate-500">V &lt; 10% Variation</span>
+        </Card>
       </div>
 
       {/* 3x3 Matrix Grid Visualizer */}
@@ -200,9 +238,9 @@ function AbcXyzAnalysisPage() {
 
       {/* Item Table */}
       <Card className="border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-        <CardContent className="p-0">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 dark:bg-slate-900 border-b text-slate-600 dark:text-slate-400">
+        <CardContent className="p-0 overflow-x-auto">
+          <table className="w-full text-left text-xs min-w-[720px]">
+            <thead className="bg-slate-50 dark:bg-slate-900 border-b text-slate-600 dark:text-slate-400 whitespace-nowrap">
               <tr>
                 <th className="py-3 px-4">SKU / Item</th>
                 <th className="py-3 px-4 text-right">Annual Revenue</th>

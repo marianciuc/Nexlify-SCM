@@ -20,6 +20,13 @@ export interface OrderItem {
     name: string;
     quantity: number;
     unitPrice: number;
+    unit?: string;
+    brand?: string;
+    brandCode?: string;
+    manufacturer?: string;
+    manufacturerCountry?: string;
+    dimensions?: string;
+    weightKg?: number;
 }
 
 export interface Order {
@@ -43,17 +50,85 @@ export interface Order {
 
 export type StockStatus = 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
 
+export type UnitOfMeasure =
+    | 'pcs'
+    | 'kg'
+    | 'g'
+    | 'l'
+    | 'ml'
+    | 'm'
+    | 'cm'
+    | 'mm'
+    | 'm2'
+    | 'm3'
+    | 'box'
+    | 'pallet'
+    | 'pack';
+
+export interface CategoryNode {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string;
+    parentId?: string | null;
+    parentName?: string | null;
+    children?: CategoryNode[];
+    productCount?: number;
+    isActive: boolean;
+    sortOrder?: number;
+}
+
+export interface Brand {
+    id: string;
+    code?: string;
+    name: string;
+    description?: string;
+    website?: string;
+    isActive: boolean;
+    createdAt?: string;
+}
+
+export interface Manufacturer {
+    id: string;
+    code?: string;
+    name: string;
+    country?: string;
+    website?: string;
+    contactEmail?: string;
+    isActive: boolean;
+    createdAt?: string;
+}
+
+export interface ProductDimensions {
+    height?: number;
+    width?: number;
+    depth?: number;
+    unit?: 'mm' | 'cm' | 'm' | 'in';
+}
+
 export interface StockItem {
     id: string;
     sku: string;
+    ean?: string;
     name: string;
     category: string;
+    categoryId?: string;
+    subcategory?: string;
+    subcategoryId?: string;
+    brand?: string;
+    brandId?: string;
+    manufacturer?: string;
+    manufacturerId?: string;
     warehouse: string;
+    warehouseId?: string;
     quantityAvailable: number;
     quantityReserved: number;
     unit: string;
     unitPrice: number;
     status: StockStatus;
+    dimensions?: string;
+    weightKg?: number;
+    minOrderQuantity?: number;
 }
 
 export type ShipmentStatus = 'PLANNED' | 'DISPATCHED' | 'IN_TRANSIT' | 'DELIVERED';
@@ -78,7 +153,7 @@ export interface RouteOptimizationResult {
     co2Kg: number;
 }
 
-export type PaymentStatus = 'PAID' | 'UNPAID' | 'OVERDUE';
+export type PaymentStatus = 'PAID' | 'UNPAID' | 'OVERDUE' | 'UNKNOWN';
 export type PaymentMethod = 'SPLIT_PAYMENT' | 'NET_30' | 'STRIPE';
 
 export interface Invoice {
@@ -110,6 +185,17 @@ export interface Bid {
     status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
     notes?: string;
     submittedAt: string;
+    items?: {
+        id: string;
+        rfqItemId?: string;
+        offeredSku?: string;
+        productName?: string;
+        quantity: number;
+        unitPrice: number;
+        isAlternative?: boolean;
+        alternativeReason?: string;
+        leadTimeDays?: number;
+    }[];
 }
 
 export interface RfqItem {
@@ -123,11 +209,21 @@ export interface RfqItem {
     deadline: string;
     targetBudget: number;
     currency: string;
-    status: 'OPEN' | 'EVALUATION' | 'AWARDED' | 'CLOSED';
+    status: 'DRAFT' | 'OPEN' | 'EVALUATION' | 'AWARDED' | 'CLOSED';
     requiredQuantity: number;
     unitOfMeasure: string;
     createdAt: string;
     bids: Bid[];
+    items?: {
+        id: string;
+        sku: string;
+        name: string;
+        quantity: number;
+        unit: string;
+        description?: string;
+        allowSubstitute: boolean;
+        targetUnitPrice?: number;
+    }[];
     awardedSupplierName?: string;
     awardedAmount?: number;
 }

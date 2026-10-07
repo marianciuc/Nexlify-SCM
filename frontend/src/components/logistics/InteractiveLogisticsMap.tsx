@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
-import { Truck, MapPin, Navigation, Maximize2, Radio, Layers, RefreshCw } from 'lucide-react';
+import { Navigation, Maximize2, Radio } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { Shipment } from '@/types/scm-domain';
@@ -103,8 +104,9 @@ export const InteractiveLogisticsMap: React.FC<InteractiveLogisticsMapProps> = (
     },
   ];
 
-  const truckLat = (activeOrigin.lat * 0.35 + activeDestination.lat * 0.65);
-  const truckLng = (activeOrigin.lng * 0.35 + activeDestination.lng * 0.65);
+  const truckLat = currentLocation?.lat ?? (activeOrigin.lat * 0.35 + activeDestination.lat * 0.65);
+  const truckLng = currentLocation?.lng ?? (activeOrigin.lng * 0.35 + activeDestination.lng * 0.65);
+  const currentSpeed = currentLocation?.speedKmH ?? simSpeed;
 
   const activeTelematics = telematics || {
     driverName: 'Tomasz Lewandowski (ID: DRV-091)',
@@ -132,7 +134,7 @@ export const InteractiveLogisticsMap: React.FC<InteractiveLogisticsMapProps> = (
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap | GraphHopper 9.x VRP Engine',
+      attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
     const routeCoords: [number, number][] = [
@@ -216,7 +218,7 @@ export const InteractiveLogisticsMap: React.FC<InteractiveLogisticsMapProps> = (
           <div style="font-size:11px; color:#475569; margin-top:2px;">Driver: ${activeTelematics.driverName}</div>
           <hr style="margin:6px 0; border:0; border-top:1px solid #e2e8f0;" />
           <div style="display:flex; justify-content:space-between; font-size:11px;">
-            <span>Speed:</span><strong style="color:#10b981;">${simSpeed} km/h</strong>
+            <span>Speed:</span><strong style="color:#10b981;">${currentSpeed} km/h</strong>
           </div>
           <div style="display:flex; justify-content:space-between; font-size:11px;">
             <span>Cargo Temp:</span><strong style="color:#2563eb;">+${activeTelematics.temperatureCelsius}°C</strong>
@@ -236,7 +238,7 @@ export const InteractiveLogisticsMap: React.FC<InteractiveLogisticsMapProps> = (
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, [selectedShipment, origin, destination, waypoints, simSpeed]);
+  }, [selectedShipment, origin, destination, waypoints, currentLocation, currentSpeed]);
 
   const handleRecenter = () => {
     if (!mapInstanceRef.current) return;
@@ -263,7 +265,7 @@ export const InteractiveLogisticsMap: React.FC<InteractiveLogisticsMapProps> = (
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
           <Radio className="h-3 w-3 text-emerald-400" />
-          <span>GraphHopper 9.x Live TMS Map</span>
+          <span>Live TMS Delivery Map</span>
         </Badge>
 
         <Badge variant="outline" className="bg-white/90 dark:bg-slate-900/90 text-xs backdrop-blur-md">

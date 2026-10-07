@@ -1,285 +1,513 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
-import { useState } from 'react';
-import {
-  ChevronLeft,
-  Package,
-  Plus,
-  Building2,
-  Warehouse,
-  ShieldCheck,
-  CheckCircle2,
-  ArrowRight,
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { ChevronLeft, Package, Plus, Building2, Factory, Ruler, Layers } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Badge } from '@/components/ui/badge';
+import {
+  FormFieldInput,
+  FormFieldSelect,
+  FormFieldNumber,
+} from '@/components/forms/common';
+import {
+  CreateBrandModal,
+  CreateManufacturerModal,
+  CreateCategoryModal,
+} from '@/components/inventory';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Form } from '@/components/ui/form';
+import {
+  useCreateProductMutation,
+  useCategoriesQuery,
+  useBrandsQuery,
+  useManufacturersQuery,
+} from '@/hooks/useScmQueries';
 
 export const Route = createFileRoute('/supplier/products/new')({
   component: CreateSkuPage,
   staticData: {
     crumb: {
-      label: 'New Product SKU',
+      label: 'Новый артикул SKU',
     },
   },
 });
 
+const skuSchema = z.object({
+  sku: z.string().min(1, 'Артикул (SKU) обязателен'),
+  ean: z.string(),
+  name: z.string().min(1, 'Наименование товара обязательно'),
+  categoryId: z.string().min(1, 'Категория обязательна'),
+  brandId: z.string(),
+  manufacturerId: z.string(),
+  dimensionLength: z.number().nonnegative(),
+  dimensionWidth: z.number().nonnegative(),
+  dimensionHeight: z.number().nonnegative(),
+  dimensionUnit: z.string(),
+  weightKg: z.number().positive('Масса должна быть положительной'),
+  unit: z.string().min(1, 'Единица измерения обязательна'),
+  basePrice: z.number().positive('Цена должна быть положительной'),
+  moq: z.number().int().min(1, 'Минимальный заказ должен быть >= 1'),
+  warehouse: z.string().min(1, 'Склад оприходования обязателен'),
+  initialStock: z.number().int().min(0, 'Начальный остаток не может быть отрицательным'),
+});
+
+type SkuFormData = z.infer<typeof skuSchema>;
+
+const UNIT_OPTIONS = [
+  { value: 'pcs', label: 'Pieces (pcs / шт)' },
+  { value: 'kg', label: 'Kilograms (kg / кг)' },
+  { value: 'g', label: 'Grams (g / г)' },
+  { value: 'l', label: 'Liters (l / л)' },
+  { value: 'ml', label: 'Milliliters (ml / мл)' },
+  { value: 'm', label: 'Meters (m / м)' },
+  { value: 'cm', label: 'Centimeters (cm / см)' },
+  { value: 'mm', label: 'Millimeters (mm / мм)' },
+  { value: 'm2', label: 'Square Meters (m² / кв.м)' },
+  { value: 'm3', label: 'Cubic Meters (m³ / куб.м)' },
+  { value: 'box', label: 'Box (box / кор)' },
+  { value: 'pallet', label: 'Pallet (pallet / палл)' },
+  { value: 'pack', label: 'Pack (pack / упак)' },
+];
+
+const DIMENSION_UNITS = [
+  { value: 'mm', label: 'Millimeters (mm)' },
+  { value: 'cm', label: 'Centimeters (cm)' },
+  { value: 'm', label: 'Meters (m)' },
+  { value: 'in', label: 'Inches (in)' },
+];
+
+const warehouseOptions = [
+  { value: 'Central DC Warszawa (WH-WAW-01)', label: 'Central DC Warszawa (WH-WAW-01)' },
+  { value: 'Silesia Logistics Hub Katowice (WH-KTW-03)', label: 'Silesia Logistics Hub Katowice (WH-KTW-03)' },
+  { value: 'Port Logistics Hub Szczecin (WH-SZC-02)', label: 'Port Logistics Hub Szczecin (WH-SZC-02)' },
+];
+
 function CreateSkuPage() {
   const navigate = useNavigate();
 
-  const [sku, setSku] = useState('');
-  const [ean, setEan] = useState('');
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState('Packaging & Cargo Units');
-  const [basePrice, setBasePrice] = useState(150.0);
-  const [moq, setMoq] = useState(10);
-  const [unit, setUnit] = useState('pcs');
-  const [weightKg, setWeightKg] = useState(15.0);
-  const [dimensions, setDimensions] = useState('1200 x 800 x 144 mm');
-  const [warehouse, setWarehouse] = useState('Central DC Warszawa (WH-WAW-01)');
-  const [initialStock, setInitialStock] = useState(500);
+  const { data: categories = [] } = useCategoriesQuery();
+  const { data: brands = [] } = useBrandsQuery();
+  const { data: manufacturers = [] } = useManufacturersQuery();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!sku || !name) {
-      toast.error('Please enter SKU and Product Title');
-      return;
+  const [brandModalOpen, setBrandModalOpen] = useState(false);
+  const [manufacturerModalOpen, setManufacturerModalOpen] = useState(false);
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+
+  // Flatten categories and subcategories for the select dropdown
+  const categoryOptions = useMemo(() => {
+    const options: { value: string; label: string; group?: string }[] = [];
+    categories.forEach((cat) => {
+      // Main category
+      options.push({
+        value: cat.id,
+        label: cat.name,
+      });
+      // Subcategories
+      if (cat.children && cat.children.length > 0) {
+        cat.children.forEach((sub) => {
+          options.push({
+            value: sub.id,
+            label: `  ↳ ${sub.name} (${cat.name})`,
+          });
+        });
+      }
+    });
+    return options;
+  }, [categories]);
+
+  const brandOptions = useMemo(() => {
+    return [
+      { value: 'none', label: '— No specific brand (Generic/OEM) —' },
+      ...brands.map((b) => ({
+        value: b.id,
+        label: b.name,
+      })),
+    ];
+  }, [brands]);
+
+  const manufacturerOptions = useMemo(() => {
+    return [
+      { value: 'none', label: '— No specific manufacturer —' },
+      ...manufacturers.map((m) => ({
+        value: m.id,
+        label: `${m.name}${m.country ? ` (${m.country})` : ''}`,
+      })),
+    ];
+  }, [manufacturers]);
+
+  const form = useForm<SkuFormData>({
+    resolver: zodResolver(skuSchema),
+    defaultValues: {
+      sku: '',
+      ean: '',
+      name: '',
+      categoryId: categories[0]?.id || 'cat-pkg',
+      brandId: 'none',
+      manufacturerId: 'none',
+      dimensionLength: 1200,
+      dimensionWidth: 800,
+      dimensionHeight: 144,
+      dimensionUnit: 'mm',
+      weightKg: 15.0,
+      unit: 'pcs',
+      basePrice: 150.0,
+      moq: 10,
+      warehouse: 'Central DC Warszawa (WH-WAW-01)',
+      initialStock: 500,
+    },
+  });
+
+  const createProductMutation = useCreateProductMutation();
+
+  const onSubmit = async (data: SkuFormData) => {
+    // Resolve Category & Subcategory names
+    let selectedCatName = 'Packaging & Cargo Units';
+    let selectedSubcatName: string | undefined = undefined;
+    let selectedSubcatId: string | undefined = undefined;
+
+    for (const cat of categories) {
+      if (cat.id === data.categoryId) {
+        selectedCatName = cat.name;
+        break;
+      }
+      if (cat.children) {
+        const foundSub = cat.children.find((s) => s.id === data.categoryId);
+        if (foundSub) {
+          selectedCatName = cat.name;
+          selectedSubcatName = foundSub.name;
+          selectedSubcatId = foundSub.id;
+          break;
+        }
+      }
     }
 
-    toast.success(`Product SKU ${sku} (${name}) registered successfully in Inventory Service!`);
+    // Resolve Brand
+    const selectedBrand = brands.find((b) => b.id === data.brandId);
+    const brandName = selectedBrand ? selectedBrand.name : undefined;
+    const brandId = selectedBrand ? selectedBrand.id : undefined;
+
+    // Resolve Manufacturer
+    const selectedMfr = manufacturers.find((m) => m.id === data.manufacturerId);
+    const manufacturerName = selectedMfr ? selectedMfr.name : undefined;
+    const manufacturerId = selectedMfr ? selectedMfr.id : undefined;
+
+    const dimensionsString =
+      data.dimensionLength && data.dimensionWidth && data.dimensionHeight
+        ? `${data.dimensionLength} x ${data.dimensionWidth} x ${data.dimensionHeight} ${data.dimensionUnit}`
+        : undefined;
+
+    await createProductMutation.mutateAsync({
+      id: 'prod-' + Math.random().toString(36).substring(2, 7),
+      sku: data.sku,
+      ean: data.ean || undefined,
+      name: data.name,
+      category: selectedCatName,
+      categoryId: data.categoryId,
+      subcategory: selectedSubcatName,
+      subcategoryId: selectedSubcatId,
+      brand: brandName,
+      brandId: brandId,
+      manufacturer: manufacturerName,
+      manufacturerId: manufacturerId,
+      dimensions: dimensionsString,
+      warehouse: data.warehouse,
+      quantityAvailable: data.initialStock,
+      quantityReserved: 0,
+      unit: data.unit,
+      unitPrice: data.basePrice,
+      status: data.initialStock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK',
+    });
+
     navigate({ to: '/supplier/products' });
   };
 
   return (
-    <div className="space-y-6 p-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
         <Link
           to="/supplier/products"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ChevronLeft className="h-4 w-4" /> Back to Products
+          <ChevronLeft className="h-4 w-4" /> Назад к каталогу товаров
         </Link>
-        <Badge variant="outline" className="text-amber-700 bg-amber-50 border-amber-200">
-          Screen P10 Integration
-        </Badge>
       </div>
 
-      <Card className="border-slate-200 dark:border-slate-800 shadow-md">
-        <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b pb-4">
-          <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Package className="h-5 w-5 text-amber-600" />
-            Register New Wholesale SKU in WMS
+      <Card className="border-border bg-card shadow-xs">
+        <CardHeader className="bg-muted/30 border-b border-border pb-4">
+          <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+            <Package className="h-5 w-5 text-primary" />
+            Регистрация нового оптового артикула в WMS
           </CardTitle>
-          <p className="text-xs text-muted-foreground mt-1">
-            Configure catalog item properties, logistics dimensions, EAN barcode, and initial regional stock allocation.
-          </p>
+          <CardDescription className="text-xs text-muted-foreground mt-1">
+            Настройка параметров номенклатуры, иерархической категории, бренда, производителя, габаритов и начального остатка.
+          </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Step 1: Basic Information */}
-            <div className="space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                1. Product Identification
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="sku" className="text-xs">
-                    Stock Keeping Unit (SKU Code):
-                  </Label>
-                  <Input
-                    id="sku"
-                    placeholder="E.g. SKU-BOX-12"
-                    value={sku}
-                    onChange={(e) => setSku(e.target.value)}
-                    className="font-mono text-xs font-bold"
-                  />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Step 1: Identification & Taxonomy */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <Layers className="h-3.5 w-3.5 text-primary" />
+                    1. Идентификация и классификация товара
+                  </h3>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="ean" className="text-xs">
-                    Barcode EAN-13 / GTIN:
-                  </Label>
-                  <Input
-                    id="ean"
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormFieldInput
+                    control={form.control}
+                    name="sku"
+                    label="Артикул товара (SKU):"
+                    placeholder="Например: SKU-BOX-12"
+                    className="font-mono text-xs font-bold bg-background"
+                  />
+
+                  <FormFieldInput
+                    control={form.control}
+                    name="ean"
+                    label="Штрихкод EAN-13 / GTIN:"
                     placeholder="5901234567890"
-                    value={ean}
-                    onChange={(e) => setEan(e.target.value)}
-                    className="font-mono text-xs"
+                    className="font-mono text-xs bg-background"
                   />
                 </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="pname" className="text-xs">
-                  Full Commercial Product Title:
-                </Label>
-                <Input
-                  id="pname"
-                  placeholder="E.g. Heavy Duty Corrugated Master Shipper Box (5-Ply)"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="text-xs font-medium"
+                <FormFieldInput
+                  control={form.control}
+                  name="name"
+                  label="Полное торговое наименование:"
+                  placeholder="Например: Гофрокороб усиленный 5-слойный 600x400x400"
+                  className="text-xs font-medium bg-background"
                 />
-              </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="cat" className="text-xs">
-                  Product Category:
-                </Label>
-                <select
-                  id="cat"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full p-2 text-xs border rounded-md bg-white dark:bg-slate-900"
-                >
-                  <option value="Packaging & Cargo Units">Packaging & Cargo Units</option>
-                  <option value="Packaging Supplies">Packaging Supplies (Film, Strapping)</option>
-                  <option value="Material Handling Equipment">Material Handling Equipment</option>
-                  <option value="Cold Chain Equipment">Cold Chain Equipment</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Step 2: Logistics & Dimensions */}
-            <div className="space-y-4 border-t pt-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                2. Logistics, Weight & Dimensions
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="dim" className="text-xs">
-                    Dimensions (L x W x H mm):
-                  </Label>
-                  <Input
-                    id="dim"
-                    value={dimensions}
-                    onChange={(e) => setDimensions(e.target.value)}
-                    className="font-mono text-xs"
+                {/* Category with quick-add */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-foreground">
+                      Категория / Подкатегория:
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCategoryModalOpen(true)}
+                      className="h-6 px-2 text-[11px] text-primary hover:bg-muted gap-1 font-semibold"
+                    >
+                      <Plus className="h-3 w-3" /> Создать категорию
+                    </Button>
+                  </div>
+                  <FormFieldSelect
+                    control={form.control}
+                    name="categoryId"
+                    options={categoryOptions}
+                    placeholder="Выберите категорию или подкатегорию..."
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="weight" className="text-xs">
-                    Unit Weight (kg):
-                  </Label>
-                  <Input
-                    id="weight"
-                    type="number"
-                    step="0.1"
-                    value={weightKg}
-                    onChange={(e) => setWeightKg(Number(e.target.value))}
-                    className="font-mono text-xs"
-                  />
-                </div>
+                {/* Brand & Manufacturer with quick-add modals */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                        <Building2 className="h-3.5 w-3.5 text-primary" />
+                        Бренд:
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setBrandModalOpen(true)}
+                        className="h-6 px-2 text-[11px] text-primary hover:bg-muted gap-1 font-semibold"
+                      >
+                        <Plus className="h-3 w-3" /> Создать бренд
+                      </Button>
+                    </div>
+                    <FormFieldSelect
+                      control={form.control}
+                      name="brandId"
+                      options={brandOptions}
+                      placeholder="Выберите бренд..."
+                    />
+                  </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="uom" className="text-xs">
-                    Unit of Measure:
-                  </Label>
-                  <Input
-                    id="uom"
-                    value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
-                    className="text-xs font-mono text-center"
-                  />
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                        <Factory className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                        Производитель:
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setManufacturerModalOpen(true)}
+                        className="h-6 px-2 text-[11px] text-emerald-600 hover:bg-muted gap-1 font-semibold"
+                      >
+                        <Plus className="h-3 w-3" /> Создать производителя
+                      </Button>
+                    </div>
+                    <FormFieldSelect
+                      control={form.control}
+                      name="manufacturerId"
+                      options={manufacturerOptions}
+                      placeholder="Выберите производителя..."
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Step 3: Pricing & MOQ */}
-            <div className="space-y-4 border-t pt-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                3. B2B Pricing & Order Rules
-              </h3>
+              {/* Step 2: Logistics & Dimensions */}
+              <div className="space-y-4 border-t border-border pt-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <Ruler className="h-3.5 w-3.5 text-primary" />
+                  2. Логистические габариты и единицы измерения
+                </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="price" className="text-xs">
-                    Base Wholesale Net Price (PLN):
-                  </Label>
-                  <Input
-                    id="price"
-                    type="number"
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <FormFieldNumber
+                    control={form.control}
+                    name="dimensionLength"
+                    label="Длина / Глубина:"
+                    min={0}
+                    step={1}
+                    className="font-mono text-xs bg-background"
+                  />
+                  <FormFieldNumber
+                    control={form.control}
+                    name="dimensionWidth"
+                    label="Ширина:"
+                    min={0}
+                    step={1}
+                    className="font-mono text-xs bg-background"
+                  />
+                  <FormFieldNumber
+                    control={form.control}
+                    name="dimensionHeight"
+                    label="Высота:"
+                    min={0}
+                    step={1}
+                    className="font-mono text-xs bg-background"
+                  />
+                  <FormFieldSelect
+                    control={form.control}
+                    name="dimensionUnit"
+                    label="Ед. изм. габаритов:"
+                    options={DIMENSION_UNITS}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormFieldNumber
+                    control={form.control}
+                    name="weightKg"
+                    label="Масса единицы (кг):"
                     step="0.01"
-                    value={basePrice}
-                    onChange={(e) => setBasePrice(Number(e.target.value))}
-                    className="font-mono text-xs font-bold"
+                    min={0.01}
                   />
-                </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="pmoq" className="text-xs">
-                    Minimum Order Quantity (MOQ):
-                  </Label>
-                  <Input
-                    id="pmoq"
-                    type="number"
-                    min="1"
-                    value={moq}
-                    onChange={(e) => setMoq(Number(e.target.value))}
-                    className="font-mono text-xs font-bold"
+                  <FormFieldSelect
+                    control={form.control}
+                    name="unit"
+                    label="Базовая единица учета (ЕИ):"
+                    options={UNIT_OPTIONS}
                   />
                 </div>
               </div>
-            </div>
 
-            {/* Step 4: Initial Warehouse Allocation */}
-            <div className="space-y-4 border-t pt-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                4. Primary Warehouse Initial Inventory
-              </h3>
+              {/* Step 3: Pricing & MOQ */}
+              <div className="space-y-4 border-t border-border pt-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  3. Оптовые цены и правила заказа
+                </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="wh" className="text-xs">
-                    Receiving Warehouse Hub:
-                  </Label>
-                  <select
-                    id="wh"
-                    value={warehouse}
-                    onChange={(e) => setWarehouse(e.target.value)}
-                    className="w-full p-2 text-xs border rounded-md bg-white dark:bg-slate-900"
-                  >
-                    <option value="Central DC Warszawa (WH-WAW-01)">Central DC Warszawa (WH-WAW-01)</option>
-                    <option value="Silesia Logistics Hub Katowice (WH-KTW-03)">Silesia Logistics Hub Katowice (WH-KTW-03)</option>
-                    <option value="Port Logistics Hub Szczecin (WH-SZC-02)">Port Logistics Hub Szczecin (WH-SZC-02)</option>
-                  </select>
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormFieldNumber
+                    control={form.control}
+                    name="basePrice"
+                    label="Базовая оптовая цена нетто (PLN):"
+                    step="0.01"
+                    min={0.01}
+                    className="font-bold"
+                  />
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="initStock" className="text-xs">
-                    Initial Physical Units Received:
-                  </Label>
-                  <Input
-                    id="initStock"
-                    type="number"
-                    min="0"
-                    value={initialStock}
-                    onChange={(e) => setInitialStock(Number(e.target.value))}
-                    className="font-mono text-xs font-bold"
+                  <FormFieldNumber
+                    control={form.control}
+                    name="moq"
+                    label="Минимальная партия (MOQ):"
+                    min={1}
+                    step={1}
+                    className="font-bold"
                   />
                 </div>
               </div>
-            </div>
 
-            {/* Actions */}
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button type="button" variant="outline" onClick={() => navigate({ to: '/supplier/products' })}>
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-amber-600 hover:bg-amber-700 text-white gap-2 font-semibold">
-                <Plus className="h-4 w-4" /> Save SKU & Create Inventory Record
-              </Button>
-            </div>
-          </form>
+              {/* Step 4: Initial Warehouse Allocation */}
+              <div className="space-y-4 border-t border-border pt-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  4. Начальное оприходование на склад
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormFieldSelect
+                    control={form.control}
+                    name="warehouse"
+                    label="Склад оприходования:"
+                    options={warehouseOptions}
+                  />
+
+                  <FormFieldNumber
+                    control={form.control}
+                    name="initialStock"
+                    label="Принятое физическое количество:"
+                    min={0}
+                    step={1}
+                    className="font-bold"
+                  />
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center sm:justify-end gap-3 pt-4 border-t border-border">
+                <Button type="button" variant="outline" size="sm" onClick={() => navigate({ to: '/supplier/products' })}>
+                  Отмена
+                </Button>
+                <Button type="submit" size="sm" className="gap-2 font-semibold shadow-xs">
+                  <Plus className="h-4 w-4" /> Сохранить SKU и оприходовать остаток
+                </Button>
+              </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
+
+
+      {/* Creation Modals */}
+      <CreateBrandModal
+        open={brandModalOpen}
+        onOpenChange={setBrandModalOpen}
+        onBrandCreated={(newId) => {
+          form.setValue('brandId', newId);
+        }}
+      />
+
+      <CreateManufacturerModal
+        open={manufacturerModalOpen}
+        onOpenChange={setManufacturerModalOpen}
+        onManufacturerCreated={(newId) => {
+          form.setValue('manufacturerId', newId);
+        }}
+      />
+
+      <CreateCategoryModal
+        open={categoryModalOpen}
+        onOpenChange={setCategoryModalOpen}
+        onCategoryCreated={(newId) => {
+          form.setValue('categoryId', newId);
+        }}
+      />
     </div>
   );
 }

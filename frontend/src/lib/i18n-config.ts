@@ -3,7 +3,7 @@ import type {InitOptions} from 'i18next';
 // Конфигурация для i18next
 export const i18nConfig: InitOptions = {
     // Основной язык (fallback)
-    fallbackLng: 'en',
+    fallbackLng: 'ru',
 
     // Поддерживаемые языки
     supportedLngs: ['en', 'ru', 'cn'],

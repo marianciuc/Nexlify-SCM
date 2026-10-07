@@ -1,27 +1,12 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { ChevronLeft, Package, Truck, CheckCircle2, Clock, MapPin, FileText, Download, AlertTriangle, Building2, Radio, ShieldAlert, ShieldCheck, Zap } from 'lucide-react';
 import { useState, useMemo } from 'react';
-import {
-  ChevronLeft,
-  Package,
-  Truck,
-  CheckCircle2,
-  Clock,
-  MapPin,
-  FileText,
-  Download,
-  AlertTriangle,
-  Building2,
-  Calendar,
-  Radio,
-  User,
-  ShieldAlert,
-  ArrowRight,
-  ShieldCheck,
-  RefreshCw,
-  Zap,
-} from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
+import { FormFieldSelect, FormFieldNumber, FormFieldInput } from '@/components/forms/common';
 import { InteractiveLogisticsMap } from '@/components/logistics/InteractiveLogisticsMap';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,16 +18,15 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useOrdersQuery, INITIAL_ORDERS } from '@/hooks/useScmQueries';
+import { Form } from '@/components/ui/form';
+import { useOrdersQuery, INITIAL_ORDERS, useUpdateOrderStatusMutation, useCreateClaimMutation } from '@/hooks/useScmQueries';
 import type { OrderStatus, IncotermsCode } from '@/types/scm-domain';
 
 export const Route = createFileRoute('/buyer/orders/$orderId')({
   component: OrderDetailPage,
   staticData: {
     crumb: {
-      label: 'Order Details & Lifecycle',
+      label: 'Детали заказа и жизненный цикл',
     },
   },
 });
@@ -54,20 +38,20 @@ export const ALL_ORDER_STATUSES: {
   category: 'HAPPY_PATH' | 'EXCEPTION' | 'TERMINAL';
   desc: string;
 }[] = [
-  { status: 'DRAFT', label: '1. Draft', category: 'HAPPY_PATH', desc: 'Koszyk B2B skompletowany' },
-  { status: 'SUBMITTED', label: '2. Submitted', category: 'HAPPY_PATH', desc: 'Złożone do Sagi Kafka (order-events)' },
-  { status: 'RESERVED', label: '3. Reserved', category: 'HAPPY_PATH', desc: 'Redisson soft-lock w magazynie WMS' },
-  { status: 'AWAITING_PAYMENT', label: '4. Awaiting Payment', category: 'HAPPY_PATH', desc: 'Weryfikacja limitu kupieckiego / MPP' },
-  { status: 'PAID', label: '5. Paid / Verified', category: 'HAPPY_PATH', desc: 'Płatność potwierdzona / Kredyt Net 30' },
-  { status: 'IN_PROCESSING', label: '6. In Processing', category: 'HAPPY_PATH', desc: 'Kompletacja i pakowanie palet w WMS' },
-  { status: 'SHIPPED', label: '7. In Transit', category: 'HAPPY_PATH', desc: 'Wydanie TMS (e-CMR) i transport drogowy' },
-  { status: 'DELIVERED', label: '8. Delivered', category: 'HAPPY_PATH', desc: 'Dostarczono do rampy rozładunkowej' },
-  { status: 'COMPLETED', label: '9. Completed', category: 'HAPPY_PATH', desc: 'Podpisano e-CMR na szkle / Zamknięto' },
+  { status: 'DRAFT', label: '1. Черновик', category: 'HAPPY_PATH', desc: 'Корзина B2B сформирована' },
+  { status: 'SUBMITTED', label: '2. Отправлен', category: 'HAPPY_PATH', desc: 'Передан на исполнение в систему' },
+  { status: 'RESERVED', label: '3. Зарезервирован', category: 'HAPPY_PATH', desc: 'Товар зарезервирован на складе' },
+  { status: 'AWAITING_PAYMENT', label: '4. Ожидает оплаты', category: 'HAPPY_PATH', desc: 'Проверка кредитного лимита / KSeF' },
+  { status: 'PAID', label: '5. Оплачен', category: 'HAPPY_PATH', desc: 'Платеж подтвержден / Лимит Net 30' },
+  { status: 'IN_PROCESSING', label: '6. Комплектация', category: 'HAPPY_PATH', desc: 'Сборка и паллетирование в WMS' },
+  { status: 'SHIPPED', label: '7. В пути', category: 'HAPPY_PATH', desc: 'Оформлен e-CMR, рейс отправлен' },
+  { status: 'DELIVERED', label: '8. Доставлен', category: 'HAPPY_PATH', desc: 'Прибыл на разгрузочную рампу' },
+  { status: 'COMPLETED', label: '9. Завершен', category: 'HAPPY_PATH', desc: 'Подписан e-CMR на стекле / закрыт' },
   // Exceptions & Alternate Branches
-  { status: 'CANCELLED_OUT_OF_STOCK', label: 'Out of Stock', category: 'EXCEPTION', desc: 'Kompensacja Sagi: brak zapasów' },
-  { status: 'PAYMENT_FAILED', label: 'Payment Failed', category: 'EXCEPTION', desc: 'Odrzucenie autoryzacji płatności' },
-  { status: 'DISPUTED', label: 'Disputed (RMA)', category: 'EXCEPTION', desc: 'Protokół szkody / Reklamacja kupca' },
-  { status: 'CANCELLED', label: 'Cancelled', category: 'TERMINAL', desc: 'Zamówienie anulowane' },
+  { status: 'CANCELLED_OUT_OF_STOCK', label: 'Нет остатка', category: 'EXCEPTION', desc: 'Дефицит товара на складе' },
+  { status: 'PAYMENT_FAILED', label: 'Ошибка оплаты', category: 'EXCEPTION', desc: 'Отклонение банковской авторизации' },
+  { status: 'DISPUTED', label: 'Рекламация (RMA)', category: 'EXCEPTION', desc: 'Акт расхождений / спор покупателя' },
+  { status: 'CANCELLED', label: 'Отменен', category: 'TERMINAL', desc: 'Заказ аннулирован' },
 ];
 
 const HAPPY_PATH_ORDER: OrderStatus[] = [
@@ -82,16 +66,27 @@ const HAPPY_PATH_ORDER: OrderStatus[] = [
   'COMPLETED',
 ];
 
+const rmaSchema = z.object({
+  rmaReason: z.string().min(1, 'Укажите причину рекламации'),
+  rmaItemSku: z.string().min(1, 'Выберите артикул'),
+  rmaQty: z.number().int().min(1, 'Количество должно быть не менее 1'),
+  rmaNotes: z.string().optional(),
+});
+
+type RmaFormData = z.infer<typeof rmaSchema>;
+
+const rmaReasonOptions = [
+  { value: 'DAMAGED_CARGO', label: 'Повреждение груза / бой при транспортировке' },
+  { value: 'SHORTAGE', label: 'Недостача (фактически меньше, чем в e-CMR)' },
+  { value: 'WRONG_SKU', label: 'Пересортица / несоответствие артикула' },
+];
+
 function OrderDetailPage() {
   const { orderId } = Route.useParams();
   const { data: orders = INITIAL_ORDERS } = useOrdersQuery();
 
   const [currentSimulatedStatus, setCurrentSimulatedStatus] = useState<OrderStatus | null>(null);
   const [showRmaDialog, setShowRmaDialog] = useState(false);
-  const [rmaReason, setRmaReason] = useState('DAMAGED_CARGO');
-  const [rmaItemSku, setRmaItemSku] = useState('');
-  const [rmaQty, setRmaQty] = useState(1);
-  const [rmaNotes, setRmaNotes] = useState('');
 
   const rawOrder = useMemo(() => {
     return (
@@ -125,41 +120,68 @@ function OrderDetailPage() {
   const isHappyPath = currentStepIndex !== -1;
 
   const handleDownloadDoc = (docType: string) => {
-    toast.success(`Generated official ${docType} for order ${rawOrder.orderNumber}`);
+    toast.success(`Сформирован документ ${docType} для заказа ${rawOrder.orderNumber}`);
   };
 
-  const handleFileRma = (e: React.FormEvent) => {
-    e.preventDefault();
+  const rmaForm = useForm<RmaFormData>({
+    resolver: zodResolver(rmaSchema),
+    defaultValues: {
+      rmaReason: 'DAMAGED_CARGO',
+      rmaItemSku: '',
+      rmaQty: 1,
+      rmaNotes: '',
+    },
+  });
+
+  const createClaimMutation = useCreateClaimMutation();
+  const updateStatusMutation = useUpdateOrderStatusMutation();
+
+  const onFileRma = async (data: RmaFormData) => {
+    await createClaimMutation.mutateAsync({
+      orderNumber: rawOrder.orderNumber,
+      supplierName: 'PlastChem Industrial Sp. k.',
+      reason: `${data.rmaReason}: ${data.rmaNotes || 'Дефект груза при приемке'}`,
+      claimAmountPln: data.rmaQty * 120,
+    });
+    await updateStatusMutation.mutateAsync({
+      orderId: rawOrder.id,
+      nextStatus: 'DISPUTED',
+    });
     setCurrentSimulatedStatus('DISPUTED');
-    toast.success(`RMA Claim filed. Order moved to DISPUTED status in Arbitration queue.`);
     setShowRmaDialog(false);
-    setRmaNotes('');
+    rmaForm.reset();
   };
 
-  const handleSimulateNextStep = () => {
+  const handleSimulateNextStep = async () => {
     if (isHappyPath && currentStepIndex < HAPPY_PATH_ORDER.length - 1) {
       const nextStatus = HAPPY_PATH_ORDER[currentStepIndex + 1]!;
+      await updateStatusMutation.mutateAsync({
+        orderId: rawOrder.id,
+        nextStatus,
+      });
       setCurrentSimulatedStatus(nextStatus);
-      toast.info(`Saga Orchestrator Transition: ➔ ${nextStatus}`);
     } else {
+      await updateStatusMutation.mutateAsync({
+        orderId: rawOrder.id,
+        nextStatus: 'SUBMITTED',
+      });
       setCurrentSimulatedStatus('SUBMITTED');
-      toast.info(`Saga Reset: ➔ SUBMITTED`);
     }
   };
 
   return (
-    <div className="space-y-6 p-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto min-w-0">
       {/* Top Breadcrumb & Status */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <Link
             to="/buyer/orders"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            <ChevronLeft className="h-4 w-4" /> Back to Orders
+            <ChevronLeft className="h-4 w-4" /> Назад к заказам
           </Link>
           <div className="flex items-center gap-3 mt-2 flex-wrap">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            <h1 className="text-2xl font-bold text-foreground">
               {rawOrder.orderNumber}
             </h1>
             <Badge
@@ -168,75 +190,75 @@ function OrderDetailPage() {
                   ? 'bg-emerald-600 text-white'
                   : activeStatus === 'DISPUTED' || activeStatus === 'CANCELLED' || activeStatus === 'CANCELLED_OUT_OF_STOCK'
                   ? 'bg-rose-600 text-white'
-                  : 'bg-indigo-600 text-white'
+                  : 'bg-primary text-primary-foreground'
               }`}
             >
-              Status: {activeStatus}
+              Статус: {activeStatus}
             </Badge>
 
-            <Badge variant="outline" className="text-xs font-mono border-emerald-500 text-emerald-700 bg-emerald-50">
+            <Badge variant="outline" className="text-xs font-mono border-emerald-500/40 text-emerald-700 dark:text-emerald-300 bg-emerald-500/10">
               Incoterms 2020: {rawOrder.incoterms || 'DAP'}
             </Badge>
 
-            <Badge variant="outline" className="text-xs border-blue-500 text-blue-700 bg-blue-50">
+            <Badge variant="outline" className="text-xs border-blue-500/40 text-blue-700 dark:text-blue-300 bg-blue-500/10">
               SLA OTIF: {rawOrder.guaranteedOtifPercent || 99.2}%
             </Badge>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Buyer: <strong>{rawOrder.customerName}</strong> • Target: {rawOrder.deliveryCity} ({rawOrder.deliveryAddress || 'DC-01 Depot'})
+          <p className="text-xs text-muted-foreground mt-1">
+            Покупатель: <strong>{rawOrder.customerName}</strong> • Назначение: {rawOrder.deliveryCity} ({rawOrder.deliveryAddress || 'DC-01 Депо'})
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
           <Button
             size="sm"
             variant="outline"
-            className="text-xs border-indigo-300 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 gap-1.5"
+            className="gap-1.5 flex-1 sm:flex-none justify-center"
             onClick={handleSimulateNextStep}
           >
-            <Zap className="h-3.5 w-3.5 text-indigo-600" />
-            Simulate Next Saga Step
+            <Zap className="h-3.5 w-3.5 text-primary" />
+            Перевести статус
           </Button>
 
           <Button
             variant="outline"
             size="sm"
-            className="text-xs border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100 gap-1.5"
+            className="border-amber-500/40 text-amber-700 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 gap-1.5 flex-1 sm:flex-none justify-center"
             onClick={() => setShowRmaDialog(true)}
           >
             <AlertTriangle className="h-3.5 w-3.5" />
-            File RMA Claim
+            Подать рекламацию (RMA)
           </Button>
 
           <Button
             size="sm"
-            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5"
-            onClick={() => handleDownloadDoc('Faktura VAT PDF')}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 flex-1 sm:flex-none justify-center"
+            onClick={() => handleDownloadDoc('Счет-фактура VAT PDF')}
           >
             <Download className="h-3.5 w-3.5" />
-            Faktura VAT
+            Счет-фактура (VAT)
           </Button>
         </div>
       </div>
 
-      {/* Visual Stepper: 13 FSM Lifecycle States */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="py-3 px-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
+      {/* Visual Stepper: Lifecycle States */}
+      <Card className="border-border bg-card shadow-xs">
+        <CardHeader className="py-3 px-5 border-b border-border bg-muted/30">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                Order Lifecycle Saga Stepper (13 Domain FSM States)
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Жизненный цикл заказа (FSM)
               </span>
-              <p className="text-2xs text-slate-500 mt-0.5">
-                Complies with Spec Doc 06 & Spring Boot OrderFsm. Orchestrated via Kafka KRaft order-events.
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Контроль контрольных точек поставки, резервирования запасов и валидации отгрузки.
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-2xs font-medium text-slate-500">Jump to State:</span>
+              <span className="text-xs font-medium text-muted-foreground">Сменить этап:</span>
               <select
                 value={activeStatus}
                 onChange={(e) => setCurrentSimulatedStatus(e.target.value as OrderStatus)}
-                className="text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 font-mono font-medium"
+                className="h-8 text-xs bg-background border border-input rounded-md px-2.5 font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               >
                 {ALL_ORDER_STATUSES.map((s) => (
                   <option key={s.status} value={s.status}>
@@ -247,9 +269,9 @@ function OrderDetailPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           {/* Main Happy Path Timeline */}
-          <div className="grid grid-cols-1 md:grid-cols-9 gap-3 relative">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-9 gap-2.5">
             {HAPPY_PATH_ORDER.map((stepStatus, idx) => {
               const meta = ALL_ORDER_STATUSES.find((s) => s.status === stepStatus)!;
               const isPast = isHappyPath && idx <= currentStepIndex;
@@ -259,46 +281,46 @@ function OrderDetailPage() {
                 <div
                   key={stepStatus}
                   onClick={() => setCurrentSimulatedStatus(stepStatus)}
-                  className={`flex flex-col items-start p-2 rounded-lg cursor-pointer transition-all ${
+                  className={`flex flex-col items-start p-2.5 rounded-lg border cursor-pointer min-w-0 transition-all ${
                     isCurrent
-                      ? 'bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-400 ring-1 ring-emerald-400'
-                      : 'hover:bg-slate-50 dark:hover:bg-slate-900'
+                      ? 'bg-emerald-500/10 border-emerald-500 ring-1 ring-emerald-500'
+                      : 'border-border/60 hover:bg-muted/40'
                   }`}
                 >
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 w-full min-w-0">
                     <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-2xs font-bold transition-colors ${
+                      className={`w-5 h-5 rounded-full flex items-center justify-center text-3xs font-bold shrink-0 transition-colors ${
                         isCurrent
-                          ? 'bg-emerald-600 text-white shadow-md animate-pulse'
+                          ? 'bg-emerald-600 text-white shadow-xs animate-pulse'
                           : isPast
                           ? 'bg-emerald-600 text-white'
-                          : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
+                          : 'bg-muted text-muted-foreground'
                       }`}
                     >
-                      {isPast && !isCurrent ? <CheckCircle2 className="h-3.5 w-3.5" /> : idx + 1}
+                      {isPast && !isCurrent ? <CheckCircle2 className="h-3 w-3" /> : idx + 1}
                     </div>
                     <span
-                      className={`text-2xs font-bold leading-tight ${
+                      className={`text-2xs font-bold leading-tight truncate ${
                         isCurrent
                           ? 'text-emerald-700 dark:text-emerald-300 font-extrabold'
                           : isPast
-                          ? 'text-slate-900 dark:text-slate-100'
-                          : 'text-slate-400'
+                          ? 'text-foreground'
+                          : 'text-muted-foreground'
                       }`}
                     >
                       {meta.label.replace(/^\d+\.\s*/, '')}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{meta.desc}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2 leading-tight">{meta.desc}</p>
                 </div>
               );
             })}
           </div>
 
           {/* Alternate Branches & Exceptions Bar */}
-          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-3">
-            <span className="text-2xs font-bold uppercase tracking-wider text-slate-500">
-              Alternate & Dispute States:
+          <div className="mt-4 pt-4 border-t border-border flex flex-wrap items-center gap-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Исключения и рекламации:
             </span>
             {ALL_ORDER_STATUSES.filter((s) => s.category !== 'HAPPY_PATH').map((s) => {
               const isCurrent = activeStatus === s.status;
@@ -308,8 +330,8 @@ function OrderDetailPage() {
                   onClick={() => setCurrentSimulatedStatus(s.status)}
                   className={`text-xs px-2.5 py-1 rounded-md border font-medium transition-colors ${
                     isCurrent
-                      ? 'bg-rose-600 text-white border-rose-700 shadow-sm'
-                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50'
+                      ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
+                      : 'bg-background text-muted-foreground border-border hover:bg-muted/40'
                   }`}
                 >
                   {s.label} ({s.desc.split(':')[0]})
@@ -322,73 +344,73 @@ function OrderDetailPage() {
 
       {/* Delivery & B2B Logistics Compliance Card */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="border-slate-200 dark:border-slate-800">
+        <Card className="border-border bg-card">
           <CardHeader className="py-2.5 px-4">
-            <CardTitle className="text-xs uppercase text-slate-500 font-semibold flex items-center gap-1.5">
-              <Building2 className="h-3.5 w-3.5 text-indigo-600" /> Incoterms 2020
+            <CardTitle className="text-xs uppercase text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Building2 className="h-3.5 w-3.5 text-primary" /> Incoterms 2020
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-3 pt-0">
-            <div className="text-xl font-bold font-mono text-slate-900 dark:text-slate-100">
+            <div className="text-xl font-bold font-mono text-foreground">
               {rawOrder.incoterms || 'DAP'} Warszawa
             </div>
-            <p className="text-2xs text-slate-500 mt-0.5">Delivered at Place (Seller covers transport & risk)</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Поставка в место назначения (риски на продавце)</p>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 dark:border-slate-800">
+        <Card className="border-border bg-card">
           <CardHeader className="py-2.5 px-4">
-            <CardTitle className="text-xs uppercase text-slate-500 font-semibold flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-rose-600" /> Delivery Address
+            <CardTitle className="text-xs uppercase text-muted-foreground font-semibold flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5 text-rose-600" /> Адрес доставки
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-3 pt-0">
-            <div className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+            <div className="text-sm font-bold text-foreground truncate">
               {rawOrder.deliveryAddress || 'ul. Magazynowa 14, Rampa 4'}
             </div>
-            <p className="text-2xs text-slate-500 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               {rawOrder.deliveryPostalCode || '05-090'} {rawOrder.deliveryCity}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 dark:border-slate-800">
+        <Card className="border-border bg-card">
           <CardHeader className="py-2.5 px-4">
-            <CardTitle className="text-xs uppercase text-slate-500 font-semibold flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-amber-600" /> Guaranteed SLA
+            <CardTitle className="text-xs uppercase text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5 text-amber-600" /> Гарантированный SLA
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-3 pt-0">
-            <div className="text-sm font-bold text-slate-900 dark:text-slate-100">
-              Target: {rawOrder.slaTargetDate || '2026-09-26 14:00'}
+            <div className="text-sm font-bold text-foreground">
+              План: {rawOrder.slaTargetDate || '2026-09-26 14:00'}
             </div>
-            <p className="text-2xs text-emerald-600 font-medium mt-0.5">
-              Max Transit: {rawOrder.slaMaxTransitHours || 24}h • OTIF: {rawOrder.guaranteedOtifPercent || 99.2}%
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-0.5">
+              Лимит в пути: {rawOrder.slaMaxTransitHours || 24}ч • OTIF: {rawOrder.guaranteedOtifPercent || 99.2}%
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 dark:border-slate-800">
+        <Card className="border-border bg-card">
           <CardHeader className="py-2.5 px-4">
-            <CardTitle className="text-xs uppercase text-slate-500 font-semibold flex items-center gap-1.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> e-CMR Protocol
+            <CardTitle className="text-xs uppercase text-muted-foreground font-semibold flex items-center gap-1.5">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> Протокол e-CMR
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-3 pt-0">
-            <div className="text-sm font-bold font-mono text-emerald-600">CMR-PL-2026-9912</div>
-            <p className="text-2xs text-slate-500 mt-0.5">Digital Sign-on-Glass Validated</p>
+            <div className="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400">CMR-PL-2026-9912</div>
+            <p className="text-xs text-muted-foreground mt-0.5">Цифровая подпись e-CMR верифицирована</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Real Interactive Leaflet OpenStreetMap Map */}
-      <Card className="border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-        <CardHeader className="py-3 px-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex flex-row items-center justify-between">
+      <Card className="border-border bg-card overflow-hidden shadow-xs">
+        <CardHeader className="py-3 px-5 border-b border-border bg-muted/30 flex flex-row items-center justify-between">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Truck className="h-4 w-4 text-emerald-600" /> Live Interactive Leaflet TMS Map (GraphHopper 9.x)
+            <Truck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Телематика рейса и маршрут доставки
           </CardTitle>
           <Badge className="bg-emerald-600 text-white text-xs gap-1">
-            <Radio className="h-3 w-3 animate-pulse" /> Live Telematics Stream
+            <Radio className="h-3 w-3 animate-pulse" /> Телематика онлайн
           </Badge>
         </CardHeader>
         <CardContent className="p-0">
@@ -401,17 +423,17 @@ function OrderDetailPage() {
               type: 'ORIGIN',
             }}
             destination={{
-              name: `${rawOrder.deliveryCity} Commercial Receiving Depot`,
+              name: `${rawOrder.deliveryCity} Депо приемки грузов`,
               lat: 54.352,
               lng: 18.6466,
               type: 'DESTINATION',
-              eta: '45 min',
+              eta: '45 мин',
             }}
             telematics={{
               driverName: 'Tomasz Lewandowski',
               vehiclePlate: 'WI 49102 (Scania R450)',
               temperatureCelsius: 4.2,
-              etaRemaining: '45 min',
+              etaRemaining: '45 мин',
               glecCo2Kg: 38.4,
             }}
           />
@@ -421,35 +443,71 @@ function OrderDetailPage() {
       {/* Line Items & Commercial Documentation */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-            <CardHeader className="py-3 px-5 border-b border-slate-100 dark:border-slate-800">
+          <Card className="border-border bg-card shadow-xs">
+            <CardHeader className="py-3 px-5 border-b border-border">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Package className="h-4 w-4 text-emerald-600" /> Order Specification & Line Items
+                <Package className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Спецификация и товарные позиции
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-900 border-b text-slate-600 dark:text-slate-400">
+            <CardContent className="p-0 overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[620px]">
+                <thead className="bg-muted/30 border-b border-border text-muted-foreground">
                   <tr>
-                    <th className="py-3 px-4">SKU / Item</th>
-                    <th className="py-3 px-4">Quantity</th>
-                    <th className="py-3 px-4">Unit Net</th>
-                    <th className="py-3 px-4">VAT (23%)</th>
-                    <th className="py-3 px-4 text-right">Total Gross</th>
+                    <th className="py-3 px-4 font-semibold">Артикул / Наименование</th>
+                    <th className="py-3 px-4 font-semibold">Бренд и производитель</th>
+                    <th className="py-3 px-4 font-semibold">Габариты</th>
+                    <th className="py-3 px-4 font-semibold">Количество</th>
+                    <th className="py-3 px-4 font-semibold">Цена нетто</th>
+                    <th className="py-3 px-4 font-semibold">НДС (23%)</th>
+                    <th className="py-3 px-4 text-right font-semibold">Итого брутто</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-border">
                   {rawOrder.items?.map((item) => {
                     const lineNet = item.unitPrice * item.quantity;
                     const lineVat = lineNet * 0.23;
                     const lineGross = lineNet + lineVat;
                     return (
-                      <tr key={item.sku}>
+                      <tr key={item.sku} className="hover:bg-muted/30 transition-colors">
                         <td className="py-3 px-4">
-                          <div className="font-semibold text-slate-900 dark:text-slate-100">{item.name}</div>
-                          <div className="font-mono text-2xs text-slate-500">{item.sku}</div>
+                          <div className="font-semibold text-foreground">{item.name}</div>
+                          <div className="font-mono text-2xs text-muted-foreground">{item.sku}</div>
                         </td>
-                        <td className="py-3 px-4 font-mono font-medium">{item.quantity} units</td>
+                        <td className="py-3 px-4">
+                          {item.brand ? (
+                            <div className="space-y-1">
+                              <Badge variant="outline" className="text-2xs font-semibold gap-1 max-w-[160px] truncate">
+                                {item.brandCode || item.brand}
+                              </Badge>
+                              {item.manufacturer && (
+                                <div className="text-2xs text-muted-foreground leading-tight flex items-center gap-1 max-w-[160px] truncate">
+                                  <Building2 className="h-2.5 w-2.5 flex-shrink-0 text-muted-foreground" />
+                                  <span className="truncate">{item.manufacturer}</span>
+                                  {item.manufacturerCountry && (
+                                    <span className="font-mono text-muted-foreground">({item.manufacturerCountry})</span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground text-2xs">—</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4">
+                          {item.dimensions ? (
+                            <div className="space-y-0.5">
+                              <div className="font-mono text-2xs text-foreground">{item.dimensions}</div>
+                              {item.weightKg && (
+                                <div className="text-2xs text-muted-foreground">{item.weightKg} кг/ед.</div>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground text-2xs">—</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 font-mono font-medium">
+                          {item.quantity} {item.unit || 'ед.'}
+                        </td>
                         <td className="py-3 px-4 font-mono">{item.unitPrice.toFixed(2)} PLN</td>
                         <td className="py-3 px-4 font-mono">{lineVat.toFixed(2)} PLN</td>
                         <td className="py-3 px-4 font-mono font-bold text-right">
@@ -461,35 +519,35 @@ function OrderDetailPage() {
                 </tbody>
               </table>
 
-              <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t flex justify-between items-center text-sm font-bold">
-                <span>Grand Total Gross:</span>
-                <span className="font-mono text-emerald-600">{rawOrder.totalAmount.toLocaleString()} PLN</span>
+              <div className="p-4 bg-muted/30 border-t border-border flex justify-between items-center text-sm font-bold">
+                <span>Итого брутто по заказу:</span>
+                <span className="font-mono text-emerald-600 dark:text-emerald-400">{rawOrder.totalAmount.toLocaleString('ru-RU')} PLN</span>
               </div>
             </CardContent>
           </Card>
         </div>
 
         <div>
-          <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-            <CardHeader className="py-3 px-5 border-b border-slate-100 dark:border-slate-800">
+          <Card className="border-border bg-card shadow-xs">
+            <CardHeader className="py-3 px-5 border-b border-border">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <FileText className="h-4 w-4 text-emerald-600" /> B2B Commercial Documents
+                <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Коммерческие документы
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               {[
-                { name: 'Electronic Consignment Note (e-CMR)', type: 'PDF / XML', desc: 'Legally signed on glass' },
-                { name: 'Faktura VAT (Invoice)', type: 'PDF (KSeF ready)', desc: 'Due date: Net 30 days' },
-                { name: 'Warehouse Packing Slip', type: 'PDF', desc: 'Scan verification codes' },
-                { name: 'Certificate of Origin & ISPM-15', type: 'PDF', desc: 'Phytosanitary HT stamp' },
+                { name: 'Транспортная накладная (e-CMR)', type: 'PDF / XML', desc: 'Цифровая подпись на стекле' },
+                { name: 'Счет-фактура (Faktura VAT)', type: 'PDF (KSeF ready)', desc: 'Срок платежа: Net 30' },
+                { name: 'Упаковочный лист склада', type: 'PDF', desc: 'Коды верификации сканирования' },
+                { name: 'Сертификат происхождения и ISPM-15', type: 'PDF', desc: 'Фитосанитарный штамп HT' },
               ].map((doc, idx) => (
                 <div
                   key={idx}
-                  className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+                  className="p-3 rounded-lg border border-border flex items-center justify-between text-xs hover:bg-muted/40 transition-colors"
                 >
                   <div>
-                    <div className="font-semibold text-slate-800 dark:text-slate-200">{doc.name}</div>
-                    <div className="text-2xs text-slate-500">{doc.desc}</div>
+                    <div className="font-semibold text-foreground">{doc.name}</div>
+                    <div className="text-2xs text-muted-foreground">{doc.desc}</div>
                   </div>
                   <Button
                     size="sm"
@@ -510,70 +568,55 @@ function OrderDetailPage() {
       <Dialog open={showRmaDialog} onOpenChange={setShowRmaDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base text-amber-700">
-              <ShieldAlert className="h-5 w-5" /> File RMA Claim / Cargo Discrepancy
+            <DialogTitle className="flex items-center gap-2 text-base text-amber-700 dark:text-amber-400">
+              <ShieldAlert className="h-5 w-5" /> Оформление рекламации (RMA) / Акт расхождений
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleFileRma} className="space-y-4 text-xs">
-            <div className="space-y-1">
-              <Label className="text-xs">Claim Reason:</Label>
-              <select
-                value={rmaReason}
-                onChange={(e) => setRmaReason(e.target.value)}
-                className="w-full p-2 border rounded-md bg-white dark:bg-slate-900"
-              >
-                <option value="DAMAGED_CARGO">Damaged Cargo / Transport Fracture</option>
-                <option value="SHORTAGE">Quantity Shortage (Delivered less than e-CMR)</option>
-                <option value="WRONG_SKU">Wrong Item / Warehouse Picking Discrepancy</option>
-              </select>
-            </div>
-
-            <div className="space-y-1">
-              <Label className="text-xs">Affected Item SKU:</Label>
-              <select
-                value={rmaItemSku}
-                onChange={(e) => setRmaItemSku(e.target.value)}
-                className="w-full p-2 border rounded-md bg-white dark:bg-slate-900"
-              >
-                <option value="">Select SKU from order...</option>
-                {rawOrder.items?.map((i) => (
-                  <option key={i.sku} value={i.sku}>
-                    {i.sku} - {i.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-1">
-              <Label className="text-xs">Discrepancy Quantity:</Label>
-              <Input
-                type="number"
-                min="1"
-                value={rmaQty}
-                onChange={(e) => setRmaQty(Number(e.target.value))}
-                className="text-xs"
+          <Form {...rmaForm}>
+            <form onSubmit={rmaForm.handleSubmit(onFileRma)} className="space-y-4 text-xs">
+              <FormFieldSelect
+                control={rmaForm.control}
+                name="rmaReason"
+                label="Причина рекламации:"
+                options={rmaReasonOptions}
               />
-            </div>
 
-            <div className="space-y-1">
-              <Label className="text-xs">Detailed Incident Report & Photos:</Label>
-              <Input
-                placeholder="Describe carton damage or missing pallet seal..."
-                value={rmaNotes}
-                onChange={(e) => setRmaNotes(e.target.value)}
-                className="text-xs"
+              <FormFieldSelect
+                control={rmaForm.control}
+                name="rmaItemSku"
+                label="Артикул с расхождением:"
+                placeholder="Выберите артикул из заказа..."
+                options={(rawOrder.items || []).map((i) => ({
+                  value: i.sku,
+                  label: `${i.sku} - ${i.name}`,
+                }))}
               />
-            </div>
 
-            <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" size="sm" onClick={() => setShowRmaDialog(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
-                Submit Claim to Arbitration
-              </Button>
-            </DialogFooter>
-          </form>
+              <FormFieldNumber
+                control={rmaForm.control}
+                name="rmaQty"
+                label="Количество с расхождением:"
+                min={1}
+                step={1}
+              />
+
+              <FormFieldInput
+                control={rmaForm.control}
+                name="rmaNotes"
+                label="Описание расхождения и ссылки на фото:"
+                placeholder="Опишите повреждение упаковки или пломбы..."
+              />
+
+              <DialogFooter className="pt-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowRmaDialog(false)}>
+                  Отмена
+                </Button>
+                <Button type="submit" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white cursor-pointer">
+                  Отправить рекламацию в арбитраж
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>

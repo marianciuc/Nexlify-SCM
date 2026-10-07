@@ -1,9 +1,10 @@
 import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
 
+import useEnvironmentStore from '../env/environment-store';
+
 import {dashboardClient} from './clients/dashboard-client';
 import {storeClient} from './clients/store-client';
 import {warehouseClient} from './clients/warehouse-client';
-import useEnvironmentStore from '../env/environment-store';
 
 describe('API clients unit tests', () => {
     const originalFetch = global.fetch;
@@ -33,7 +34,7 @@ describe('API clients unit tests', () => {
             expect(data).toEqual(mockOrders);
 
             expect(global.fetch).toHaveBeenCalledWith(
-                'http://localhost:8080/api/v1/orders',
+                'http://localhost:8090/api/v1/orders',
                 expect.objectContaining({
                     headers: expect.objectContaining({
                         Authorization: 'Bearer opq_acc_mock_test_token',
@@ -68,7 +69,7 @@ describe('API clients unit tests', () => {
             expect(result.id).toBe('new-id');
 
             expect(global.fetch).toHaveBeenCalledWith(
-                'http://localhost:8080/api/v1/orders',
+                'http://localhost:8090/api/v1/orders',
                 expect.objectContaining({
                     method: 'POST',
                     headers: expect.objectContaining({
@@ -93,7 +94,7 @@ describe('API clients unit tests', () => {
             expect(result.success).toBe(true);
 
             expect(global.fetch).toHaveBeenCalledWith(
-                'http://localhost:8080/api/v1/inventory/reserve',
+                'http://localhost:8090/api/v1/inventory/reserve',
                 expect.objectContaining({
                     method: 'POST',
                     body: JSON.stringify({sku: 'SKU-PAL-01', quantity: 50}),
@@ -143,7 +144,7 @@ describe('API clients unit tests', () => {
             const res = await ordersClient.submitOrder('ord-123');
             expect(res.status).toBe('SUBMITTED');
             expect(global.fetch).toHaveBeenCalledWith(
-                'http://localhost:8080/api/v1/orders/ord-123/submit',
+                'http://localhost:8090/api/v1/orders/ord-123/submit',
                 expect.objectContaining({ method: 'POST' })
             );
 
@@ -155,17 +156,17 @@ describe('API clients unit tests', () => {
             expect(cancelRes.status).toBe('CANCELLED');
         });
 
-        it('billingClient should fetch and pay invoices with Split Payment', async () => {
+        it('billingClient should create a payment intent without marking the invoice paid', async () => {
             const { billingClient } = await import('./clients/billing-client');
             global.fetch = vi.fn().mockResolvedValue({
                 ok: true,
-                json: async () => ({ success: true, paymentStatus: 'PAID' }),
+                json: async () => ({ clientSecret: 'test-client-secret' }),
             });
 
-            const payRes = await billingClient.payInvoice('inv-01', 'SPLIT_PAYMENT');
-            expect(payRes.paymentStatus).toBe('PAID');
+            const intent = await billingClient.createPaymentIntent('inv-01');
+            expect(intent.clientSecret).toBe('test-client-secret');
             expect(global.fetch).toHaveBeenCalledWith(
-                'http://localhost:8080/api/v1/billing/invoices/inv-01/pay?paymentMethod=SPLIT_PAYMENT',
+                'http://localhost:8090/api/v1/billing/invoices/inv-01/payment-intent',
                 expect.objectContaining({
                     method: 'POST',
                 })

@@ -1,20 +1,5 @@
+import { Activity, Check, Cpu, Globe, RefreshCw, RotateCcw, Save, Server, Shield, Sliders, Warehouse, Wifi, WifiOff } from 'lucide-react';
 import {useState, useEffect} from 'react';
-import {
-    Activity,
-    Check,
-    Cpu,
-    ExternalLink,
-    Globe,
-    RefreshCw,
-    RotateCcw,
-    Save,
-    Server,
-    Shield,
-    Sliders,
-    Warehouse,
-    Wifi,
-    WifiOff,
-} from 'lucide-react';
 import {toast} from 'sonner';
 
 import {Badge} from '@/components/ui/badge';
@@ -198,7 +183,7 @@ export function ManualEnvironmentModal({open, onOpenChange}: ManualEnvironmentMo
                         Ручная настройка окружения (Environment & Gateway Config)
                     </DialogTitle>
                     <DialogDescription className='text-xs text-muted-foreground'>
-                        Сконфигурируйте рабочий хост API Gateway, Keycloak OIDC, режим мок-данных и параметры мультиарендной организации.
+                        Сконфигурируйте рабочий хост API Gateway, OIDC провайдер авторизации, режим мок-данных и параметры организации.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -273,7 +258,7 @@ export function ManualEnvironmentModal({open, onOpenChange}: ManualEnvironmentMo
                                     setGatewayUrl(e.target.value);
                                     if (selectedEnv !== 'custom') setSelectedEnv('custom');
                                 }}
-                                placeholder='http://localhost:8080 или https://your-gateway.domain'
+                                placeholder='http://localhost:8090 или https://your-gateway.domain'
                                 className='h-8 text-xs font-mono bg-white dark:bg-slate-950'
                             />
 
@@ -281,9 +266,9 @@ export function ManualEnvironmentModal({open, onOpenChange}: ManualEnvironmentMo
                             <div className='flex flex-wrap items-center gap-1.5 pt-1'>
                                 <span className='text-[10px] text-muted-foreground mr-1'>Быстрые хосты:</span>
                                 {[
-                                    'http://localhost:8080',
+                                    'http://localhost:8090',
                                     'http://localhost:8081',
-                                    'http://127.0.0.1:8080',
+                                    'http://127.0.0.1:8090',
                                     'https://staging-gateway.nexlify-scm.internal',
                                     'https://api.nexlify-scm.com',
                                 ].map(presetUrl => (
@@ -306,7 +291,7 @@ export function ManualEnvironmentModal({open, onOpenChange}: ManualEnvironmentMo
                         <div className='space-y-1.5 rounded-lg border border-slate-200 dark:border-slate-800 p-3.5 bg-slate-50/40 dark:bg-slate-900/40'>
                             <Label htmlFor='custom-keycloak-url' className='text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5'>
                                 <Shield className='h-3.5 w-3.5 text-blue-600' />
-                                Keycloak OIDC Realm URL
+                                OIDC / Auth Realm URL
                             </Label>
                             <Input
                                 id='custom-keycloak-url'

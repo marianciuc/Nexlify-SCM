@@ -1,10 +1,11 @@
 import {useMatchRoute, useNavigate} from '@tanstack/react-router';
 import {useEffect, useState, type ReactNode} from 'react';
 
+import {getDefaultWorkspacePath} from '@/lib/workspace-routing';
 import useAuthStore from '@/service/auth/auth-store';
 
 const AuthProvider = ({children}: { children: ReactNode }) => {
-    const {isAuthenticated} = useAuthStore();
+    const {isAuthenticated, userData} = useAuthStore();
     const matchRoute = useMatchRoute();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
@@ -31,9 +32,9 @@ const AuthProvider = ({children}: { children: ReactNode }) => {
         }
 
         if (isAuthenticated && (matchRoute({to: '/auth/login'}) || matchRoute({to: '/auth/register'}))) {
-            navigate({to: '/supplier/dashboard'});
+            navigate({to: getDefaultWorkspacePath(userData)});
         }
-    }, [isAuthenticated, matchRoute, navigate]);
+    }, [isAuthenticated, matchRoute, navigate, userData]);
 
     if (isLoading) {
         return <div className='flex items-center justify-center h-screen'>Loading...</div>;

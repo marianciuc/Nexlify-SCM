@@ -75,27 +75,6 @@ export const billingClient = {
         return res.json();
     },
 
-    async payInvoice(id: string, paymentMethod: string = 'SPLIT_PAYMENT', transactionId?: string): Promise<any> {
-        const { getBaseUrl, currentTenant } = useEnvironmentStore.getState();
-        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-
-        const params = new URLSearchParams({ paymentMethod });
-        if (transactionId) params.set('transactionId', transactionId);
-
-        const res = await fetch(`${getBaseUrl()}/api/v1/billing/invoices/${id}/pay?${params.toString()}`, {
-            method: 'POST',
-            headers: {
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                'X-Tenant-Id': currentTenant.id,
-            },
-        });
-
-        if (!res.ok) {
-            throw new Error(`Failed to process payment: ${res.statusText}`);
-        }
-        return res.json();
-    },
-
     async createPaymentIntent(id: string): Promise<any> {
         const { getBaseUrl, currentTenant } = useEnvironmentStore.getState();
         const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;

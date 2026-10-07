@@ -19,7 +19,6 @@ import { Route as SupplierScorecardRouteImport } from './routes/supplier/scoreca
 import { Route as SupplierProductsRouteImport } from './routes/supplier/products'
 import { Route as SupplierPricingRouteImport } from './routes/supplier/pricing'
 import { Route as SupplierOrdersRouteImport } from './routes/supplier/orders'
-import { Route as SupplierEdiRouteImport } from './routes/supplier/edi'
 import { Route as SupplierDashboardRouteImport } from './routes/supplier/dashboard'
 import { Route as LogisticsSettingsRouteImport } from './routes/logistics/settings'
 import { Route as LogisticsRoutesRouteImport } from './routes/logistics/routes'
@@ -47,6 +46,7 @@ import { Route as SupplierProductsNewRouteImport } from './routes/supplier/produ
 import { Route as SupplierProductsSkuRouteImport } from './routes/supplier/products.$sku'
 import { Route as SupplierPricingContractIdRouteImport } from './routes/supplier/pricing.$contractId'
 import { Route as SupplierInventoryTransfersRouteImport } from './routes/supplier/inventory.transfers'
+import { Route as SupplierInventoryMapRouteImport } from './routes/supplier/inventory.map'
 import { Route as SupplierInventoryAbcXyzRouteImport } from './routes/supplier/inventory.abc-xyz'
 import { Route as SupplierBidsBoardRouteImport } from './routes/supplier/bids.board'
 import { Route as LogisticsRoutesPlannerRouteImport } from './routes/logistics/routes.planner'
@@ -113,11 +113,6 @@ const SupplierPricingRoute = SupplierPricingRouteImport.update({
 const SupplierOrdersRoute = SupplierOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
-  getParentRoute: () => SupplierRouteRoute,
-} as any)
-const SupplierEdiRoute = SupplierEdiRouteImport.update({
-  id: '/edi',
-  path: '/edi',
   getParentRoute: () => SupplierRouteRoute,
 } as any)
 const SupplierDashboardRoute = SupplierDashboardRouteImport.update({
@@ -257,6 +252,11 @@ const SupplierInventoryTransfersRoute =
     path: '/inventory/transfers',
     getParentRoute: () => SupplierRouteRoute,
   } as any)
+const SupplierInventoryMapRoute = SupplierInventoryMapRouteImport.update({
+  id: '/inventory/map',
+  path: '/inventory/map',
+  getParentRoute: () => SupplierRouteRoute,
+} as any)
 const SupplierInventoryAbcXyzRoute = SupplierInventoryAbcXyzRouteImport.update({
   id: '/inventory/abc-xyz',
   path: '/inventory/abc-xyz',
@@ -375,7 +375,6 @@ export interface FileRoutesByFullPath {
   '/logistics/routes': typeof LogisticsRoutesRouteWithChildren
   '/logistics/settings': typeof LogisticsSettingsRoute
   '/supplier/dashboard': typeof SupplierDashboardRoute
-  '/supplier/edi': typeof SupplierEdiRoute
   '/supplier/orders': typeof SupplierOrdersRouteWithChildren
   '/supplier/pricing': typeof SupplierPricingRouteWithChildren
   '/supplier/products': typeof SupplierProductsRouteWithChildren
@@ -396,6 +395,7 @@ export interface FileRoutesByFullPath {
   '/logistics/routes/planner': typeof LogisticsRoutesPlannerRoute
   '/supplier/bids/board': typeof SupplierBidsBoardRoute
   '/supplier/inventory/abc-xyz': typeof SupplierInventoryAbcXyzRoute
+  '/supplier/inventory/map': typeof SupplierInventoryMapRoute
   '/supplier/inventory/transfers': typeof SupplierInventoryTransfersRoute
   '/supplier/pricing/$contractId': typeof SupplierPricingContractIdRoute
   '/supplier/products/$sku': typeof SupplierProductsSkuRoute
@@ -432,7 +432,6 @@ export interface FileRoutesByTo {
   '/logistics/routes': typeof LogisticsRoutesRouteWithChildren
   '/logistics/settings': typeof LogisticsSettingsRoute
   '/supplier/dashboard': typeof SupplierDashboardRoute
-  '/supplier/edi': typeof SupplierEdiRoute
   '/supplier/orders': typeof SupplierOrdersRouteWithChildren
   '/supplier/pricing': typeof SupplierPricingRouteWithChildren
   '/supplier/products': typeof SupplierProductsRouteWithChildren
@@ -453,6 +452,7 @@ export interface FileRoutesByTo {
   '/logistics/routes/planner': typeof LogisticsRoutesPlannerRoute
   '/supplier/bids/board': typeof SupplierBidsBoardRoute
   '/supplier/inventory/abc-xyz': typeof SupplierInventoryAbcXyzRoute
+  '/supplier/inventory/map': typeof SupplierInventoryMapRoute
   '/supplier/inventory/transfers': typeof SupplierInventoryTransfersRoute
   '/supplier/pricing/$contractId': typeof SupplierPricingContractIdRoute
   '/supplier/products/$sku': typeof SupplierProductsSkuRoute
@@ -490,7 +490,6 @@ export interface FileRoutesById {
   '/logistics/routes': typeof LogisticsRoutesRouteWithChildren
   '/logistics/settings': typeof LogisticsSettingsRoute
   '/supplier/dashboard': typeof SupplierDashboardRoute
-  '/supplier/edi': typeof SupplierEdiRoute
   '/supplier/orders': typeof SupplierOrdersRouteWithChildren
   '/supplier/pricing': typeof SupplierPricingRouteWithChildren
   '/supplier/products': typeof SupplierProductsRouteWithChildren
@@ -511,6 +510,7 @@ export interface FileRoutesById {
   '/logistics/routes/planner': typeof LogisticsRoutesPlannerRoute
   '/supplier/bids/board': typeof SupplierBidsBoardRoute
   '/supplier/inventory/abc-xyz': typeof SupplierInventoryAbcXyzRoute
+  '/supplier/inventory/map': typeof SupplierInventoryMapRoute
   '/supplier/inventory/transfers': typeof SupplierInventoryTransfersRoute
   '/supplier/pricing/$contractId': typeof SupplierPricingContractIdRoute
   '/supplier/products/$sku': typeof SupplierProductsSkuRoute
@@ -549,7 +549,6 @@ export interface FileRouteTypes {
     | '/logistics/routes'
     | '/logistics/settings'
     | '/supplier/dashboard'
-    | '/supplier/edi'
     | '/supplier/orders'
     | '/supplier/pricing'
     | '/supplier/products'
@@ -570,6 +569,7 @@ export interface FileRouteTypes {
     | '/logistics/routes/planner'
     | '/supplier/bids/board'
     | '/supplier/inventory/abc-xyz'
+    | '/supplier/inventory/map'
     | '/supplier/inventory/transfers'
     | '/supplier/pricing/$contractId'
     | '/supplier/products/$sku'
@@ -606,7 +606,6 @@ export interface FileRouteTypes {
     | '/logistics/routes'
     | '/logistics/settings'
     | '/supplier/dashboard'
-    | '/supplier/edi'
     | '/supplier/orders'
     | '/supplier/pricing'
     | '/supplier/products'
@@ -627,6 +626,7 @@ export interface FileRouteTypes {
     | '/logistics/routes/planner'
     | '/supplier/bids/board'
     | '/supplier/inventory/abc-xyz'
+    | '/supplier/inventory/map'
     | '/supplier/inventory/transfers'
     | '/supplier/pricing/$contractId'
     | '/supplier/products/$sku'
@@ -663,7 +663,6 @@ export interface FileRouteTypes {
     | '/logistics/routes'
     | '/logistics/settings'
     | '/supplier/dashboard'
-    | '/supplier/edi'
     | '/supplier/orders'
     | '/supplier/pricing'
     | '/supplier/products'
@@ -684,6 +683,7 @@ export interface FileRouteTypes {
     | '/logistics/routes/planner'
     | '/supplier/bids/board'
     | '/supplier/inventory/abc-xyz'
+    | '/supplier/inventory/map'
     | '/supplier/inventory/transfers'
     | '/supplier/pricing/$contractId'
     | '/supplier/products/$sku'
@@ -773,13 +773,6 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/supplier/orders'
       preLoaderRoute: typeof SupplierOrdersRouteImport
-      parentRoute: typeof SupplierRouteRoute
-    }
-    '/supplier/edi': {
-      id: '/supplier/edi'
-      path: '/edi'
-      fullPath: '/supplier/edi'
-      preLoaderRoute: typeof SupplierEdiRouteImport
       parentRoute: typeof SupplierRouteRoute
     }
     '/supplier/dashboard': {
@@ -969,6 +962,13 @@ declare module '@tanstack/react-router' {
       path: '/inventory/transfers'
       fullPath: '/supplier/inventory/transfers'
       preLoaderRoute: typeof SupplierInventoryTransfersRouteImport
+      parentRoute: typeof SupplierRouteRoute
+    }
+    '/supplier/inventory/map': {
+      id: '/supplier/inventory/map'
+      path: '/inventory/map'
+      fullPath: '/supplier/inventory/map'
+      preLoaderRoute: typeof SupplierInventoryMapRouteImport
       parentRoute: typeof SupplierRouteRoute
     }
     '/supplier/inventory/abc-xyz': {
@@ -1305,7 +1305,6 @@ const SupplierProductsRouteWithChildren =
 
 interface SupplierRouteRouteChildren {
   SupplierDashboardRoute: typeof SupplierDashboardRoute
-  SupplierEdiRoute: typeof SupplierEdiRoute
   SupplierOrdersRoute: typeof SupplierOrdersRouteWithChildren
   SupplierPricingRoute: typeof SupplierPricingRouteWithChildren
   SupplierProductsRoute: typeof SupplierProductsRouteWithChildren
@@ -1313,13 +1312,13 @@ interface SupplierRouteRouteChildren {
   SupplierSettingsRoute: typeof SupplierSettingsRoute
   SupplierBidsBoardRoute: typeof SupplierBidsBoardRoute
   SupplierInventoryAbcXyzRoute: typeof SupplierInventoryAbcXyzRoute
+  SupplierInventoryMapRoute: typeof SupplierInventoryMapRoute
   SupplierInventoryTransfersRoute: typeof SupplierInventoryTransfersRoute
   SupplierBidsRfqIdSubmitRoute: typeof SupplierBidsRfqIdSubmitRoute
 }
 
 const SupplierRouteRouteChildren: SupplierRouteRouteChildren = {
   SupplierDashboardRoute: SupplierDashboardRoute,
-  SupplierEdiRoute: SupplierEdiRoute,
   SupplierOrdersRoute: SupplierOrdersRouteWithChildren,
   SupplierPricingRoute: SupplierPricingRouteWithChildren,
   SupplierProductsRoute: SupplierProductsRouteWithChildren,
@@ -1327,6 +1326,7 @@ const SupplierRouteRouteChildren: SupplierRouteRouteChildren = {
   SupplierSettingsRoute: SupplierSettingsRoute,
   SupplierBidsBoardRoute: SupplierBidsBoardRoute,
   SupplierInventoryAbcXyzRoute: SupplierInventoryAbcXyzRoute,
+  SupplierInventoryMapRoute: SupplierInventoryMapRoute,
   SupplierInventoryTransfersRoute: SupplierInventoryTransfersRoute,
   SupplierBidsRfqIdSubmitRoute: SupplierBidsRfqIdSubmitRoute,
 }

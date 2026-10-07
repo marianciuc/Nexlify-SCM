@@ -14,25 +14,25 @@ export interface TenantContext {
 export const AVAILABLE_ENVIRONMENTS: Record<EnvironmentType, { label: string; url: string; badgeColor: string; description: string }> = {
     development: {
         label: 'Development (Local)',
-        url: 'http://localhost:8080',
+        url: 'http://localhost:8090',
         badgeColor: 'bg-emerald-500/15 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-400',
         description: 'Local Docker & Spring Gateway environment',
     },
     staging: {
         label: 'Staging (Pre-Prod)',
-        url: 'http://localhost:8080',
+        url: 'http://localhost:8090',
         badgeColor: 'bg-amber-500/15 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-400',
-        description: 'Kubernetes Pre-production Testbed (ZUT Lab)',
+        description: 'Kubernetes Pre-production Staging Environment',
     },
     production: {
         label: 'Production (Cloud)',
-        url: 'http://localhost:8080',
+        url: 'http://localhost:8090',
         badgeColor: 'bg-indigo-500/15 text-indigo-700 border-indigo-300 dark:bg-indigo-950/40 dark:text-indigo-400',
         description: 'Live High-Availability B2B Network',
     },
     custom: {
         label: 'Custom (Manual URL)',
-        url: 'http://localhost:8080',
+        url: 'http://localhost:8090',
         badgeColor: 'bg-purple-500/15 text-purple-700 border-purple-300 dark:bg-purple-950/40 dark:text-purple-400',
         description: 'User-specified API Gateway and Auth endpoints',
     },
@@ -94,7 +94,7 @@ const STORAGE_CUSTOM_URL_KEY = 'nexlify_custom_gateway_url';
 const STORAGE_CUSTOM_KEYCLOAK_KEY = 'nexlify_custom_keycloak_url';
 const STORAGE_MOCK_MODE_KEY = 'nexlify_mock_mode_enabled';
 
-const DEFAULT_CUSTOM_URL = 'http://localhost:8080';
+const DEFAULT_CUSTOM_URL = 'http://localhost:8090';
 const DEFAULT_KEYCLOAK_URL = 'http://localhost:9090/realms/nexlify';
 
 export const useEnvironmentStore = create<EnvironmentState>((set, get) => {

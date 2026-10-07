@@ -1,17 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { Users } from 'lucide-react';
 import { useState } from 'react';
-import {
-  Users,
-  Clock,
-  ShieldCheck,
-  CheckCircle2,
-  Calendar,
-  AlertTriangle,
-} from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export const Route = createFileRoute('/logistics/drivers')({
   component: LogisticsDriversPage,
@@ -70,7 +63,7 @@ function LogisticsDriversPage() {
   const [drivers] = useState<Driver[]>(DRIVERS_DATA);
 
   return (
-    <div className="space-y-6 p-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header */}
       <div>
         <div className="flex items-center gap-2">
@@ -89,9 +82,9 @@ function LogisticsDriversPage() {
 
       {/* Drivers Table */}
       <Card className="border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-        <CardContent className="p-0">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 dark:bg-slate-900 border-b text-slate-600 dark:text-slate-400">
+        <CardContent className="p-0 overflow-x-auto">
+          <table className="w-full text-left text-xs min-w-[700px]">
+            <thead className="bg-slate-50 dark:bg-slate-900 border-b text-slate-600 dark:text-slate-400 whitespace-nowrap">
               <tr>
                 <th className="py-3 px-4">Driver Name</th>
                 <th className="py-3 px-4">License / Qualification</th>
@@ -101,7 +94,7 @@ function LogisticsDriversPage() {
                 <th className="py-3 px-4 text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 whitespace-nowrap">
               {drivers.map((d) => (
                 <tr key={d.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/50">
                   <td className="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">
