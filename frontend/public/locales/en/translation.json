@@ -925,6 +925,150 @@
       "empty": {
         "title": "No organizations found",
         "subtitle": "Adjust the filters or clear the search"
+      },
+      "verification": {
+        "title": "Organization verification queue",
+        "subtitle": "Compliance review of registrations: MF VAT white list, KRS/GUS registries, transport licenses and trade credit terms.",
+        "backToDirectory": "Back to organizations",
+        "newApplication": "New application",
+        "searchLabel": "Search applications",
+        "searchPlaceholder": "Name, NIP or KRS…",
+        "searchClear": "Clear search",
+        "copiedToast": "{{label}} copied: {{value}}",
+        "copyNip": "Copy NIP",
+        "copyIban": "Copy account number",
+        "ageDays": "{{count}} d",
+        "review": "Review",
+        "reviewAria": "Review application of {{name}}",
+        "filter": {
+          "ariaLabel": "Filter by status",
+          "all": "All",
+          "pending": "Pending audit",
+          "approved": "Approved",
+          "rejected": "Rejected"
+        },
+        "status": {
+          "pendingAudit": "Pending audit",
+          "approved": "Approved",
+          "rejected": "Rejected"
+        },
+        "table": {
+          "caption": "KYC applications for compliance review",
+          "organization": "Organization",
+          "role": "Role",
+          "status": "Status",
+          "submitted": "Submitted",
+          "age": "Age",
+          "checks": "Registry checks",
+          "documents": "Docs",
+          "requestedLimit": "Requested credit"
+        },
+        "checks": {
+          "regon": "GUS / REGON registry",
+          "vatWhiteList": "VAT white list (MF)",
+          "accountMatch": "Bank account on white list (MPP)",
+          "vies": "VIES EU VAT",
+          "sanctions": "Sanctions & PEP screening",
+          "summary": "{{passed}} of {{total}} registry checks passed",
+          "pass": "pass",
+          "fail": "fail"
+        },
+        "documents": {
+          "title": "Registration documents & licenses",
+          "none": "No documents attached",
+          "incomplete": "Missing required documents: {{types}}",
+          "inspectAria": "Preview document {{name}}"
+        },
+        "docType": {
+          "krsExtract": "KRS extract",
+          "vatWhiteList": "VAT white list confirmation",
+          "transportLicense": "Transport license (GITD)",
+          "bankConfirmation": "Bank account confirmation",
+          "isoCertificate": "ISO certificate"
+        },
+        "paymentTerms": {
+          "net15": "Net 15 days (short)",
+          "net30": "Net 30 days (standard B2B)",
+          "net60": "Net 60 days (extended)",
+          "prepayment": "Prepayment"
+        },
+        "bulk": {
+          "approve": "Approve selected ({{count}})",
+          "reject": "Reject selected ({{count}})"
+        },
+        "empty": {
+          "title": "No applications match the filters",
+          "subtitle": "All KYC submissions have been processed, or there are no new registrations."
+        },
+        "reviewDialog": {
+          "title": "KYC review",
+          "submittedOn": "Submitted",
+          "field": {
+            "nip": "NIP",
+            "krs": "KRS / REGON",
+            "iban": "Settlement bank account (split payment)",
+            "email": "Email",
+            "phone": "Phone",
+            "address": "Address"
+          },
+          "whiteList": {
+            "match": "White list: account matches",
+            "mismatch": "White list: account mismatch"
+          },
+          "requestedLimit": "Requested credit limit",
+          "checksTitle": "Automated registry checks",
+          "outcome": {
+            "approved": "Approved by compliance",
+            "rejected": "Rejected by compliance"
+          },
+          "rejectionReason": "Reason",
+          "noNotes": "No audit notes",
+          "approve": "Approve & set credit",
+          "reject": "Reject"
+        },
+        "approveDialog": {
+          "title": "Approve organization & set credit",
+          "org": "{{name}} (NIP {{nip}})",
+          "limitLabel": "Approved trade credit limit (PLN)",
+          "requestedHint": "Requested: {{amount}} PLN",
+          "termsLabel": "Payment terms",
+          "notesLabel": "Compliance audit note",
+          "notesPlaceholder": "e.g. Verified against the MF white list; KRS up to date.",
+          "confirm": "Confirm & activate organization",
+          "defaultNotes": "Verified in the VAT taxpayers registry. Split payment (MPP) account confirmed."
+        },
+        "rejectDialog": {
+          "title": "Reject registration application",
+          "org": "{{name}}",
+          "reasonLabel": "Rejection reason",
+          "notesLabel": "Recommendations for the applicant",
+          "notesPlaceholder": "e.g. Update the account number with the tax office and resubmit.",
+          "confirm": "Confirm rejection"
+        },
+        "rejectReasons": {
+          "whiteList": "Bank account not listed on the MF VAT white list (no MPP)",
+          "krsMismatch": "Representative data inconsistent with KRS / CEIDG",
+          "transportLicense": "Missing required GITD transport license",
+          "vatRemoved": "Entity removed from the register of active VAT taxpayers",
+          "creditRisk": "Negative credit risk and payment history assessment"
+        },
+        "docPreview": {
+          "title": "Compliance document preview",
+          "org": "{{name}} (NIP: {{nip}})",
+          "signature": "Qualified eIDAS signature",
+          "reportRegistry": "STATE REGISTRY OF POLAND (MF WHITE LIST)",
+          "reportDate": "REPORT DATE: 2026-09-28",
+          "entity": "Business entity:",
+          "nipLabel": "Tax ID (NIP):",
+          "vatStatus": "Taxpayer status:",
+          "vatActive": "ACTIVE VAT TAXPAYER",
+          "mpp": "Split payment mechanism (MPP):",
+          "mppRegistered": "YES — REGISTERED",
+          "checksum": "SHA-256 checksum: 4e9f7a812b03c94d8ef51...d8a2bc",
+          "close": "Close preview",
+          "download": "Download original PDF",
+          "downloadStarted": "Download started: {{file}}"
+        }
       }
     },
     "analytics": {
