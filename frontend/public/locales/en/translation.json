@@ -2131,6 +2131,103 @@
           "equipmentInfo": "{{name}}: {{task}}"
         }
       }
+    },
+    "transfers": {
+      "title": "Inter-hub stock transfers",
+      "subtitle": "Rebalance wholesale inventory across multi-hub fulfilment centers.",
+      "filters": {
+        "ariaLabel": "Filter transfers by status",
+        "searchPlaceholder": "Search transfer no, SKU, hub…",
+        "searchLabel": "Search transfers"
+      },
+      "status": {
+        "DISPATCHED": "Dispatched",
+        "IN_TRANSIT": "In transit",
+        "RECEIVED": "Received"
+      },
+      "table": {
+        "caption": "Active and recent inter-hub transfer orders",
+        "transferNo": "Transfer no.",
+        "item": "SKU / Item",
+        "from": "From",
+        "to": "To",
+        "qty": "Qty",
+        "initiatedBy": "Initiated by",
+        "created": "Created",
+        "eta": "ETA"
+      },
+      "units": {
+        "pcs": "pcs"
+      },
+      "eta": {
+        "today": "Today, {{time}}",
+        "tomorrow": "Tomorrow, {{time}}",
+        "delivered": "Delivered"
+      },
+      "empty": {
+        "title": "No transfers match the current filters.",
+        "subtitle": "Adjust the status filter or the search query."
+      },
+      "actions": {
+        "create": "Create transfer order"
+      },
+      "modal": {
+        "title": "Schedule inter-hub transfer",
+        "fields": {
+          "sourceHub": "Source warehouse (origin)",
+          "destHub": "Destination facility",
+          "sku": "SKU to transfer",
+          "qty": "Quantity to move"
+        },
+        "skuOption": "{{sku}} — {{name}}",
+        "validation": {
+          "sourceRequired": "Source hub is required",
+          "destRequired": "Destination hub is required",
+          "skuRequired": "SKU is required",
+          "qtyMin": "Quantity must be at least 1"
+        },
+        "submit": "Dispatch transfer order",
+        "success": "Transfer order {{number}} scheduled from {{from}} to {{to}}."
+      }
+    },
+    "abcXyz": {
+      "title": "ABC/XYZ inventory analysis",
+      "subtitle": "Dual-axis classification: value contribution (ABC) vs demand variation coefficient (XYZ).",
+      "filters": {
+        "abcAria": "Filter by ABC value class",
+        "xyzAria": "Filter by XYZ variation class"
+      },
+      "table": {
+        "caption": "SKU classification matrix",
+        "item": "SKU / Item",
+        "annualRevenue": "Annual revenue",
+        "revenueShare": "Revenue share",
+        "variation": "Variation (V)",
+        "abcClass": "ABC",
+        "xyzClass": "XYZ",
+        "policy": "Replenishment policy"
+      },
+      "empty": {
+        "title": "No SKUs in the selected classes.",
+        "subtitle": "Combine different ABC and XYZ classes to see more items."
+      },
+      "legend": {
+        "title": "Class definitions",
+        "abcLabel": "Value contribution (ABC):",
+        "abcA": "top revenue share",
+        "abcB": "steady secondary",
+        "abcC": "sporadic, long tail",
+        "xyzLabel": "Demand variation (XYZ):",
+        "xyzX": "V < 10% — predictable",
+        "xyzY": "V 10–25% — seasonal",
+        "xyzZ": "V > 25% — erratic"
+      },
+      "policy": {
+        "JIT_BUFFER": "High turnover, strictly predictable — JIT replenishment with a 3-day buffer.",
+        "WEEKLY_REORDER": "Medium value, continuous demand — weekly automated reorder point.",
+        "SEASONAL_SAFETY_STOCK": "Seasonal fluctuations — raise safety stock in Q2/Q3.",
+        "ON_DEMAND": "Sporadic orders — assemble or order on demand, minimise warehouse footprint."
+      }
     }
   }
 }

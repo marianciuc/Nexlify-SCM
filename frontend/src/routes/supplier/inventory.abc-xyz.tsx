@@ -1,19 +1,30 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Grid } from 'lucide-react';
-import { useState } from 'react';
+import { Grid, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
-import '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MoneyDisplay } from '@/components/money-display';
+import { PageHeader } from '@/components/page-header';
+import { StatusBadge, type StatusTone } from '@/components/status-badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { useLocale } from '@/hooks/useLocale';
+import { type TranslationPath } from '@/types/generated-locale';
 
 export const Route = createFileRoute('/supplier/inventory/abc-xyz')({
   component: AbcXyzAnalysisPage,
   staticData: {
     crumb: {
-      label: 'ABC/XYZ Matrix',
+      label: 'nav.supplier.abcXyz',
     },
   },
 });
+
+/** Analysis class codes — locale-independent, only rendering goes through t(). */
+type AbcClass = 'A' | 'B' | 'C';
+type XyzClass = 'X' | 'Y' | 'Z';
+type AbcFilter = 'ALL' | AbcClass;
+type XyzFilter = 'ALL' | XyzClass;
+type PolicyCode = 'JIT_BUFFER' | 'WEEKLY_REORDER' | 'SEASONAL_SAFETY_STOCK' | 'ON_DEMAND';
 
 interface AbcItem {
   sku: string;
@@ -21,8 +32,9 @@ interface AbcItem {
   annualRevenuePln: number;
   revenueSharePercent: number;
   variationCoefficientPercent: number;
-  quadrant: 'AX' | 'AY' | 'AZ' | 'BX' | 'BY' | 'BZ' | 'CX' | 'CY' | 'CZ';
-  recommendation: string;
+  abc: AbcClass;
+  xyz: XyzClass;
+  policy: PolicyCode;
 }
 
 const ABC_ITEMS: AbcItem[] = [
@@ -32,8 +44,9 @@ const ABC_ITEMS: AbcItem[] = [
     annualRevenuePln: 1450000,
     revenueSharePercent: 62.5,
     variationCoefficientPercent: 6.8,
-    quadrant: 'AX',
-    recommendation: 'Golden Asset: High turnover, strictly predictable JIT replenishment with buffer of 3 days.',
+    abc: 'A',
+    xyz: 'X',
+    policy: 'JIT_BUFFER',
   },
   {
     sku: 'SKU-STR-05',
@@ -41,8 +54,9 @@ const ABC_ITEMS: AbcItem[] = [
     annualRevenuePln: 420000,
     revenueSharePercent: 18.1,
     variationCoefficientPercent: 8.2,
-    quadrant: 'BX',
-    recommendation: 'Medium value, continuous demand: weekly automated reorder point.',
+    abc: 'B',
+    xyz: 'X',
+    policy: 'WEEKLY_REORDER',
   },
   {
     sku: 'SKU-COL-09',
@@ -50,8 +64,9 @@ const ABC_ITEMS: AbcItem[] = [
     annualRevenuePln: 280000,
     revenueSharePercent: 12.0,
     variationCoefficientPercent: 21.4,
-    quadrant: 'BY',
-    recommendation: 'Seasonal fluctuations: increase safety stock in Q2/Q3 for summer food logistics.',
+    abc: 'B',
+    xyz: 'Y',
+    policy: 'SEASONAL_SAFETY_STOCK',
   },
   {
     sku: 'SKU-HYD-02',
@@ -59,223 +74,225 @@ const ABC_ITEMS: AbcItem[] = [
     annualRevenuePln: 170000,
     revenueSharePercent: 7.4,
     variationCoefficientPercent: 34.0,
-    quadrant: 'CZ',
-    recommendation: 'Capital equipment, sporadic orders: assemble or order on-demand, minimize warehouse footprint.',
+    abc: 'C',
+    xyz: 'Z',
+    policy: 'ON_DEMAND',
   },
 ];
 
-function AbcXyzAnalysisPage() {
-  const [selectedQuadrant, setSelectedQuadrant] = useState<string>('ALL');
-  const [selectedWarehouse, setSelectedWarehouse] = useState<string>('ALL');
+const ABC_TONE: Record<AbcClass, StatusTone> = {
+  A: 'success',
+  B: 'info',
+  C: 'neutral',
+};
 
-  const filtered = ABC_ITEMS.filter((i) => {
-    if (selectedQuadrant === 'ALL') return true;
-    return i.quadrant === selectedQuadrant;
-  });
+const XYZ_TONE: Record<XyzClass, StatusTone> = {
+  X: 'success',
+  Y: 'warning',
+  Z: 'danger',
+};
+
+const POLICY_LABEL_KEY: Record<PolicyCode, TranslationPath> = {
+  JIT_BUFFER: 'supplier.abcXyz.policy.JIT_BUFFER',
+  WEEKLY_REORDER: 'supplier.abcXyz.policy.WEEKLY_REORDER',
+  SEASONAL_SAFETY_STOCK: 'supplier.abcXyz.policy.SEASONAL_SAFETY_STOCK',
+  ON_DEMAND: 'supplier.abcXyz.policy.ON_DEMAND',
+};
+
+const ABC_FILTERS: AbcFilter[] = ['ALL', 'A', 'B', 'C'];
+const XYZ_FILTERS: XyzFilter[] = ['ALL', 'X', 'Y', 'Z'];
+
+function AbcXyzAnalysisPage() {
+  return <AbcXyzAnalysisContent />;
+}
+
+function AbcXyzAnalysisContent() {
+  const { t } = useLocale();
+  const [abcFilter, setAbcFilter] = useState<AbcFilter>('ALL');
+  const [xyzFilter, setXyzFilter] = useState<XyzFilter>('ALL');
+
+  const filtered = useMemo(
+    () =>
+      ABC_ITEMS.filter(
+        (item) =>
+          (abcFilter === 'ALL' || item.abc === abcFilter) &&
+          (xyzFilter === 'ALL' || item.xyz === xyzFilter)
+      ),
+    [abcFilter, xyzFilter]
+  );
+
+  const abcCounts = useMemo(() => {
+    const base: Record<AbcFilter, number> = { ALL: ABC_ITEMS.length, A: 0, B: 0, C: 0 };
+    for (const item of ABC_ITEMS) base[item.abc] += 1;
+    return base;
+  }, []);
+
+  const xyzCounts = useMemo(() => {
+    const base: Record<XyzFilter, number> = { ALL: ABC_ITEMS.length, X: 0, Y: 0, Z: 0 };
+    for (const item of ABC_ITEMS) base[item.xyz] += 1;
+    return base;
+  }, []);
+
+  const hasFilters = abcFilter !== 'ALL' || xyzFilter !== 'ALL';
+  const clearAll = () => {
+    setAbcFilter('ALL');
+    setXyzFilter('ALL');
+  };
+
+  const renderFilterGroup = <T extends AbcFilter | XyzFilter>(
+    filters: readonly T[],
+    active: T,
+    onSelect: (next: T) => void,
+    counts: Record<T, number>,
+    ariaLabel: string
+  ) => (
+    <div
+      className="flex items-center gap-1 bg-card p-1 rounded-lg border border-border shadow-xs text-xs overflow-x-auto"
+      role="group"
+      aria-label={ariaLabel}
+    >
+      {filters.map((id) => {
+        const isActive = active === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            onClick={() => onSelect(id)}
+            aria-pressed={isActive}
+            className={`px-3 py-1.5 rounded-md font-semibold transition-colors shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 ${
+              isActive
+                ? 'bg-primary text-primary-foreground shadow-xs'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+            }`}
+          >
+            <span>{id === 'ALL' ? t('common.all') : id}</span>
+            <span
+              className={`tabular-nums px-1.5 rounded text-[10px] font-bold ${
+                isActive
+                  ? 'bg-primary-foreground/15 text-primary-foreground'
+                  : 'bg-muted text-muted-foreground'
+              }`}
+            >
+              {counts[id]}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <Grid className="h-6 w-6 text-amber-600" />
-              ABC / XYZ Inventory Matrix Analysis
-            </h1>
-            <Badge variant="outline" className="text-amber-700 bg-amber-50 border-amber-200">
-              Enterprise SCM 2.0
-            </Badge>
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            Dual-axis classification: Value contribution (ABC) vs Demand predictability & variation coefficient (XYZ).
-          </p>
-        </div>
+    <div className="space-y-6 max-w-7xl mx-auto min-w-0">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <Grid className="h-5 w-5 text-primary" aria-hidden="true" />
+            {t('supplier.abcXyz.title')}
+          </span>
+        }
+        subtitle={t('supplier.abcXyz.subtitle')}
+      />
 
-        {/* Warehouse Filter */}
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          {[
-            { id: 'ALL', label: 'All Distribution Hubs' },
-            { id: 'WAW', label: 'Warszawa DC-01' },
-            { id: 'KTW', label: 'Katowice DC-02' },
-          ].map((wh) => (
-            <button
-              key={wh.id}
-              onClick={() => setSelectedWarehouse(wh.id)}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-colors ${
-                selectedWarehouse === wh.id
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              {wh.label}
-            </button>
-          ))}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
+          {renderFilterGroup(ABC_FILTERS, abcFilter, setAbcFilter, abcCounts, t('supplier.abcXyz.filters.abcAria'))}
+          {renderFilterGroup(XYZ_FILTERS, xyzFilter, setXyzFilter, xyzCounts, t('supplier.abcXyz.filters.xyzAria'))}
+        </div>
+        {hasFilters && (
+          <Button variant="ghost" size="sm" onClick={clearAll} className="text-xs self-start">
+            <X className="h-3.5 w-3.5" aria-hidden="true" />
+            {t('common.clearAll')}
+          </Button>
+        )}
+      </div>
+
+      {/* Compact class definitions — replaces the decorative 9-cell grid card */}
+      <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-xs space-y-2">
+        <p className="font-semibold text-foreground">{t('supplier.abcXyz.legend.title')}</p>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-muted-foreground">
+          <span className="font-medium text-foreground">{t('supplier.abcXyz.legend.abcLabel')}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <StatusBadge tone={ABC_TONE.A} label="A" size="sm" />
+            {t('supplier.abcXyz.legend.abcA')}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <StatusBadge tone={ABC_TONE.B} label="B" size="sm" />
+            {t('supplier.abcXyz.legend.abcB')}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <StatusBadge tone={ABC_TONE.C} label="C" size="sm" />
+            {t('supplier.abcXyz.legend.abcC')}
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-muted-foreground">
+          <span className="font-medium text-foreground">{t('supplier.abcXyz.legend.xyzLabel')}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <StatusBadge tone={XYZ_TONE.X} label="X" size="sm" />
+            {t('supplier.abcXyz.legend.xyzX')}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <StatusBadge tone={XYZ_TONE.Y} label="Y" size="sm" />
+            {t('supplier.abcXyz.legend.xyzY')}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <StatusBadge tone={XYZ_TONE.Z} label="Z" size="sm" />
+            {t('supplier.abcXyz.legend.xyzZ')}
+          </span>
         </div>
       </div>
 
-      {/* KPI Distribution Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card className="p-4 border-slate-200 dark:border-slate-800">
-          <span className="text-xs text-muted-foreground">Class A (Top Revenue)</span>
-          <div className="text-xl font-bold font-mono text-emerald-600 mt-1">62.5%</div>
-          <span className="text-2xs text-slate-500">1 SKU • Strict JIT buffer</span>
-        </Card>
-        <Card className="p-4 border-slate-200 dark:border-slate-800">
-          <span className="text-xs text-muted-foreground">Class B (Steady Secondary)</span>
-          <div className="text-xl font-bold font-mono text-blue-600 mt-1">30.1%</div>
-          <span className="text-2xs text-slate-500">2 SKUs • Weekly automated PO</span>
-        </Card>
-        <Card className="p-4 border-slate-200 dark:border-slate-800">
-          <span className="text-xs text-muted-foreground">Class C (Sporadic / Bulky)</span>
-          <div className="text-xl font-bold font-mono text-amber-600 mt-1">7.4%</div>
-          <span className="text-2xs text-slate-500">1 SKU • Order on confirmation</span>
-        </Card>
-        <Card className="p-4 border-slate-200 dark:border-slate-800">
-          <span className="text-xs text-muted-foreground">Class X (Predictable Demand)</span>
-          <div className="text-xl font-bold font-mono text-slate-900 dark:text-slate-100 mt-1">80.6%</div>
-          <span className="text-2xs text-slate-500">V &lt; 10% Variation</span>
-        </Card>
-      </div>
-
-      {/* 3x3 Matrix Grid Visualizer */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-2xs">
-        <CardHeader className="py-3 px-5 border-b">
-          <CardTitle className="text-sm font-semibold">Interactive 9-Cell Classification Grid</CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-3 gap-3 text-center text-xs">
-            {/* Row 1: A Category */}
-            <div
-              onClick={() => setSelectedQuadrant(selectedQuadrant === 'AX' ? 'ALL' : 'AX')}
-              className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                selectedQuadrant === 'AX'
-                  ? 'border-emerald-600 bg-emerald-500/15 shadow-xs ring-2 ring-emerald-500'
-                  : 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 hover:border-emerald-400'
-              }`}
-            >
-              <div className="font-extrabold text-sm text-emerald-800 dark:text-emerald-300">AX (Golden Core)</div>
-              <div className="text-2xs text-emerald-700 dark:text-emerald-400 mt-1">
-                High Value, Stable Demand. Strict JIT replenishment.
-              </div>
-              <Badge className="mt-2 bg-emerald-600 text-white text-2xs">1 SKU (62.5% Rev)</Badge>
-            </div>
-
-            <div
-              onClick={() => setSelectedQuadrant(selectedQuadrant === 'AY' ? 'ALL' : 'AY')}
-              className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 cursor-pointer"
-            >
-              <div className="font-bold text-slate-800 dark:text-slate-200">AY (High Value Seasonal)</div>
-              <div className="text-2xs text-slate-500 mt-1">Moderate variation, buffer stock required</div>
-            </div>
-
-            <div
-              onClick={() => setSelectedQuadrant(selectedQuadrant === 'AZ' ? 'ALL' : 'AZ')}
-              className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 cursor-pointer"
-            >
-              <div className="font-bold text-slate-800 dark:text-slate-200">AZ (High Value Unstable)</div>
-              <div className="text-2xs text-slate-500 mt-1">Expensive items with sporadic order spikes</div>
-            </div>
-
-            {/* Row 2: B Category */}
-            <div
-              onClick={() => setSelectedQuadrant(selectedQuadrant === 'BX' ? 'ALL' : 'BX')}
-              className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                selectedQuadrant === 'BX'
-                  ? 'border-blue-600 bg-blue-500/15 shadow-xs ring-2 ring-blue-500'
-                  : 'bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 hover:border-blue-400'
-              }`}
-            >
-              <div className="font-extrabold text-sm text-blue-800 dark:text-blue-300">BX (Steady Secondary)</div>
-              <div className="text-2xs text-blue-700 dark:text-blue-400 mt-1">Regular consumables (Stretch Film)</div>
-              <Badge className="mt-2 bg-blue-600 text-white text-2xs">1 SKU (18.1% Rev)</Badge>
-            </div>
-
-            <div
-              onClick={() => setSelectedQuadrant(selectedQuadrant === 'BY' ? 'ALL' : 'BY')}
-              className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                selectedQuadrant === 'BY'
-                  ? 'border-blue-600 bg-blue-500/15 shadow-xs ring-2 ring-blue-500'
-                  : 'bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 hover:border-blue-400'
-              }`}
-            >
-              <div className="font-extrabold text-sm text-blue-800 dark:text-blue-300">BY (Cold Chain Boxes)</div>
-              <div className="text-2xs text-blue-700 dark:text-blue-400 mt-1">Seasonal weather peaks</div>
-              <Badge className="mt-2 bg-blue-600 text-white text-2xs">1 SKU (12.0% Rev)</Badge>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 cursor-pointer">
-              <div className="font-bold text-slate-800 dark:text-slate-200">BZ (Medium Erratic)</div>
-              <div className="text-2xs text-slate-500 mt-1">Order on confirmation</div>
-            </div>
-
-            {/* Row 3: C Category */}
-            <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 cursor-pointer">
-              <div className="font-bold text-slate-800 dark:text-slate-200">CX (Bulk Low-Cost)</div>
-              <div className="text-2xs text-slate-500 mt-1">Pallet nails, standard strapping</div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 cursor-pointer">
-              <div className="font-bold text-slate-800 dark:text-slate-200">CY (Low Cost Seasonal)</div>
-              <div className="text-2xs text-slate-500 mt-1">Specialized tape, desiccants</div>
-            </div>
-
-            <div
-              onClick={() => setSelectedQuadrant(selectedQuadrant === 'CZ' ? 'ALL' : 'CZ')}
-              className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                selectedQuadrant === 'CZ'
-                  ? 'border-red-600 bg-red-500/15 shadow-xs ring-2 ring-red-500'
-                  : 'bg-red-50/50 dark:bg-red-950/20 border-red-200 hover:border-red-400'
-              }`}
-            >
-              <div className="font-extrabold text-sm text-red-800 dark:text-red-300">CZ (Dead-Stock Risk)</div>
-              <div className="text-2xs text-red-700 dark:text-red-400 mt-1">Heavy tools, zero floor buffer</div>
-              <Badge className="mt-2 bg-red-600 text-white text-2xs">1 SKU (7.4% Rev)</Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Item Table */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+      <Card className="border-border shadow-xs overflow-hidden bg-card">
         <CardContent className="p-0 overflow-x-auto">
-          <table className="w-full text-left text-xs min-w-[720px]">
-            <thead className="bg-slate-50 dark:bg-slate-900 border-b text-slate-600 dark:text-slate-400 whitespace-nowrap">
+          <table className="w-full text-left text-sm min-w-[980px]">
+            <caption className="sr-only">{t('supplier.abcXyz.table.caption')}</caption>
+            <thead className="bg-muted/40 border-b border-border text-muted-foreground whitespace-nowrap uppercase tracking-wider text-[11px] font-semibold">
               <tr>
-                <th className="py-3 px-4">SKU / Item</th>
-                <th className="py-3 px-4 text-right">Annual Revenue</th>
-                <th className="py-3 px-4 text-right">Rev Share</th>
-                <th className="py-3 px-4 text-right">Variation (V)</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Operational Replenishment Policy</th>
+                <th className="py-3 px-4">{t('supplier.abcXyz.table.item')}</th>
+                <th className="py-3 px-4 text-right">{t('supplier.abcXyz.table.annualRevenue')}</th>
+                <th className="py-3 px-4 text-right">{t('supplier.abcXyz.table.revenueShare')}</th>
+                <th className="py-3 px-4 text-right">{t('supplier.abcXyz.table.variation')}</th>
+                <th className="py-3 px-4">{t('supplier.abcXyz.table.abcClass')}</th>
+                <th className="py-3 px-4">{t('supplier.abcXyz.table.xyzClass')}</th>
+                <th className="py-3 px-4 min-w-[280px]">{t('supplier.abcXyz.table.policy')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {filtered.map((item) => (
-                <tr key={item.sku} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/50">
-                  <td className="py-3 px-4">
-                    <div className="font-semibold text-slate-800 dark:text-slate-200">{item.name}</div>
-                    <div className="font-mono text-2xs text-slate-500">{item.sku}</div>
-                  </td>
-                  <td className="py-3 px-4 font-mono font-bold text-right text-slate-900 dark:text-slate-100">
-                    {item.annualRevenuePln.toLocaleString()} PLN
-                  </td>
-                  <td className="py-3 px-4 font-mono text-right text-emerald-600 font-semibold">
-                    {item.revenueSharePercent}%
-                  </td>
-                  <td className="py-3 px-4 font-mono text-right text-slate-600">
-                    {item.variationCoefficientPercent}%
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge className="font-bold text-2xs bg-amber-100 text-amber-900">
-                      {item.quadrant}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4 text-slate-600 dark:text-slate-400">
-                    {item.recommendation}
+            <tbody className="divide-y divide-border">
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-sm text-muted-foreground">
+                    <Grid className="h-10 w-10 mx-auto text-muted-foreground/40 mb-2" aria-hidden="true" />
+                    <p className="font-semibold text-foreground">{t('supplier.abcXyz.empty.title')}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t('supplier.abcXyz.empty.subtitle')}</p>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map((item) => (
+                  <tr key={item.sku} className="hover:bg-muted/40 transition-colors">
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <div className="font-semibold text-foreground">{item.name}</div>
+                      <div className="font-mono text-[11px] text-muted-foreground">{item.sku}</div>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <MoneyDisplay amount={item.annualRevenuePln} variant="inline" emphasize />
+                    </td>
+                    <td className="py-3 px-4 text-right font-mono font-semibold tabular-nums text-foreground">
+                      {item.revenueSharePercent}%
+                    </td>
+                    <td className="py-3 px-4 text-right font-mono tabular-nums text-muted-foreground">
+                      {item.variationCoefficientPercent}%
+                    </td>
+                    <td className="py-3 px-4">
+                      <StatusBadge tone={ABC_TONE[item.abc]} label={item.abc} size="sm" />
+                    </td>
+                    <td className="py-3 px-4">
+                      <StatusBadge tone={XYZ_TONE[item.xyz]} label={item.xyz} size="sm" />
+                    </td>
+                    <td className="py-3 px-4 text-xs text-muted-foreground">
+                      {t(POLICY_LABEL_KEY[item.policy])}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </CardContent>
@@ -283,3 +300,5 @@ function AbcXyzAnalysisPage() {
     </div>
   );
 }
+
+export default AbcXyzAnalysisPage;
