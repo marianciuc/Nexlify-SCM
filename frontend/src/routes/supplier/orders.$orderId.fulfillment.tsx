@@ -229,7 +229,7 @@ function WarehouseFulfillmentContent() {
                       isCurrent
                         ? 'bg-primary text-primary-foreground'
                         : isPast
-                        ? 'bg-emerald-600 text-white'
+                        ? 'bg-primary text-primary-foreground'
                         : 'bg-muted text-muted-foreground'
                     }`}
                     aria-hidden="true"
@@ -346,7 +346,7 @@ function WarehouseFulfillmentContent() {
                 return (
                   <tr
                     key={item.sku}
-                    className={item.isVerified ? 'bg-emerald-500/5' : 'hover:bg-muted/40'}
+                    className={item.isVerified ? 'bg-muted/40' : 'hover:bg-muted/40'}
                   >
                     <td className="py-3.5 px-4">
                       <div className="font-semibold text-foreground">{item.zone}</div>
@@ -369,7 +369,7 @@ function WarehouseFulfillmentContent() {
                     <td className="py-3.5 px-4 text-right font-mono font-bold tabular-nums text-foreground">
                       {item.quantityRequired} {t('supplier.fulfillment.itemsUnit')}
                     </td>
-                    <td className="py-3.5 px-4 text-right font-mono font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
+                    <td className="py-3.5 px-4 text-right font-mono font-bold tabular-nums text-foreground">
                       {item.quantityPicked} {t('supplier.fulfillment.itemsUnit')}
                     </td>
                     <td className="py-3.5 px-4 text-right">

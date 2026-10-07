@@ -139,11 +139,11 @@ function SupplierSettingsContent() {
           )}
 
           {kycStatus === 'PENDING_AUDIT' && (
-            <Card className="border-amber-300 bg-amber-500/5 shadow-xs">
+            <Card className="border-border bg-muted/40 shadow-xs">
               <CardContent className="p-4 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <Clock
-                    className="h-6 w-6 text-amber-600 dark:text-amber-400 shrink-0"
+                    className="h-6 w-6 text-muted-foreground shrink-0"
                     aria-hidden="true"
                   />
                   <div>

@@ -349,7 +349,7 @@ function CreateSkuContent() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-foreground flex items-center gap-1.5">
                         <Factory
-                          className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"
+                          className="h-3.5 w-3.5 text-muted-foreground"
                           aria-hidden="true"
                         />
                         {t('supplier.productNew.fields.manufacturer')}
@@ -359,7 +359,7 @@ function CreateSkuContent() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setManufacturerModalOpen(true)}
-                        className="h-6 px-2 text-[11px] text-emerald-600 dark:text-emerald-400 hover:bg-muted gap-1 font-semibold"
+                        className="h-6 px-2 text-[11px] text-primary hover:bg-muted gap-1 font-semibold"
                       >
                         <Plus className="h-3 w-3" aria-hidden="true" />
                         {t('supplier.productNew.actions.createManufacturer')}

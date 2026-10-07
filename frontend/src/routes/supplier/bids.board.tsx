@@ -262,7 +262,8 @@ function RfqMarketplaceContent() {
                             <Badge
                               variant="outline"
                               className="text-[10px] font-semibold gap-1"
-                              aria-label={t('supplier.bids.actions.viewBidsAria', {
+                              aria-label={t('supplier.bids.actions.viewBidsCount', {
+                                count: rfq.bids.length,
                                 number: rfq.rfqNumber,
                               })}
                             >

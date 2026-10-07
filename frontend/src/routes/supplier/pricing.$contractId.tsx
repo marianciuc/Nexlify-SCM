@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ChevronLeft, Tag, Building2, CheckCircle2, Save } from 'lucide-react';
+import { ChevronLeft, Tag, Building2, Save } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -120,10 +120,12 @@ function PricingContractDetailPage() {
             </div>
             <div>
               <span className="text-muted-foreground block">VIES</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                {t('supplier.pricing.detail.buyerVies')}
-              </span>
+              <StatusBadge
+                tone="success"
+                size="sm"
+                label={t('supplier.pricing.detail.buyerVies')}
+                className="gap-1"
+              />
             </div>
           </CardContent>
         </Card>
@@ -163,7 +165,7 @@ function PricingContractDetailPage() {
                   step="0.01"
                   value={contractPrice}
                   onChange={(e) => setContractPrice(Number(e.target.value))}
-                  className="font-mono font-bold text-emerald-700 dark:text-emerald-400"
+                  className="font-mono font-bold text-foreground"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3 pt-2">
@@ -241,7 +243,7 @@ function PricingContractDetailPage() {
                     <td className="py-3 px-4 text-right">
                       <MoneyDisplay amount={line.unitPrice} variant="inline" emphasize />
                     </td>
-                    <td className="py-3 px-4 text-right font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                    <td className="py-3 px-4 text-right font-mono font-bold text-foreground">
                       -{line.discount}%
                     </td>
                   </tr>

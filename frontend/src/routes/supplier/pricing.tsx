@@ -98,6 +98,11 @@ const STATUS_TONE: Record<PricingContract['status'], StatusTone> = {
   EXPIRED: 'neutral',
 };
 
+const STATUS_LABEL_KEY: Record<PricingContract['status'], TranslationPath> = {
+  ACTIVE: 'supplier.pricing.status.ACTIVE',
+  EXPIRED: 'supplier.pricing.status.EXPIRED',
+};
+
 function SupplierPricingPage() {
   return <SupplierPricingContent />;
 }
@@ -322,7 +327,7 @@ function SupplierPricingContent() {
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="py-12 text-center text-sm text-muted-foreground">
-                    {t('supplier.bids.empty')}
+                    {t('supplier.pricing.empty')}
                   </td>
                 </tr>
               ) : (
@@ -355,17 +360,17 @@ function SupplierPricingContent() {
                         amount={c.contractPrice}
                         variant="inline"
                         emphasize
-                        className="text-emerald-700 dark:text-emerald-400"
+                        className="text-foreground"
                       />
                     </td>
-                    <td className="py-3 px-4 text-right font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                    <td className="py-3 px-4 text-right font-mono font-bold text-foreground">
                       -{c.discountPercent}%
                     </td>
                     <td className="py-3 px-4 font-mono text-xs text-foreground">{c.validUntil}</td>
                     <td className="py-3 px-4">
                       <StatusBadge
                         tone={STATUS_TONE[c.status]}
-                        label={t(`supplier.pricing.status.${c.status}` as TranslationPath)}
+                        label={t(STATUS_LABEL_KEY[c.status])}
                         size="sm"
                       />
                     </td>
