@@ -234,6 +234,7 @@ function AdminTenantsDirectoryPage() {
       <Card className="border-border shadow-xs overflow-hidden bg-card">
         <CardContent className="p-0 overflow-x-auto">
           <table className="w-full text-left text-sm min-w-[900px]">
+            <caption className="sr-only">{t('admin.users.title')}</caption>
             <thead className="bg-muted/40 border-b border-border text-muted-foreground whitespace-nowrap uppercase tracking-wider text-[11px] font-semibold">
               <tr>
                 <th className="py-3 px-3 w-10">

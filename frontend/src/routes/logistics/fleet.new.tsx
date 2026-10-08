@@ -88,7 +88,7 @@ function RegisterVehiclePage() {
           to="/logistics/fleet"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ChevronLeft className="h-4 w-4" /> Back to Fleet Registry
+          <ChevronLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" /> Back to Fleet Registry
         </Link>
       </div>
 

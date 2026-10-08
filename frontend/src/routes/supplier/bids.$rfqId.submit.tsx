@@ -194,7 +194,7 @@ export function SubmitRfqBidPage() {
           to="/supplier/bids/board"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ChevronLeft className="h-4 w-4" /> Назад к тендерной доске
+          <ChevronLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" /> Назад к тендерной доске
         </Link>
       </div>
 

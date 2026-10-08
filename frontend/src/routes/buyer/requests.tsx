@@ -204,7 +204,7 @@ function BuyerRequestsPage() {
                                         <Link to="/buyer/requests/$requestId" params={{ requestId: rfq.id }}>
                                             <Button size="sm" className="w-full gap-1.5 shadow-xs font-medium">
                                                 <span>{t('buyer.requests.evaluateBids', { count: bidsCount })}</span>
-                                                <ArrowRight className="h-3.5 w-3.5" />
+                                                <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden="true" />
                                             </Button>
                                         </Link>
                                     </div>

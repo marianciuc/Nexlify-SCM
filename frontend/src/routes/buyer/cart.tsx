@@ -104,7 +104,7 @@ function BuyerCartPage() {
                         search={{ q: '', category: 'ALL', brand: 'ALL', manufacturer: 'ALL', stock: 'ALL' }}
                     >
                         <Button className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2">
-                            {t('buyer.cart.empty.goToCatalog')} <ArrowRight className="h-4 w-4" />
+                            {t('buyer.cart.empty.goToCatalog')} <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
                         </Button>
                     </Link>
                 </Card>
@@ -407,7 +407,7 @@ function BuyerCartPage() {
                                         size="lg"
                                         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-xs"
                                     >
-                                        {t('buyer.cart.summary.checkout')} <ArrowRight className="ml-2 h-4 w-4" />
+                                        {t('buyer.cart.summary.checkout')} <ArrowRight className="ml-2 h-4 w-4 rtl:rotate-180" aria-hidden="true" />
                                     </Button>
                                 </Link>
 

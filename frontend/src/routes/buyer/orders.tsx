@@ -178,6 +178,7 @@ function OrdersPage() {
             <Card className="border-border shadow-2xs bg-card overflow-hidden">
                 <CardContent className="p-0 overflow-x-auto">
                     <table className="w-full text-xs text-left min-w-[760px]">
+                        <caption className="sr-only">{t('buyer.orders.title')}</caption>
                         <thead className="bg-muted/40 text-muted-foreground font-semibold border-b border-border uppercase tracking-wider text-[11px] whitespace-nowrap">
                             <tr>
                                 <th className="px-4 py-3 font-semibold">{t('buyer.orders.table.number')}</th>
@@ -296,6 +297,7 @@ function OrdersPage() {
 
                                 <div className="border border-border rounded-lg overflow-x-auto">
                                     <table className="w-full text-xs text-left min-w-[500px]">
+                                        <caption className="sr-only">{t('buyer.orders.create.itemsTitle')}</caption>
                                         <thead className="bg-muted/50 border-b border-border text-muted-foreground font-semibold">
                                             <tr>
                                                 <th className="py-2 px-3">

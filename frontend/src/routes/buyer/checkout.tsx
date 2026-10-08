@@ -119,7 +119,7 @@ function BuyerCheckoutPage() {
           <div className="flex justify-center gap-3">
             <Button asChild size="sm" className="gap-2">
               <Link to="/buyer/catalog" search={{ q: '', category: 'ALL', brand: 'ALL', manufacturer: 'ALL', stock: 'ALL' }}>
-                {t('buyer.cart.empty.goToCatalog')} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                {t('buyer.cart.empty.goToCatalog')} <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
               </Link>
             </Button>
           </div>

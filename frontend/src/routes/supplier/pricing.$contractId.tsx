@@ -211,6 +211,7 @@ function PricingContractDetailPage() {
             </p>
           ) : (
             <table className="w-full text-sm min-w-[640px]">
+              <caption className="sr-only">{t('supplier.pricing.detail.linesHeading')}</caption>
               <thead className="bg-muted/40 border-b border-border text-muted-foreground whitespace-nowrap uppercase tracking-wider text-[11px] font-semibold">
                 <tr>
                   <th className="py-3 px-4 text-left">

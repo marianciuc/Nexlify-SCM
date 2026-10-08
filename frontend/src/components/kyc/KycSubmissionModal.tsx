@@ -229,7 +229,7 @@ export function KycSubmissionModal({
                     size="sm"
                     onClick={handleAutofillGus}
                     disabled={isFetchingGus}
-                    className="h-6 text-3xs text-emerald-700 dark:text-emerald-400 gap-1 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 px-2 font-medium"
+                    className="h-6 text-xs text-emerald-700 dark:text-emerald-400 gap-1 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 px-2 font-medium"
                     title="Automatycznie pobierz dane firmy z bazy GUS / REGON"
                   >
                     {isFetchingGus ? (
@@ -282,7 +282,7 @@ export function KycSubmissionModal({
                       variant="outline"
                       size="sm"
                       onClick={() => form.setValue('requestedCreditLimitPln', amt)}
-                      className="text-3xs h-5 px-1.5 text-muted-foreground"
+                      className="text-xs h-5 px-1.5 text-muted-foreground"
                     >
                       {amt.toLocaleString()} zł
                     </Button>

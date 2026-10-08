@@ -98,6 +98,7 @@ function SupplierOrdersQueueContent() {
       <Card className="border-border shadow-xs overflow-hidden bg-card">
         <CardContent className="p-0 overflow-x-auto">
           <table className="w-full text-left text-sm min-w-[760px]">
+            <caption className="sr-only">{t('supplier.orders.title')}</caption>
             <thead className="bg-muted/40 border-b border-border text-muted-foreground whitespace-nowrap font-semibold uppercase tracking-wider text-[11px]">
               <tr>
                 <th className="py-3 px-4">{t('supplier.orders.table.orderNumber')}</th>
