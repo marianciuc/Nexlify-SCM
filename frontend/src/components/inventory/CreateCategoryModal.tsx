@@ -78,7 +78,7 @@ export function CreateCategoryModal({
             type="button"
             variant="outline"
             size="sm"
-            className="h-7 text-xs gap-1 text-slate-700 dark:text-slate-200"
+            className="h-7 text-xs gap-1 text-foreground"
           >
             <Plus className="h-3 w-3" />
             Добавить категорию
@@ -89,7 +89,7 @@ export function CreateCategoryModal({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">
+              <div className="p-2 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary">
                 <FolderTree className="h-5 w-5" />
               </div>
               <div>
@@ -104,7 +104,7 @@ export function CreateCategoryModal({
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="cat-name">
-                Наименование категории <span className="text-rose-500">*</span>
+                Наименование категории <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="cat-name"
@@ -159,7 +159,7 @@ export function CreateCategoryModal({
             <Button
               type="submit"
               disabled={createCategoryMutation.isPending || !name.trim()}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               {createCategoryMutation.isPending ? 'Сохранение...' : 'Создать'}
             </Button>

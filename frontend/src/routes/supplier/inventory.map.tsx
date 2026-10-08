@@ -138,7 +138,7 @@ const SPECIAL_ZONE_TYPE_LABEL_KEY: Record<WarehouseSpecialZone['type'], Translat
   CHARGING: `${M}.specialZoneType.charging`,
 };
 
-const TIER_LABEL_KEY: Record<number, TranslationPath> = {
+const TIER_LABEL_KEY: Record<4 | 3 | 2 | 1, TranslationPath> = {
   4: `${M}.inspector.tier4`,
   3: `${M}.inspector.tier3`,
   2: `${M}.inspector.tier2`,
@@ -738,7 +738,7 @@ function VirtualWarehouseMapPage() {
     if (!selectedRack) return [];
 
     // Tiers 4, 3, 2, 1 (from top to ground)
-    const tiers = [4, 3, 2, 1];
+    const tiers = [4, 3, 2, 1] as const;
     return tiers.map((tierNum) => {
       const positions = [1, 2, 3];
       const slotBins = positions.map((pos) => {
@@ -1658,7 +1658,7 @@ function VirtualWarehouseMapPage() {
                     {rackElevationSlots.map((tier) => (
                       <div key={tier.tierNumber} className="space-y-1">
                         <div className="text-[10px] font-semibold text-muted-foreground">
-                          {t(TIER_LABEL_KEY[tier.tierNumber]!)}
+                          {t(TIER_LABEL_KEY[tier.tierNumber])}
                         </div>
                         {/* 3 Pallet bins per shelf */}
                         <div className="grid grid-cols-3 gap-1.5">
@@ -1909,7 +1909,7 @@ function VirtualWarehouseMapPage() {
                     <tr
                       key={stop.stopNumber}
                       className={`cursor-pointer transition-colors ${
-                        stop.isPicked ? 'bg-emerald-500/5' : 'hover:bg-muted/40'
+                        stop.isPicked ? 'bg-primary/5' : 'hover:bg-muted/40'
                       }`}
                       onClick={() => {
                         setSelectedRack(stop.rack);

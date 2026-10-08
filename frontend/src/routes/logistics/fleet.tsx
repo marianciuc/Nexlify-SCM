@@ -43,10 +43,6 @@ const STATUS_LABEL_KEY: Record<VehicleStatus, TranslationPath> = {
 };
 
 function LogisticsFleetPage() {
-  return <LogisticsFleetContent />;
-}
-
-function LogisticsFleetContent() {
   const { t } = useLocale();
   const { data: vehicles = INITIAL_FLEET } = useFleetQuery();
   const [filterType, setFilterType] = useState<TypeFilter>('ALL');

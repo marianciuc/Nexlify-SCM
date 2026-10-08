@@ -248,11 +248,11 @@ export function SubmitRfqBidPage() {
                   <Layers className="h-4 w-4 text-primary" />
                   Попозиционное предложение и сопоставление аналогов
                 </h2>
-                <p className="text-2xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Для каждой позиции спецификации укажите предложение по оригинальному артикулу или сертифицированный аналог.
                 </p>
               </div>
-              <Badge variant="outline" className="text-2xs">
+              <Badge variant="outline" className="text-xs">
                 Модуль комплексного предложения
               </Badge>
             </div>
@@ -289,14 +289,14 @@ export function SubmitRfqBidPage() {
                   >
                     <CardHeader className="py-3 px-4 bg-muted/30 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-2xs font-bold px-2 py-0.5 rounded bg-muted text-foreground">
+                        <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-muted text-foreground">
                           Позиция #{idx + 1}
                         </span>
                         <div>
                           <div className="font-semibold text-xs text-foreground">
                             {req.name}
                           </div>
-                          <div className="text-2xs text-muted-foreground font-mono">
+                          <div className="text-xs text-muted-foreground font-mono">
                           Запрос: {req.quantity} {req.unit}{req.targetUnitPrice > 0 ? ` · ориентир ${req.targetUnitPrice.toFixed(2)} PLN/${req.unit}` : ''}
                           </div>
                         </div>
@@ -313,7 +313,7 @@ export function SubmitRfqBidPage() {
                                 form.setValue(`bids.${req.id}.offeredSku`, req.sku);
                                 form.setValue(`bids.${req.id}.offeredName`, req.name);
                               }}
-                              className={`px-2.5 py-1 rounded text-2xs font-semibold transition-all cursor-pointer ${
+                              className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
                                 !currentBid.isSubstitute
                                   ? 'bg-primary text-primary-foreground shadow-xs'
                                   : 'text-muted-foreground hover:text-foreground'
@@ -328,7 +328,7 @@ export function SubmitRfqBidPage() {
                                 form.setValue(`bids.${req.id}.offeredSku`, `${req.sku}-SUB`);
                                 form.setValue(`bids.${req.id}.offeredName`, `Аналог сертифицированный ${req.name}`);
                               }}
-                              className={`px-2.5 py-1 rounded text-2xs font-semibold transition-all flex items-center gap-1 cursor-pointer ${
+                              className={`px-2.5 py-1 rounded text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer ${
                                 currentBid.isSubstitute
                                   ? 'bg-primary text-primary-foreground shadow-xs'
                                   : 'text-muted-foreground hover:text-foreground'
@@ -339,7 +339,7 @@ export function SubmitRfqBidPage() {
                             </button>
                           </div>
                         ) : (
-                          <Badge variant="outline" className="text-2xs text-muted-foreground">
+                          <Badge variant="outline" className="text-xs text-muted-foreground">
                             Только точный оригинал
                           </Badge>
                         )}
@@ -349,7 +349,7 @@ export function SubmitRfqBidPage() {
                     <CardContent className="p-4 space-y-3 text-xs">
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <div className="md:col-span-2 space-y-1">
-                          <FormLabel className="text-2xs font-semibold">
+                          <FormLabel className="text-xs font-semibold">
                             {currentBid.isSubstitute ? 'Наименование предлагаемого аналога:' : 'Наименование товара:'}
                           </FormLabel>
                           <Input
@@ -360,7 +360,7 @@ export function SubmitRfqBidPage() {
                         </div>
 
                         <div className="space-y-1">
-                          <FormLabel className="text-2xs font-semibold">Артикул поставщика (SKU):</FormLabel>
+                          <FormLabel className="text-xs font-semibold">Артикул поставщика (SKU):</FormLabel>
                           <Input
                             {...form.register(`bids.${req.id}.offeredSku`)}
                             aria-label={`Артикул SKU для позиции ${idx + 1}`}
@@ -369,7 +369,7 @@ export function SubmitRfqBidPage() {
                         </div>
 
                         <div className="space-y-1">
-                          <FormLabel className="text-2xs font-semibold">Цена за единицу (PLN):</FormLabel>
+                          <FormLabel className="text-xs font-semibold">Цена за единицу (PLN):</FormLabel>
                           <div className="flex items-center gap-1">
                             <Input
                               type="number"
@@ -385,7 +385,7 @@ export function SubmitRfqBidPage() {
                               }
                               className="h-8 text-xs font-mono tabular-nums font-bold text-right bg-background"
                             />
-                            <span className="text-2xs font-mono text-muted-foreground">PLN</span>
+                            <span className="text-xs font-mono text-muted-foreground">PLN</span>
                           </div>
                         </div>
                       </div>
@@ -393,7 +393,7 @@ export function SubmitRfqBidPage() {
                       {/* If Substitute is selected: show technical justification inputs */}
                       {currentBid.isSubstitute && (
                         <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg space-y-2">
-                          <div className="flex items-center gap-1.5 text-foreground font-bold text-2xs uppercase">
+                          <div className="flex items-center gap-1.5 text-foreground font-bold text-xs uppercase">
                             <Sparkles className="h-3.5 w-3.5 text-primary" />
                             Эквивалентность аналога и техническое обоснование:
                           </div>
@@ -416,7 +416,7 @@ export function SubmitRfqBidPage() {
                       )}
 
                       {/* Position Summary Bar */}
-                      <div className="flex flex-wrap items-center justify-between pt-2 border-t border-border text-2xs text-muted-foreground">
+                      <div className="flex flex-wrap items-center justify-between pt-2 border-t border-border text-xs text-muted-foreground">
                         <div>
                           Объем: <strong>{currentBid.offeredQuantity} {req.unit}</strong> @ {Number(currentBid.offeredUnitPrice).toFixed(2)} PLN/ед.
                         </div>
@@ -478,13 +478,13 @@ export function SubmitRfqBidPage() {
           {/* Final Financial Summary Bar */}
           <div className="p-4 bg-muted/40 border border-border text-foreground rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
             <div>
-              <span className="text-2xs uppercase tracking-wider text-muted-foreground font-semibold block">
+              <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold block">
                 Итоговая сумма коммерческого предложения:
               </span>
               <div className="text-2xl font-mono font-extrabold text-foreground">
                 {totalOfferedAmount.toLocaleString('ru-RU', { minimumFractionDigits: 2 })} PLN
               </div>
-              <div className="text-2xs text-muted-foreground mt-0.5">
+              <div className="text-xs text-muted-foreground mt-0.5">
                 {targetBudgetTotal > 0 ? `Разница с бюджетом: ${totalSavings.toLocaleString('ru-RU')} PLN (${savingsPercent}%)` : 'Бюджет заказчиком не указан'}
               </div>
             </div>

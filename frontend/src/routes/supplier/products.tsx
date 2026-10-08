@@ -169,7 +169,7 @@ function InventoryPageContent() {
                             onClick={() => setBrandModalOpen(true)}
                             className="gap-1 border-border font-medium"
                         >
-                            <Building2 className="h-3.5 w-3.5 text-amber-500" />
+                            <Building2 className="h-3.5 w-3.5 text-primary" />
                             {t('supplier.products.actions.addBrand')}
                         </Button>
                         <Button
@@ -178,7 +178,7 @@ function InventoryPageContent() {
                             onClick={() => setManufacturerModalOpen(true)}
                             className="gap-1 border-border font-medium"
                         >
-                            <Factory className="h-3.5 w-3.5 text-emerald-500" />
+                            <Factory className="h-3.5 w-3.5 text-primary" />
                             {t('supplier.products.actions.addManufacturer')}
                         </Button>
                         <Link to="/supplier/products/new">
@@ -205,7 +205,7 @@ function InventoryPageContent() {
                     tone="primary"
                 />
                 <CapacityCard
-                    icon={<Warehouse className="h-4 w-4 text-purple-600" />}
+                    icon={<Warehouse className="h-4 w-4 text-muted-foreground" />}
                     name="Port Logistics Hub Szczecin (WH-SZC-02)"
                     description="ul. Gdańska 21, Szczecin"
                     tempLabel={t('supplier.products.warehouse.coldChainLabel')}
@@ -214,7 +214,7 @@ function InventoryPageContent() {
                     used={6100}
                     capacity={8500}
                     usedUnit={t('supplier.products.warehouse.pallets')}
-                    tone="purple"
+                    tone="secondary"
                 />
             </div>
 
@@ -554,14 +554,14 @@ function CapacityCard({
     used: number;
     capacity: number;
     usedUnit: string;
-    tone: 'primary' | 'purple';
+    tone: 'primary' | 'secondary';
 }) {
     const { t } = useLocale();
-    const filledColor = tone === 'primary' ? 'bg-primary' : 'bg-purple-600';
+    const filledColor = tone === 'primary' ? 'bg-primary' : 'bg-muted-foreground';
     const badgeTone =
         tone === 'primary'
             ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
-            : 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20';
+            : 'bg-muted text-foreground border-border';
     return (
         <Card className="border-border shadow-xs">
             <CardHeader className="pb-2">

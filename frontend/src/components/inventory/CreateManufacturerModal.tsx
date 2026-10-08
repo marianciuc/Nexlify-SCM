@@ -86,7 +86,7 @@ export function CreateManufacturerModal({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 gap-1.5 text-xs text-indigo-700 bg-indigo-50/70 border-indigo-200 hover:bg-indigo-100 hover:text-indigo-800 dark:bg-indigo-950/30 dark:border-indigo-800 dark:text-indigo-300"
+            className="h-8 gap-1.5 text-xs text-primary bg-primary/10 border-primary/30 hover:bg-primary/20 hover:text-primary dark:bg-primary/20 dark:border-primary/40 dark:text-primary"
           >
             <Plus className="h-3.5 w-3.5" />
             Добавить изготовителя
@@ -97,7 +97,7 @@ export function CreateManufacturerModal({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400">
+              <div className="p-2 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary">
                 <Factory className="h-5 w-5" />
               </div>
               <div>
@@ -112,10 +112,10 @@ export function CreateManufacturerModal({
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="mfr-name">
-                Юридическое наименование завода / изготовителя <span className="text-rose-500">*</span>
+                Юридическое наименование завода / изготовителя <span className="text-destructive">*</span>
               </Label>
               <div className="relative">
-                <Factory className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Factory className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="mfr-name"
                   placeholder="Например: Drewnex Palety Sp. z o.o., ThermaSafe S.A."
@@ -142,7 +142,7 @@ export function CreateManufacturerModal({
               <div className="grid gap-2">
                 <Label htmlFor="mfr-country">Страна производства</Label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="mfr-country"
                     placeholder="Poland, Germany, France..."
@@ -157,7 +157,7 @@ export function CreateManufacturerModal({
             <div className="grid gap-2">
               <Label htmlFor="mfr-website">Сайт компании</Label>
               <div className="relative">
-                <Globe className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Globe className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="mfr-website"
                   type="url"
@@ -172,7 +172,7 @@ export function CreateManufacturerModal({
             <div className="grid gap-2">
               <Label htmlFor="mfr-email">Контактный email отдела отгрузок / B2B</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="mfr-email"
                   type="email"
@@ -196,7 +196,7 @@ export function CreateManufacturerModal({
             <Button
               type="submit"
               disabled={createManufacturerMutation.isPending || !name.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               {createManufacturerMutation.isPending ? 'Сохранение...' : 'Создать изготовителя'}
             </Button>

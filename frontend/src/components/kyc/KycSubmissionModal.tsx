@@ -131,7 +131,7 @@ export function KycSubmissionModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {triggerButton || (
-          <Button className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 text-xs font-semibold">
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 text-xs font-semibold">
             <ShieldCheck className="h-4 w-4" />
             Zgłoś organizację do weryfikacji KYC & Biała Lista
           </Button>
@@ -156,43 +156,43 @@ export function KycSubmissionModal({
         </DialogHeader>
 
         {/* Real-time automated pre-check status indicator */}
-        <div className="p-3.5 bg-slate-50 dark:bg-slate-900 border rounded-lg space-y-2">
+        <div className="p-3.5 bg-muted border rounded-lg space-y-2">
           <div className="flex items-center justify-between text-xs font-semibold">
-            <span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200">
+            <span className="flex items-center gap-1.5 text-foreground">
               <Sparkles className="h-4 w-4 text-emerald-600" />
               Automatyczna integracja z rejestrami publicznymi:
             </span>
             {hasValidNipLength ? (
-              <Badge className="bg-emerald-600 text-white text-2xs">Rejestry Aktywne</Badge>
+              <Badge className="bg-emerald-600 text-white text-xs">Rejestry Aktywne</Badge>
             ) : (
-              <span className="text-2xs text-muted-foreground">Wprowadź 10-cyfrowy NIP</span>
+              <span className="text-xs text-muted-foreground">Wprowadź 10-cyfrowy NIP</span>
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-2xs">
-            <div className="flex items-center gap-1.5 bg-white dark:bg-slate-950 p-2 rounded border">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <div className="flex items-center gap-1.5 bg-background p-2 rounded border">
               {hasValidNipLength ? (
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
               ) : (
-                <div className="h-3.5 w-3.5 rounded-full border border-slate-300 shrink-0" />
+                <div className="h-3.5 w-3.5 rounded-full border border-border shrink-0" />
               )}
               <span>GUS / REGON (CEIDG)</span>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-white dark:bg-slate-950 p-2 rounded border">
+            <div className="flex items-center gap-1.5 bg-background p-2 rounded border">
               {hasValidNipLength ? (
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
               ) : (
-                <div className="h-3.5 w-3.5 rounded-full border border-slate-300 shrink-0" />
+                <div className="h-3.5 w-3.5 rounded-full border border-border shrink-0" />
               )}
               <span>Biała Lista VAT (MF)</span>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-white dark:bg-slate-950 p-2 rounded border">
+            <div className="flex items-center gap-1.5 bg-background p-2 rounded border">
               {hasValidNipLength ? (
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
               ) : (
-                <div className="h-3.5 w-3.5 rounded-full border border-slate-300 shrink-0" />
+                <div className="h-3.5 w-3.5 rounded-full border border-border shrink-0" />
               )}
               <span>VIES EU VAT</span>
             </div>
@@ -222,7 +222,7 @@ export function KycSubmissionModal({
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-2xs font-semibold text-slate-700 dark:text-slate-300">NIP (10 cyfr bez spacji):</span>
+                  <span className="text-xs font-semibold text-foreground">NIP (10 cyfr bez spacji):</span>
                   <Button
                     type="button"
                     variant="ghost"
@@ -282,7 +282,7 @@ export function KycSubmissionModal({
                       variant="outline"
                       size="sm"
                       onClick={() => form.setValue('requestedCreditLimitPln', amt)}
-                      className="text-3xs h-5 px-1.5 text-slate-600 dark:text-slate-400"
+                      className="text-3xs h-5 px-1.5 text-muted-foreground"
                     >
                       {amt.toLocaleString()} zł
                     </Button>
@@ -351,7 +351,7 @@ export function KycSubmissionModal({
               <Button
                 type="submit"
                 size="sm"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-1.5"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold gap-1.5"
                 disabled={submitMutation.isPending}
               >
                 {submitMutation.isPending ? (

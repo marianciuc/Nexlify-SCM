@@ -68,11 +68,11 @@ export function FormFieldInput<
             </FormControl>
           </div>
           {description && (
-            <FormDescription className="text-2xs text-muted-foreground">
+            <FormDescription className="text-xs text-muted-foreground">
               {description}
             </FormDescription>
           )}
-          <FormMessage className="text-2xs" />
+          <FormMessage className="text-xs" />
         </FormItem>
       )}
     />

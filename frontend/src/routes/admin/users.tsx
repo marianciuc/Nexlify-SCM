@@ -53,10 +53,6 @@ const ROLE_LABEL_KEY: Record<'BUYER' | 'SUPPLIER' | 'LOGISTICS_CARRIER', Transla
 };
 
 function AdminTenantsDirectoryPage() {
-  return <AdminTenantsDirectoryContent />;
-}
-
-function AdminTenantsDirectoryContent() {
   const { t } = useLocale();
   const { data: tenants = [] } = useTenantListQuery();
   const { data: kycApps = [] } = useKycApplicationsQuery();

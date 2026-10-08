@@ -101,7 +101,6 @@ function AnalyticsDashboardPage() {
                     label={t('admin.analytics.otif')}
                     icon={<ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
                     value={`${kpis.otifRate}%`}
-                    tone="success"
                     delta={{
                         direction: 'up',
                         value: `+3.4% ${t('admin.analytics.toSlaTarget')}`,
@@ -117,7 +116,6 @@ function AnalyticsDashboardPage() {
                             <span className="text-base font-normal text-muted-foreground ml-1">{t('common.days')}</span>
                         </>
                     }
-                    tone="info"
                     delta={{
                         direction: 'down',
                         value: `-0.7${t('admin.analytics.fasterThan')} (${kpis.leadTimeTargetDays}${t('common.days')})`,
@@ -126,29 +124,27 @@ function AnalyticsDashboardPage() {
                 />
                 <KpiCard
                     label={t('admin.analytics.throughput')}
-                    icon={<Truck className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />}
+                    icon={<Truck className="h-4 w-4 text-primary" />}
                     value={
                         <>
                             {kpis.totalThroughputTons.toLocaleString('ru-RU')}
                             <span className="text-base font-normal text-muted-foreground ml-1">{t('common.tons')}</span>
                         </>
                     }
-                    tone="indigo"
                     delta={{ direction: 'flat', value: `${kpis.activeRoutesCount} ${t('admin.analytics.activeCorridors')}` }}
-                    progress={{ value: throughputPct, tone: 'indigo' }}
+                    progress={{ value: throughputPct, tone: 'primary' }}
                 />
                 <KpiCard
                     label={t('admin.analytics.savings')}
-                    icon={<TrendingUp className="h-4 w-4 text-purple-600 dark:text-purple-400" />}
+                    icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
                     value={
                         <>
                             {kpis.costSavingsTotal.toLocaleString('ru-RU')}
                             <span className="text-base font-normal text-muted-foreground ml-1">{kpis.currency}</span>
                         </>
                     }
-                    tone="purple"
                     delta={{ direction: 'flat', value: t('admin.analytics.vrpReverseAuctions') }}
-                    progress={{ value: savingsPct, tone: 'purple' }}
+                    progress={{ value: savingsPct, tone: 'neutral' }}
                 />
             </div>
 
@@ -309,13 +305,13 @@ function AnalyticsDashboardPage() {
     );
 }
 
-type Tone = 'success' | 'info' | 'indigo' | 'purple';
+type Tone = 'success' | 'info' | 'primary' | 'neutral';
 
 const TONE_BAR: Record<Tone, string> = {
     success: 'bg-emerald-500',
     info: 'bg-sky-500',
-    indigo: 'bg-indigo-500',
-    purple: 'bg-purple-500',
+    primary: 'bg-primary',
+    neutral: 'bg-muted-foreground/60',
 };
 
 const TONE_DELTA: Record<'up' | 'down' | 'flat', string> = {
@@ -328,14 +324,12 @@ function KpiCard({
     label,
     icon,
     value,
-    tone,
     delta,
     progress,
 }: {
     label: string;
     icon: React.ReactNode;
     value: React.ReactNode;
-    tone: Tone;
     delta: { direction: 'up' | 'down' | 'flat'; value: string };
     progress: { value: number; tone: Tone };
 }) {

@@ -167,7 +167,7 @@ function AdminTenantDetailPage() {
         }
         subtitle={
           <span className="flex flex-wrap items-center gap-x-3 gap-y-1.5 font-normal">
-            <span className="font-mono">NIP {tenant.nip}</span>
+            <span className="font-mono">{t('admin.users.table.nip')} {tenant.nip}</span>
             <Badge variant="outline" className="text-[10px] font-mono font-semibold">
               {t(ROLE_LABEL_KEY[tenant.role])}
             </Badge>

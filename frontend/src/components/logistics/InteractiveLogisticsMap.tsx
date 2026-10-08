@@ -329,21 +329,21 @@ export const InteractiveLogisticsMap: React.FC<InteractiveLogisticsMapProps> = (
       {/* Bottom Telematics HUD */}
       <div className="bg-slate-50 dark:bg-slate-900/95 p-3 border-t border-slate-200 dark:border-slate-800 text-xs grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
-          <span className="text-slate-500 block text-2xs uppercase">Driver & Vehicle:</span>
+          <span className="text-slate-500 block text-xs uppercase">Driver & Vehicle:</span>
           <span className="font-semibold text-slate-800 dark:text-slate-200">{activeTelematics.vehiclePlate}</span>
         </div>
         <div>
-          <span className="text-slate-500 block text-2xs uppercase">Active Corridor:</span>
+          <span className="text-slate-500 block text-xs uppercase">Active Corridor:</span>
           <span className="font-mono text-slate-800 dark:text-slate-200">
             {activeOrigin.name.split(' ')[0]} ➔ {activeDestination.name.split(' ')[0]}
           </span>
         </div>
         <div>
-          <span className="text-slate-500 block text-2xs uppercase">Estimated ETA:</span>
+          <span className="text-slate-500 block text-xs uppercase">Estimated ETA:</span>
           <span className="font-bold text-emerald-600">{activeTelematics.etaRemaining}</span>
         </div>
         <div>
-          <span className="text-slate-500 block text-2xs uppercase">GLEC Standard Emissions:</span>
+          <span className="text-slate-500 block text-xs uppercase">GLEC Standard Emissions:</span>
           <span className="font-mono text-slate-800 dark:text-slate-200">{activeTelematics.glecCo2Kg} kg CO2e</span>
         </div>
       </div>

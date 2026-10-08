@@ -262,10 +262,6 @@ function CategoryHierarchySelect({
 }
 
 export function CreateRfqPage() {
-  return <CreateRfqContent />;
-}
-
-function CreateRfqContent() {
   const { t } = useLocale();
   const navigate = useNavigate();
 

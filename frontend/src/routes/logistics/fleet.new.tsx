@@ -86,16 +86,16 @@ function RegisterVehiclePage() {
       <div className="flex items-center justify-between">
         <Link
           to="/logistics/fleet"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
           <ChevronLeft className="h-4 w-4" /> Back to Fleet Registry
         </Link>
       </div>
 
-      <Card className="border-slate-200 dark:border-slate-800 shadow-md">
-        <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b pb-4">
-          <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Truck className="h-5 w-5 text-amber-500" />
+      <Card className="border-border shadow-md">
+        <CardHeader className="bg-muted border-b pb-4">
+          <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+            <Truck className="h-5 w-5 text-primary" />
             Register Commercial Vehicle into TMS Registry
           </CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
@@ -106,7 +106,7 @@ function RegisterVehiclePage() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   1. Registration & Identification
                 </h3>
 
@@ -138,7 +138,7 @@ function RegisterVehiclePage() {
               </div>
 
               <div className="space-y-4 border-t pt-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   2. Cargo Capacity & Weight Ratings
                 </h3>
 
@@ -171,7 +171,7 @@ function RegisterVehiclePage() {
                 <Button type="button" variant="outline" size="sm" onClick={() => navigate({ to: '/logistics/fleet' })}>
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white gap-2 font-semibold">
+                <Button type="submit" size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 font-semibold">
                   <Plus className="h-4 w-4" /> Save Vehicle to Active Fleet
                 </Button>
               </div>

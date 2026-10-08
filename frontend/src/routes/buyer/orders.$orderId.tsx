@@ -33,7 +33,7 @@ import type { IncotermsCode, OrderStatus } from '@/types/scm-domain';
 export const Route = createFileRoute('/buyer/orders/$orderId')({
   component: OrderDetailPage,
   staticData: {
-    crumb: { label: 'nav.buyer.orders' },
+    crumb: { label: 'nav.buyer.orderDetail' },
   },
 });
 

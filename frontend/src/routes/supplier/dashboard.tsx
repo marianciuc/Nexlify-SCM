@@ -25,11 +25,11 @@ function DashboardOverviewPage() {
   const { currentTenant } = useEnvironmentStore();
   const { t } = useLocale();
 
-  const pipelineSteps: { status: string; count: number; tone: 'info' | 'warning' | 'success' | 'neutral' | 'purple'; labelKey: TranslationPath }[] = [
+  const pipelineSteps: { status: string; count: number; tone: 'info' | 'warning' | 'success' | 'neutral' | 'primary'; labelKey: TranslationPath }[] = [
     { status: 'SUBMITTED', count: 14, tone: 'info', labelKey: 'supplier.dashboard.pipeline.submitted' },
     { status: 'RESERVED', count: 8, tone: 'warning', labelKey: 'supplier.dashboard.pipeline.reserved' },
     { status: 'PAID', count: 12, tone: 'success', labelKey: 'supplier.dashboard.pipeline.paid' },
-    { status: 'SHIPPED', count: 5, tone: 'purple', labelKey: 'supplier.dashboard.pipeline.shipped' },
+    { status: 'SHIPPED', count: 5, tone: 'primary', labelKey: 'supplier.dashboard.pipeline.shipped' },
     { status: 'COMPLETED', count: 82, tone: 'neutral', labelKey: 'supplier.dashboard.pipeline.completed' },
   ];
 
@@ -68,12 +68,12 @@ function DashboardOverviewPage() {
     },
   ];
 
-  const toneClass: Record<'info' | 'warning' | 'success' | 'neutral' | 'purple', string> = {
+  const toneClass: Record<'info' | 'warning' | 'success' | 'neutral' | 'primary', string> = {
     info: 'bg-sky-500',
     warning: 'bg-amber-500',
     success: 'bg-emerald-500',
     neutral: 'bg-muted-foreground/60',
-    purple: 'bg-purple-500',
+    primary: 'bg-primary',
   };
 
   return (
@@ -127,7 +127,7 @@ function DashboardOverviewPage() {
           label={t('supplier.dashboard.kpi.otif')}
           value="98.4%"
           delta={{ value: t('supplier.dashboard.kpi.aboveSla'), direction: 'up', helper: t('supplier.dashboard.kpi.targetSla', { pct: '98.0%' }) }}
-          icon={<Truck className="h-4 w-4 text-purple-500" />}
+          icon={<Truck className="h-4 w-4 text-primary" />}
         />
       </div>
 
@@ -246,7 +246,7 @@ function DashboardOverviewPage() {
                         variant="outline"
                         className={
                           s.status === 'IN_TRANSIT'
-                            ? 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20 text-[10px]'
+                            ? 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20 text-[10px]'
                             : 'bg-muted text-muted-foreground text-[10px]'
                         }
                       >

@@ -84,7 +84,7 @@ export function CreateBrandModal({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 gap-1.5 text-xs text-amber-700 bg-amber-50/70 border-amber-200 hover:bg-amber-100 hover:text-amber-800 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-300"
+            className="h-8 gap-1.5 text-xs text-primary bg-primary/10 border-primary/30 hover:bg-primary/20 hover:text-primary dark:bg-primary/20 dark:border-primary/40 dark:text-primary"
           >
             <Plus className="h-3.5 w-3.5" />
             Добавить бренд
@@ -95,7 +95,7 @@ export function CreateBrandModal({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400">
+              <div className="p-2 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary">
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
@@ -110,10 +110,10 @@ export function CreateBrandModal({
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="brand-name">
-                Название бренда <span className="text-rose-500">*</span>
+                Название бренда <span className="text-destructive">*</span>
               </Label>
               <div className="relative">
-                <Building className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Building className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="brand-name"
                   placeholder="Например: Jungheinrich, EPAL, PlastChem"
@@ -142,7 +142,7 @@ export function CreateBrandModal({
             <div className="grid gap-2">
               <Label htmlFor="brand-website">Веб-сайт или портал спецификаций</Label>
               <div className="relative">
-                <Globe className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Globe className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="brand-website"
                   type="url"
@@ -178,7 +178,7 @@ export function CreateBrandModal({
             <Button
               type="submit"
               disabled={createBrandMutation.isPending || !name.trim()}
-              className="bg-amber-600 hover:bg-amber-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               {createBrandMutation.isPending ? 'Сохранение...' : 'Создать бренд'}
             </Button>

@@ -305,6 +305,7 @@
       "catalog": "Catalog",
       "cart": "Cart",
       "orders": "Orders",
+      "orderDetail": "Order details",
       "invoices": "Invoices",
       "rfq": "RFQ tenders",
       "contracts": "Contracts & SLA",
@@ -1492,8 +1493,7 @@
           "termsLabel": "Payment terms",
           "notesLabel": "Compliance audit note",
           "notesPlaceholder": "e.g. Verified against the MF white list; KRS up to date.",
-          "confirm": "Confirm & activate organization",
-          "defaultNotes": "Verified in the VAT taxpayers registry. Split payment (MPP) account confirmed."
+          "confirm": "Confirm & activate organization"
         },
         "rejectDialog": {
           "title": "Reject registration application",
