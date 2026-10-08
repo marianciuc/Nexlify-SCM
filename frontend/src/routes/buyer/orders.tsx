@@ -297,7 +297,9 @@ function OrdersPage() {
 
                                 <div className="border border-border rounded-lg overflow-x-auto">
                                     <table className="w-full text-xs text-left min-w-[500px]">
-                                        <caption className="sr-only">{t('buyer.orders.create.itemsTitle')}</caption>
+                                        <caption className="sr-only">
+                                            {t('buyer.orders.create.itemsTitle', { count: fields.length })}
+                                        </caption>
                                         <thead className="bg-muted/50 border-b border-border text-muted-foreground font-semibold">
                                             <tr>
                                                 <th className="py-2 px-3">
