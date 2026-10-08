@@ -4,12 +4,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { QuantityInput } from '@/components/inventory';
-import { MoneyDisplay } from '@/components/money-display';
+import { MoneyDisplay, QuantityDisplay } from '@/components/money-display';
+import { PageHeader } from '@/components/page-header';
 import { StockStatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { useLocale } from '@/hooks/useLocale';
-import { useInventoryQuery, useInventoryDataSourceQuery } from '@/hooks/useScmQueries';
+import { useInventoryDataSourceQuery, useInventoryQuery } from '@/hooks/useScmQueries';
 import { useCartStore } from '@/service/cart/cart-store';
 
 export const Route = createFileRoute('/buyer/catalog/$sku')({
@@ -94,63 +96,73 @@ function SkuDetailPage() {
     const canOrder = Boolean(supplierNip) && product.status !== 'OUT_OF_STOCK';
 
     return (
-        <div className="mx-auto max-w-5xl space-y-5">
-            <Link
-                to="/buyer/catalog"
-                search={search}
-                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-            >
-                <ChevronLeft className="h-4 w-4" />
-                {t('buyer.productDetail.backToCatalog')}
-            </Link>
+        <div className="mx-auto max-w-5xl space-y-5 min-w-0">
+            <div>
+                <Link
+                    to="/buyer/catalog"
+                    search={search}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    <ChevronLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
+                    {t('buyer.productDetail.backToCatalog')}
+                </Link>
+            </div>
 
             {dataSource === 'demo' && (
                 <p
                     role="status"
-                    className="border-l-2 border-amber-500 pl-3 py-1 text-sm text-muted-foreground"
+                    className="border-l-2 border-border bg-muted/50 px-4 py-2.5 text-sm text-muted-foreground"
                 >
                     {t('buyer.catalog.demoNotice')}
                 </p>
             )}
 
+            <PageHeader
+                title={product.name}
+                subtitle={<span className="font-mono">{product.sku}</span>}
+                actions={<StockStatusBadge status={product.status} t={t} size="md" />}
+            />
+
             <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem] items-start">
-                <Card>
-                    <CardHeader className="border-b">
-                        <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-mono text-sm text-muted-foreground">{product.sku}</span>
-                            <StockStatusBadge status={product.status} t={t} />
-                        </div>
-                        <CardTitle className="pt-1 text-xl">{product.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid gap-x-6 gap-y-4 p-5 sm:grid-cols-2">
-                        <Detail label={t('buyer.productDetail.category')} value={product.category} />
-                        <Detail label={t('buyer.productDetail.brand')} value={product.brand} />
-                        <Detail label={t('buyer.productDetail.manufacturer')} value={product.manufacturer} />
-                        <Detail label={t('buyer.productDetail.dimensions')} value={product.dimensions} />
-                        <Detail
-                            label={t('buyer.productDetail.unitWeight')}
-                            value={product.weightKg ? `${product.weightKg} kg` : undefined}
-                        />
-                        <Detail label={t('buyer.productDetail.warehouse')} value={product.warehouse} />
-                        <Detail
-                            label={t('buyer.productDetail.available')}
-                            value={`${product.quantityAvailable.toLocaleString('pl-PL')} ${product.unit}`}
-                        />
-                        <Detail
-                            label={t('buyer.productDetail.moq')}
-                            value={moq ? `${moq} ${product.unit}` : undefined}
-                        />
-                        {supplierName && (
-                            <Detail label={t('buyer.productDetail.supplier')} value={supplierName} />
-                        )}
+                <Card className="border-border bg-card shadow-xs">
+                    <CardContent className="p-5 sm:p-6 space-y-5">
+                        <span className="text-sm font-semibold text-foreground block">
+                            {t('buyer.productDetail.specs')}
+                        </span>
+                        <dl className="grid gap-x-6 gap-y-4 text-sm sm:grid-cols-2">
+                            <SpecRow label={t('buyer.productDetail.category')} value={product.category} />
+                            <SpecRow label={t('buyer.productDetail.brand')} value={product.brand} />
+                            <SpecRow
+                                label={t('buyer.productDetail.manufacturer')}
+                                value={product.manufacturer}
+                            />
+                            <SpecRow
+                                label={t('buyer.productDetail.dimensions')}
+                                value={product.dimensions}
+                            />
+                            <SpecRow
+                                label={t('buyer.productDetail.unitWeight')}
+                                value={product.weightKg ? `${product.weightKg} kg` : undefined}
+                            />
+                            <SpecRow
+                                label={t('buyer.productDetail.warehouse')}
+                                value={product.warehouse}
+                            />
+                            {supplierName && (
+                                <SpecRow
+                                    label={t('buyer.productDetail.supplier')}
+                                    value={supplierName}
+                                />
+                            )}
+                        </dl>
                     </CardContent>
                 </Card>
 
-                <Card className="lg:sticky lg:top-20">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-base">{t('buyer.productDetail.purchase')}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
+                <Card className="border-border bg-card shadow-xs lg:sticky lg:top-20">
+                    <CardContent className="p-5 space-y-4">
+                        <span className="text-sm font-semibold text-foreground block">
+                            {t('buyer.productDetail.purchase')}
+                        </span>
                         <div>
                             <MoneyDisplay
                                 amount={product.unitPrice}
@@ -162,13 +174,34 @@ function SkuDetailPage() {
                                 {t('buyer.productDetail.perUnit', { unit: product.unit })}
                             </div>
                         </div>
+
+                        <dl className="grid grid-cols-2 gap-3 rounded-md border border-border p-3">
+                            <div className="min-w-0">
+                                <dt className="text-xs text-muted-foreground">
+                                    {t('buyer.productDetail.available')}
+                                </dt>
+                                <dd className="mt-0.5">
+                                    <QuantityDisplay
+                                        amount={product.quantityAvailable}
+                                        unit={product.unit}
+                                        emphasize
+                                    />
+                                </dd>
+                            </div>
+                            <div className="min-w-0">
+                                <dt className="text-xs text-muted-foreground">
+                                    {t('buyer.productDetail.moq')}
+                                </dt>
+                                <dd className="mt-0.5">
+                                    <QuantityDisplay amount={moq} unit={product.unit} />
+                                </dd>
+                            </div>
+                        </dl>
+
                         <div className="space-y-1.5">
-                            <label
-                                htmlFor="sku-quantity"
-                                className="text-sm font-medium text-foreground"
-                            >
+                            <Label htmlFor="sku-quantity" className="text-sm font-medium text-foreground">
                                 {t('buyer.productDetail.qtyLabel')}
-                            </label>
+                            </Label>
                             <QuantityInput
                                 id="sku-quantity"
                                 value={quantity}
@@ -190,12 +223,13 @@ function SkuDetailPage() {
                                 </p>
                             )}
                         </div>
+
                         <Button
-                            className="w-full gap-2"
+                            className="w-full gap-2 font-medium"
                             disabled={!canOrder}
                             onClick={handleAddToCart}
                         >
-                            <ShoppingCart className="h-4 w-4" />
+                            <ShoppingCart className="h-4 w-4" aria-hidden="true" />
                             {t('buyer.productDetail.addToCart')}
                         </Button>
                         {!supplierNip && (
@@ -215,15 +249,13 @@ function SkuDetailPage() {
     );
 }
 
-function Detail({ label, value }: { label: string; value?: string }) {
+function SpecRow({ label, value }: { label: string; value?: string }) {
     return (
         <div className="min-w-0">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+            <dt className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
                 {label}
-            </div>
-            <div className="mt-1 truncate text-sm font-medium text-foreground">
-                {value || '—'}
-            </div>
+            </dt>
+            <dd className="mt-1 truncate text-sm font-medium text-foreground">{value || '—'}</dd>
         </div>
     );
 }

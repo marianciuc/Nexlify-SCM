@@ -605,6 +605,57 @@
         }
       }
     },
+    "orderDetail": {
+      "backToOrders": "Back to orders",
+      "advance": "Advance status",
+      "lifecycle": {
+        "title": "Order lifecycle",
+        "stepsAria": "Order lifecycle steps",
+        "exceptionNote": "Order is in an exceptional state — happy-path progress does not apply."
+      },
+      "items": {
+        "title": "Line items",
+        "caption": "Order line items",
+        "unit": "pcs",
+        "item": "Item & SKU",
+        "brand": "Brand / Manufacturer",
+        "qty": "Quantity",
+        "unitPrice": "Net unit price",
+        "vat": "VAT (23%)",
+        "gross": "Gross total",
+        "orderTotal": "Order gross total"
+      },
+      "delivery": {
+        "title": "Delivery & SLA",
+        "customer": "Customer",
+        "destination": "Delivery address",
+        "incoterms": "Incoterms 2020",
+        "slaTarget": "Planned delivery",
+        "transitLimit": "Max transit time",
+        "transitHours": "{{hours}} h",
+        "otif": "Guaranteed OTIF",
+        "otifPercent": "{{percent}}%",
+        "createdAt": "Created"
+      },
+      "rma": {
+        "open": "File RMA claim",
+        "title": "File an RMA claim / discrepancy report",
+        "description": "Describe the discrepancy to submit the claim to arbitration.",
+        "reasonLabel": "Claim reason",
+        "reasonDamaged": "Cargo damaged / broken in transit",
+        "reasonShortage": "Shortage (less than in e-CMR)",
+        "reasonWrongSku": "Wrong item / SKU mismatch",
+        "skuLabel": "Discrepant SKU",
+        "skuPlaceholder": "Select an item from the order...",
+        "qtyLabel": "Discrepant quantity",
+        "notesLabel": "Discrepancy description and photo links",
+        "notesPlaceholder": "Describe the packaging or seal damage...",
+        "submit": "Submit claim to arbitration",
+        "reasonRequired": "Select a claim reason",
+        "skuRequired": "Select a SKU",
+        "qtyMin": "Quantity must be at least 1"
+      }
+    },
     "invoices": {
       "netAmount": "Net total",
       "netHint": "VAT exclusive",
@@ -627,6 +678,25 @@
         "dueDate": "Due date",
         "status": "Status"
       }
+    },
+    "invoiceDetail": {
+      "backToInvoices": "Back to invoices",
+      "orderRef": "Order {{number}}",
+      "loading": "Loading invoice...",
+      "error": "Failed to load invoice. Try refreshing the page.",
+      "notFound": "Invoice not found. Go back to the register and select an available invoice.",
+      "print": "Print / save PDF",
+      "unpaidNotice": "Online payment is not available yet. The invoice status will change after confirmation by the payment system.",
+      "detailsTitle": "Invoice data",
+      "buyer": "Buyer",
+      "buyerNip": "Buyer NIP",
+      "issueDate": "Issued",
+      "dueDate": "Due date",
+      "amountsTitle": "Amounts",
+      "amount": "Amount",
+      "net": "Net amount",
+      "vat": "VAT (23%)",
+      "gross": "Gross total"
     },
     "productDetail": {
       "backToCatalog": "Back to catalog",
@@ -651,7 +721,44 @@
       "noSupplier": "No supplier assigned — this item cannot be added to an order.",
       "unavailable": "Item is temporarily unavailable.",
       "moqError": "Minimum quantity: {{min}} {{unit}}",
-      "addedSuccess": "Added to cart: {{qty}} {{unit}}"
+      "addedSuccess": "Added to cart: {{qty}} {{unit}}",
+      "specs": "Specification"
+    },
+    "settings": {
+      "title": "Organization profile",
+      "subtitle": "Legal entity data (NIP), trade credit and delivery notifications.",
+      "identityTitle": "Legal identity & tax data",
+      "companyName": "Legal company name",
+      "nip": "Tax ID (NIP)",
+      "krs": "Court register number (KRS)",
+      "city": "City of registration",
+      "notificationsTitle": "Shipment & logistics notifications",
+      "wsLabel": "Real-time tracking notifications (WebSockets)",
+      "wsDesc": "Alert when the truck approaches the unloading terminal (<10 km).",
+      "emailLabel": "Automatic VAT invoices and e-CMR delivery",
+      "emailDesc": "Invoices and waybills are emailed to accounting right after dispatch.",
+      "save": "Save settings",
+      "savedToast": "Organization profile and delivery settings saved.",
+      "validation": {
+        "companyName": "Company name is required",
+        "nip": "Enter a valid 10-digit NIP",
+        "krs": "KRS number is required",
+        "city": "City is required"
+      },
+      "kyc": {
+        "verified": "Verified",
+        "pending": "Pending audit",
+        "rejected": "Rejected",
+        "verifiedDesc": "NIP {{nip}} is verified in the MF register (GUS / REGON).",
+        "pendingTitle": "KYC application under compliance audit",
+        "pendingDesc": "Registration data submitted and awaiting the platform compliance officer's decision.",
+        "rejectedTitle": "KYC verification requires clarification",
+        "rejectedReason": "Reason: {{reason}}",
+        "rejectedDefault": "Bank account does not match the Ministry of Finance white list.",
+        "creditLimit": "Active credit limit:",
+        "requestIncrease": "Request limit increase",
+        "resubmit": "Submit corrected dossier"
+      }
     },
     "contracts": {
       "demoNotice": "Demo contract data. Create and download actions are not yet available.",

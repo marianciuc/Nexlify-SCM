@@ -1,54 +1,70 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
-import { Building2, ShieldCheck, Save, Bell, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import { Building2, Save } from 'lucide-react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { FormFieldInput, FormFieldCheckbox } from '@/components/forms/common';
+import { FormFieldCheckbox, FormFieldInput } from '@/components/forms/common';
 import { KycSubmissionModal } from '@/components/kyc/KycSubmissionModal';
-import { Badge } from '@/components/ui/badge';
+import { MoneyDisplay } from '@/components/money-display';
+import { PageHeader } from '@/components/page-header';
+import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
-import {
-  useTenantListQuery,
-  useKycApplicationsQuery,
-} from '@/hooks/useScmQueries';
+import { useLocale } from '@/hooks/useLocale';
+import { useKycApplicationsQuery, useTenantListQuery } from '@/hooks/useScmQueries';
 
 export const Route = createFileRoute('/buyer/settings')({
   component: BuyerSettingsPage,
   staticData: {
     crumb: {
-      label: 'Buyer Settings',
+      label: 'nav.buyer.settings',
     },
   },
 });
 
-const buyerSettingsSchema = z.object({
-  companyName: z.string().min(1, 'Company name is required'),
-  nip: z.string().min(10, 'Valid 10-digit NIP is required'),
-  krs: z.string().min(1, 'KRS number is required'),
-  city: z.string().min(1, 'City is required'),
-  wsNotifications: z.boolean(),
-  emailNotifications: z.boolean(),
-});
-
-type BuyerSettingsFormData = z.infer<typeof buyerSettingsSchema>;
+type BuyerSettingsFormData = {
+  companyName: string;
+  nip: string;
+  krs: string;
+  city: string;
+  wsNotifications: boolean;
+  emailNotifications: boolean;
+};
 
 function BuyerSettingsPage() {
+  const { t } = useLocale();
   const { data: tenants = [] } = useTenantListQuery();
   const { data: kycApps = [] } = useKycApplicationsQuery();
 
   // Active buyer tenant (default: ten-01 Baltic Retail Group)
-  const currentBuyer = tenants.find((t) => t.role === 'BUYER') || tenants[0];
+  const currentBuyer = tenants.find((tn) => tn.role === 'BUYER') || tenants[0];
   const currentKyc = kycApps.find(
-    (app) => (currentBuyer && app.nip === currentBuyer.nip) || (currentBuyer && app.tenantId === currentBuyer.id)
+    (app) =>
+      (currentBuyer && app.nip === currentBuyer.nip) ||
+      (currentBuyer && app.tenantId === currentBuyer.id)
   );
 
   const kycStatus = currentBuyer?.kycStatus || currentKyc?.status || 'VERIFIED';
   const tradeCreditLimit = currentBuyer?.tradeCreditLimitPln ?? 150000;
   const paymentTerms = currentBuyer?.paymentTerms ?? 'NET_30';
+
+  // Validation messages are user-visible, so the schema is rebuilt with the active locale.
+  const buyerSettingsSchema = useMemo(
+    () =>
+      z.object({
+        companyName: z.string().min(1, t('buyer.settings.validation.companyName')),
+        nip: z.string().min(10, t('buyer.settings.validation.nip')),
+        krs: z.string().min(1, t('buyer.settings.validation.krs')),
+        city: z.string().min(1, t('buyer.settings.validation.city')),
+        wsNotifications: z.boolean(),
+        emailNotifications: z.boolean(),
+      }),
+    [t]
+  );
 
   const form = useForm<BuyerSettingsFormData>({
     resolver: zodResolver(buyerSettingsSchema),
@@ -63,46 +79,42 @@ function BuyerSettingsPage() {
   });
 
   const onSubmit = (_data: BuyerSettingsFormData) => {
-    toast.success('Настройки организации и параметры доставки успешно сохранены!');
+    toast.success(t('buyer.settings.savedToast'));
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto min-w-0">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-          <Building2 className="h-6 w-6 text-primary" />
-          Профиль организации и параметры доставки
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Управление проверенным юрлицом (NIP), кредитным лимитом B2B и логистическими терминалами.
-        </p>
-      </div>
+    <div className="space-y-6 max-w-3xl mx-auto min-w-0">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-primary" aria-hidden="true" />
+            {t('buyer.settings.title')}
+          </span>
+        }
+        subtitle={t('buyer.settings.subtitle')}
+      />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* KYC & Compliance Status Banner / Card */}
+          {/* KYC & compliance status */}
           {kycStatus === 'VERIFIED' && (
-            <Card className="border-emerald-500/20 bg-emerald-500/5 shadow-xs">
+            <Card className="border-border bg-card shadow-xs">
               <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <ShieldCheck className="h-8 w-8 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <div>
-                    <div className="font-bold text-sm text-foreground flex items-center gap-2">
-                      <span>Верифицированное юрлицо B2B</span>
-                      <Badge className="bg-emerald-600 text-white text-2xs">Biała Lista VAT: Активен</Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      NIP {currentBuyer?.nip} верифицирован в реестре Минфина и GUS / REGON. Поддержка Split Payment (MPP) активна.
-                    </div>
-                  </div>
+                <div className="flex items-center gap-3 min-w-0">
+                  <StatusBadge tone="success" label={t('buyer.settings.kyc.verified')} size="md" />
+                  <p className="text-xs text-muted-foreground">
+                    {t('buyer.settings.kyc.verifiedDesc', { nip: currentBuyer?.nip || '—' })}
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-3 sm:border-l sm:border-border sm:pl-4">
+                <div className="flex items-center gap-3 sm:border-l sm:border-border sm:pl-4 shrink-0">
                   <div className="text-right text-xs">
-                    <span className="text-muted-foreground block">Активный лимит:</span>
-                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">
-                      {tradeCreditLimit.toLocaleString()} PLN ({paymentTerms})
+                    <span className="text-muted-foreground block">
+                      {t('buyer.settings.kyc.creditLimit')}
+                    </span>
+                    <span className="text-sm text-foreground">
+                      <MoneyDisplay amount={tradeCreditLimit} variant="inline" emphasize />{' '}
+                      <span className="font-mono">({paymentTerms})</span>
                     </span>
                   </div>
 
@@ -115,8 +127,8 @@ function BuyerSettingsPage() {
                       requestedCreditLimitPln: tradeCreditLimit + 50000,
                     }}
                     triggerButton={
-                      <Button type="button" variant="outline" size="sm" className="text-2xs h-8 border-emerald-500/30">
-                        Запросить повышение лимита
+                      <Button type="button" variant="outline" size="sm" className="font-medium">
+                        {t('buyer.settings.kyc.requestIncrease')}
                       </Button>
                     }
                   />
@@ -126,40 +138,17 @@ function BuyerSettingsPage() {
           )}
 
           {kycStatus === 'PENDING_AUDIT' && (
-            <Card className="border-amber-500/30 bg-amber-500/5 shadow-xs">
-              <CardContent className="p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <Clock className="h-5 w-5 text-amber-500" />
-                    <div>
-                      <h3 className="font-bold text-sm text-foreground">
-                        Заявка KYC на аудите комплаенс
-                      </h3>
-                      <p className="text-2xs text-muted-foreground">
-                        Регистрационные данные поданы и ожидают решения комплаенс-офицера платформы.
-                      </p>
-                    </div>
-                  </div>
-                  <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700 text-2xs">Ожидает аудит</Badge>
-                </div>
-
-                {/* Progress Pipeline */}
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 pt-2 text-2xs">
-                  <div className="p-2 rounded bg-card border border-border flex items-center gap-1.5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span className="font-medium text-foreground">1. Подача заявки</span>
-                  </div>
-                  <div className="p-2 rounded bg-card border border-border flex items-center gap-1.5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span className="font-medium text-foreground">2. База MF / GUS</span>
-                  </div>
-                  <div className="p-2 rounded bg-amber-500/10 border border-amber-500/30 flex items-center gap-1.5 text-amber-700 dark:text-amber-300 font-bold">
-                    <Clock className="h-4 w-4 text-amber-500 shrink-0 animate-spin" />
-                    <span>3. Аудит комплаенс</span>
-                  </div>
-                  <div className="p-2 rounded bg-muted/40 border border-border text-muted-foreground flex items-center gap-1.5">
-                    <div className="h-3 w-3 rounded-full border border-border" />
-                    <span>4. Активация Net-30</span>
+            <Card className="border-border bg-card shadow-xs">
+              <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <StatusBadge tone="warning" label={t('buyer.settings.kyc.pending')} size="md" />
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-bold text-foreground">
+                      {t('buyer.settings.kyc.pendingTitle')}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {t('buyer.settings.kyc.pendingDesc')}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -167,16 +156,19 @@ function BuyerSettingsPage() {
           )}
 
           {kycStatus === 'REJECTED' && (
-            <Card className="border-rose-500/30 bg-rose-500/5 shadow-xs">
-              <CardContent className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <XCircle className="h-6 w-6 text-rose-500 shrink-0" />
-                  <div>
-                    <h3 className="font-bold text-sm text-foreground">
-                      Верификация KYC требует уточнения данных
+            <Card className="border-border bg-card shadow-xs">
+              <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <StatusBadge tone="danger" label={t('buyer.settings.kyc.rejected')} size="md" />
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-bold text-foreground">
+                      {t('buyer.settings.kyc.rejectedTitle')}
                     </h3>
-                    <p className="text-2xs text-muted-foreground">
-                      Причина: {currentKyc?.rejectionReason || 'Несоответствие банковского счета Белому списку Минфина.'}
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {t('buyer.settings.kyc.rejectedReason', {
+                        reason:
+                          currentKyc?.rejectionReason || t('buyer.settings.kyc.rejectedDefault'),
+                      })}
                     </p>
                   </div>
                 </div>
@@ -189,8 +181,8 @@ function BuyerSettingsPage() {
                     role: 'BUYER',
                   }}
                   triggerButton={
-                    <Button type="button" size="sm" variant="destructive" className="text-xs">
-                      Подать исправленное досье
+                    <Button type="button" size="sm" variant="destructive" className="font-medium">
+                      {t('buyer.settings.kyc.resubmit')}
                     </Button>
                   }
                 />
@@ -198,65 +190,60 @@ function BuyerSettingsPage() {
             </Card>
           )}
 
-          {/* Legal Identity Form */}
-          <Card className="border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Юридические реквизиты и налоговые данные</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-xs">
+          {/* Legal identity form */}
+          <Card className="border-border bg-card shadow-xs">
+            <CardContent className="p-4 sm:p-6 space-y-4">
+              <span className="text-sm font-semibold text-foreground block">
+                {t('buyer.settings.identityTitle')}
+              </span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormFieldInput
                   control={form.control}
                   name="companyName"
-                  label="Юридическое наименование компании:"
+                  label={t('buyer.settings.companyName')}
                   className="font-medium"
                 />
                 <FormFieldInput
                   control={form.control}
                   name="nip"
-                  label="Налоговый номер (NIP):"
+                  label={t('buyer.settings.nip')}
                   className="font-mono font-bold"
+                  dir="ltr"
                 />
                 <FormFieldInput
                   control={form.control}
                   name="krs"
-                  label="Номер в судебном реестре (KRS):"
+                  label={t('buyer.settings.krs')}
                   className="font-mono"
+                  dir="ltr"
                 />
                 <FormFieldInput
                   control={form.control}
                   name="city"
-                  label="Город юридической регистрации:"
+                  label={t('buyer.settings.city')}
                 />
               </div>
             </CardContent>
           </Card>
 
-          {/* Notification Preferences */}
-          <Card className="border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Bell className="h-4 w-4 text-primary" /> Уведомления об отгрузках и логистике
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-xs">
-              <div className="p-3 rounded-lg border border-border bg-card">
+          {/* Notification preferences */}
+          <Card className="border-border bg-card shadow-xs">
+            <CardContent className="p-4 sm:p-6 space-y-4">
+              <span className="text-sm font-semibold text-foreground block">
+                {t('buyer.settings.notificationsTitle')}
+              </span>
+              <div className="rounded-md border border-border p-3 space-y-3">
                 <FormFieldCheckbox
                   control={form.control}
                   name="wsNotifications"
-                  label="Онлайн-уведомления трекинга через WebSockets"
-                  description="Оповещение в реальном времени при приближении автопоезда к терминалу разгрузки (<10 км)."
-                  className="text-primary"
+                  label={t('buyer.settings.wsLabel')}
+                  description={t('buyer.settings.wsDesc')}
                 />
-              </div>
-
-              <div className="p-3 rounded-lg border border-border bg-card">
                 <FormFieldCheckbox
                   control={form.control}
                   name="emailNotifications"
-                  label="Автоматическая отправка фактур VAT и e-CMR"
-                  description="Электронная рассылка фактур и накладных в бухгалтерию сразу после отправки."
-                  className="text-primary"
+                  label={t('buyer.settings.emailLabel')}
+                  description={t('buyer.settings.emailDesc')}
                 />
               </div>
             </CardContent>
@@ -264,7 +251,8 @@ function BuyerSettingsPage() {
 
           <div className="flex justify-end">
             <Button type="submit" size="sm" className="gap-2 font-medium w-full sm:w-auto">
-              <Save className="h-4 w-4" /> Сохранить настройки профиля
+              <Save className="h-4 w-4" aria-hidden="true" />
+              {t('buyer.settings.save')}
             </Button>
           </div>
         </form>
