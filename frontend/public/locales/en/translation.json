@@ -1559,9 +1559,6 @@
           "regon": "REGON",
           "submitted": "KYC application submitted",
           "noApplication": "No KYC application on file — automated registry checks are unavailable."
-        },
-        "docs": {
-          "downloadAria": "Download document {{name}}"
         }
       }
     },

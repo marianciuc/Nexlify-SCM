@@ -5,7 +5,6 @@ import {
   Check,
   ChevronLeft,
   CreditCard,
-  Download,
   FileText,
   Save,
   ShieldCheck,
@@ -425,15 +424,6 @@ function AdminTenantDetailPage() {
                           {doc.fileName} ({doc.fileSize})
                         </span>
                       </span>
-                      <Button
-                        variant="ghost"
-                        size="icon-xs"
-                        className="shrink-0"
-                        aria-label={t('admin.users.detail.docs.downloadAria', { name: doc.name })}
-                        title={t('admin.users.detail.docs.downloadAria', { name: doc.name })}
-                      >
-                        <Download className="h-3 w-3" aria-hidden="true" />
-                      </Button>
                     </li>
                   ))}
                 </ul>
