@@ -891,6 +891,192 @@
         "awardConfirmDesc": "The tender will be marked as awarded to {{supplier}} for {{amount}} {{currency}}. The order is created separately.",
         "awardConfirm": "Confirm award",
         "awardError": "Failed to award the bid."
+      },
+      "create": {
+        "crumb": "New RFQ",
+        "backToRequests": "Back to RFQ register",
+        "title": "Publish RFQ tender",
+        "subtitle": "Specify the required goods, planned volumes, price limits and the substitutes policy.",
+        "itemCountBadge": "Line items: {{count}}",
+        "sections": {
+          "scope": "Tender parameters & logistics",
+          "category": "Category & subcategory",
+          "brands": "Brand & manufacturer preferences",
+          "items": "Procurement specification"
+        },
+        "fields": {
+          "title": "Tender title:",
+          "titlePlaceholder": "e.g. Wholesale purchase of EPAL pallets and stretch film, Q4/2026",
+          "deliveryLocation": "Destination logistics hub:",
+          "deadline": "Bid submission deadline:",
+          "description": "Technical requirements & delivery terms:",
+          "descriptionPlaceholder": "Contract terms, required certificates (ISPM-15, ISO, CE), unloading ramp requirements…",
+          "brands": "Preferred brands",
+          "brandsOptional": "(optional — leave empty for an open tender)",
+          "manufacturer": "Preferred manufacturer",
+          "manufacturerOptional": "(optional)"
+        },
+        "brands": {
+          "any": "Any brands (open tender)",
+          "selectedCount": "Brands selected: {{count}}",
+          "removeAria": "Remove brand {{name}}",
+          "searchPlaceholder": "Search brand…",
+          "notFound": "No brands found",
+          "resetAll": "Reset all",
+          "done": "Done",
+          "substitutesHint": "Suppliers of other brands may still submit bids as substitutes."
+        },
+        "category": {
+          "label": "Product category:",
+          "subcategoryLabel": "Subcategory:",
+          "all": "All"
+        },
+        "manufacturer": {
+          "any": "Any manufacturer (open tender)"
+        },
+        "items": {
+          "hint": "Specify each item, the required volume, target price and the substitutes flag.",
+          "add": "Add line item",
+          "col": {
+            "item": "Item & SKU",
+            "qty": "Qty",
+            "price": "Target price",
+            "total": "Line total",
+            "substitute": "Substitute?"
+          },
+          "namePlaceholder": "Product name",
+          "skuPlaceholder": "SKU code",
+          "specPlaceholder": "Technical requirements & tolerances",
+          "yes": "Yes",
+          "no": "No",
+          "countLabel": "Line items:",
+          "budgetLabel": "Calculated budget limit:",
+          "aria": {
+            "name": "Item name {{index}}",
+            "sku": "SKU code, item {{index}}",
+            "spec": "Specifications, item {{index}}",
+            "qty": "Quantity, item {{index}}",
+            "unit": "Unit of measure, item {{index}}",
+            "price": "Target price, item {{index}}",
+            "substitute": "Allow substitutes, item {{index}}",
+            "remove": "Remove item {{index}}"
+          }
+        },
+        "substitutes": {
+          "title": "Substitutes policy in this B2B tender",
+          "description": "When enabled, suppliers may offer alternative items for lines marked \"Substitute\". Technical parameters and certificates must be confirmed.",
+          "ariaLabel": "Allow substitutes for the whole tender"
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "submit": "Publish tender ({{count}} items)",
+          "submitting": "Publishing…"
+        },
+        "validation": {
+          "titleRequired": "Tender title is required",
+          "categoryRequired": "Category is required",
+          "deliveryRequired": "Destination is required",
+          "deadlineRequired": "Bid submission deadline is required",
+          "skuRequired": "SKU is required",
+          "nameRequired": "Item name is required",
+          "qtyMin": "Quantity must be at least 1",
+          "unitRequired": "Unit of measure is required",
+          "pricePositive": "Target price must be positive",
+          "minItems": "The tender must contain at least one line item",
+          "minItemsToast": "Tender must contain at least 1 line item",
+          "submitFailed": "Could not publish the tender. Check the data and try again."
+        },
+        "unit": {
+          "pcs": "pcs",
+          "kg": "kg",
+          "rolls": "roll",
+          "pallets": "pallet",
+          "m3": "m³",
+          "boxes": "box",
+          "units": "units"
+        }
+      }
+    },
+    "checkout": {
+      "crumb": "Checkout",
+      "title": "Checkout",
+      "subtitle": "Delivery address, shipping conditions and payment preference — all on one page.",
+      "backToCart": "Back to cart",
+      "totalAria": "Order total",
+      "draftNotice": "Confirming will create an order draft. Delivery conditions will be passed to the supplier together with the order.",
+      "placeOrder": "Place order",
+      "submitting": "Creating…",
+      "error": "Could not create the order draft. Your cart has been preserved — please try again.",
+      "address": {
+        "title": "Delivery address",
+        "streetLabel": "Warehouse or receiving point address",
+        "streetPlaceholder": "Street, building number, postal code",
+        "cityLabel": "City",
+        "cityPlaceholder": "e.g. Warszawa",
+        "hint": "Enter the actual receiving address — it will be passed on with the order."
+      },
+      "logistics": {
+        "title": "Delivery conditions",
+        "incotermsLabel": "Delivery terms (Incoterms):",
+        "incotermsAria": "Delivery terms",
+        "windowLabel": "Preferred receiving time:",
+        "windowAria": "Delivery time"
+      },
+      "incoterms": {
+        "dap": {
+          "title": "DAP — delivered to the named place",
+          "desc": "The supplier organizes carriage to the delivery address. Passed along as a preference."
+        },
+        "exw": {
+          "title": "EXW — pickup from the supplier's warehouse",
+          "desc": "The buyer organizes carriage from the supplier's warehouse. Passed along as a preference."
+        }
+      },
+      "window": {
+        "standard": {
+          "title": "During the day · 08:00–18:00",
+          "desc": "Standard receiving"
+        },
+        "morning": {
+          "title": "Morning · 07:00–12:00",
+          "desc": "Morning slot"
+        },
+        "afternoon": {
+          "title": "Afternoon · 12:00–17:00",
+          "desc": "Afternoon slot"
+        }
+      },
+      "tailgate": {
+        "label": "Tailgate lift required",
+        "hint": "Check if the site has no high loading ramp"
+      },
+      "payment": {
+        "title": "Payment preference",
+        "ariaLabel": "Payment method",
+        "net30": {
+          "title": "Invoice payment · 30 days",
+          "desc": "Recorded as a preference for the supplier. The order does not reserve a credit line."
+        },
+        "split": {
+          "title": "Partial payment · 30% advance / 70% after delivery",
+          "desc": "The condition is passed to the supplier. No advance is charged at this step."
+        },
+        "card": {
+          "title": "Card or bank transfer",
+          "desc": "The choice is passed to the supplier as a preference. No payment is taken at this step."
+        }
+      },
+      "notes": {
+        "label": "Note for the driver or warehouse (optional):",
+        "placeholder": "e.g. give the gate code to security on arrival"
+      },
+      "summary": {
+        "title": "Order summary",
+        "shipmentsHeading": "Shipments by supplier"
+      },
+      "group": {
+        "itemsCount": "{{count}} items",
+        "weight": "{{tons}} t"
       }
     }
   },
