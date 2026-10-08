@@ -42,6 +42,16 @@ import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminSystemAuditRouteImport } from './routes/admin/system-audit'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
+import { Route as SupplierProductsIndexRouteImport } from './routes/supplier/products.index'
+import { Route as SupplierPricingIndexRouteImport } from './routes/supplier/pricing.index'
+import { Route as SupplierOrdersIndexRouteImport } from './routes/supplier/orders.index'
+import { Route as LogisticsRoutesIndexRouteImport } from './routes/logistics/routes.index'
+import { Route as LogisticsFleetIndexRouteImport } from './routes/logistics/fleet.index'
+import { Route as BuyerRequestsIndexRouteImport } from './routes/buyer/requests.index'
+import { Route as BuyerOrdersIndexRouteImport } from './routes/buyer/orders.index'
+import { Route as BuyerInvoicesIndexRouteImport } from './routes/buyer/invoices.index'
+import { Route as BuyerCatalogIndexRouteImport } from './routes/buyer/catalog.index'
+import { Route as AdminUsersIndexRouteImport } from './routes/admin/users.index'
 import { Route as SupplierProductsNewRouteImport } from './routes/supplier/products.new'
 import { Route as SupplierProductsSkuRouteImport } from './routes/supplier/products.$sku'
 import { Route as SupplierPricingContractIdRouteImport } from './routes/supplier/pricing.$contractId'
@@ -228,6 +238,56 @@ const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const SupplierProductsIndexRoute = SupplierProductsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SupplierProductsRoute,
+} as any)
+const SupplierPricingIndexRoute = SupplierPricingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SupplierPricingRoute,
+} as any)
+const SupplierOrdersIndexRoute = SupplierOrdersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SupplierOrdersRoute,
+} as any)
+const LogisticsRoutesIndexRoute = LogisticsRoutesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LogisticsRoutesRoute,
+} as any)
+const LogisticsFleetIndexRoute = LogisticsFleetIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LogisticsFleetRoute,
+} as any)
+const BuyerRequestsIndexRoute = BuyerRequestsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BuyerRequestsRoute,
+} as any)
+const BuyerOrdersIndexRoute = BuyerOrdersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BuyerOrdersRoute,
+} as any)
+const BuyerInvoicesIndexRoute = BuyerInvoicesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BuyerInvoicesRoute,
+} as any)
+const BuyerCatalogIndexRoute = BuyerCatalogIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BuyerCatalogRoute,
+} as any)
+const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminUsersRoute,
+} as any)
 const SupplierProductsNewRoute = SupplierProductsNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -384,6 +444,16 @@ export interface FileRoutesByFullPath {
   '/supplier/pricing/$contractId': typeof SupplierPricingContractIdRoute
   '/supplier/products/$sku': typeof SupplierProductsSkuRoute
   '/supplier/products/new': typeof SupplierProductsNewRoute
+  '/admin/users/': typeof AdminUsersIndexRoute
+  '/buyer/catalog/': typeof BuyerCatalogIndexRoute
+  '/buyer/invoices/': typeof BuyerInvoicesIndexRoute
+  '/buyer/orders/': typeof BuyerOrdersIndexRoute
+  '/buyer/requests/': typeof BuyerRequestsIndexRoute
+  '/logistics/fleet/': typeof LogisticsFleetIndexRoute
+  '/logistics/routes/': typeof LogisticsRoutesIndexRoute
+  '/supplier/orders/': typeof SupplierOrdersIndexRoute
+  '/supplier/pricing/': typeof SupplierPricingIndexRoute
+  '/supplier/products/': typeof SupplierProductsIndexRoute
   '/supplier/bids/$rfqId/submit': typeof SupplierBidsRfqIdSubmitRoute
   '/supplier/orders/$orderId/fulfillment': typeof SupplierOrdersOrderIdFulfillmentRoute
 }
@@ -396,29 +466,19 @@ export interface FileRoutesByTo {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/system-audit': typeof AdminSystemAuditRoute
-  '/admin/users': typeof AdminUsersRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/buyer/cart': typeof BuyerCartRoute
-  '/buyer/catalog': typeof BuyerCatalogRouteWithChildren
   '/buyer/checkout': typeof BuyerCheckoutRoute
   '/buyer/claims': typeof BuyerClaimsRoute
   '/buyer/contracts': typeof BuyerContractsRoute
-  '/buyer/invoices': typeof BuyerInvoicesRouteWithChildren
-  '/buyer/orders': typeof BuyerOrdersRouteWithChildren
-  '/buyer/requests': typeof BuyerRequestsRouteWithChildren
   '/buyer/settings': typeof BuyerSettingsRoute
   '/logistics/drivers': typeof LogisticsDriversRoute
   '/logistics/ecmr': typeof LogisticsEcmrRoute
-  '/logistics/fleet': typeof LogisticsFleetRouteWithChildren
   '/logistics/map': typeof LogisticsMapRoute
-  '/logistics/routes': typeof LogisticsRoutesRouteWithChildren
   '/logistics/settings': typeof LogisticsSettingsRoute
   '/supplier/dashboard': typeof SupplierDashboardRoute
-  '/supplier/orders': typeof SupplierOrdersRouteWithChildren
-  '/supplier/pricing': typeof SupplierPricingRouteWithChildren
-  '/supplier/products': typeof SupplierProductsRouteWithChildren
   '/supplier/scorecard': typeof SupplierScorecardRoute
   '/supplier/settings': typeof SupplierSettingsRoute
   '/admin/users/$tenantId': typeof AdminUsersTenantIdRoute
@@ -439,6 +499,16 @@ export interface FileRoutesByTo {
   '/supplier/pricing/$contractId': typeof SupplierPricingContractIdRoute
   '/supplier/products/$sku': typeof SupplierProductsSkuRoute
   '/supplier/products/new': typeof SupplierProductsNewRoute
+  '/admin/users': typeof AdminUsersIndexRoute
+  '/buyer/catalog': typeof BuyerCatalogIndexRoute
+  '/buyer/invoices': typeof BuyerInvoicesIndexRoute
+  '/buyer/orders': typeof BuyerOrdersIndexRoute
+  '/buyer/requests': typeof BuyerRequestsIndexRoute
+  '/logistics/fleet': typeof LogisticsFleetIndexRoute
+  '/logistics/routes': typeof LogisticsRoutesIndexRoute
+  '/supplier/orders': typeof SupplierOrdersIndexRoute
+  '/supplier/pricing': typeof SupplierPricingIndexRoute
+  '/supplier/products': typeof SupplierProductsIndexRoute
   '/supplier/bids/$rfqId/submit': typeof SupplierBidsRfqIdSubmitRoute
   '/supplier/orders/$orderId/fulfillment': typeof SupplierOrdersOrderIdFulfillmentRoute
 }
@@ -495,6 +565,16 @@ export interface FileRoutesById {
   '/supplier/pricing/$contractId': typeof SupplierPricingContractIdRoute
   '/supplier/products/$sku': typeof SupplierProductsSkuRoute
   '/supplier/products/new': typeof SupplierProductsNewRoute
+  '/admin/users/': typeof AdminUsersIndexRoute
+  '/buyer/catalog/': typeof BuyerCatalogIndexRoute
+  '/buyer/invoices/': typeof BuyerInvoicesIndexRoute
+  '/buyer/orders/': typeof BuyerOrdersIndexRoute
+  '/buyer/requests/': typeof BuyerRequestsIndexRoute
+  '/logistics/fleet/': typeof LogisticsFleetIndexRoute
+  '/logistics/routes/': typeof LogisticsRoutesIndexRoute
+  '/supplier/orders/': typeof SupplierOrdersIndexRoute
+  '/supplier/pricing/': typeof SupplierPricingIndexRoute
+  '/supplier/products/': typeof SupplierProductsIndexRoute
   '/supplier/bids/$rfqId/submit': typeof SupplierBidsRfqIdSubmitRoute
   '/supplier/orders/$orderId/fulfillment': typeof SupplierOrdersOrderIdFulfillmentRoute
 }
@@ -552,6 +632,16 @@ export interface FileRouteTypes {
     | '/supplier/pricing/$contractId'
     | '/supplier/products/$sku'
     | '/supplier/products/new'
+    | '/admin/users/'
+    | '/buyer/catalog/'
+    | '/buyer/invoices/'
+    | '/buyer/orders/'
+    | '/buyer/requests/'
+    | '/logistics/fleet/'
+    | '/logistics/routes/'
+    | '/supplier/orders/'
+    | '/supplier/pricing/'
+    | '/supplier/products/'
     | '/supplier/bids/$rfqId/submit'
     | '/supplier/orders/$orderId/fulfillment'
   fileRoutesByTo: FileRoutesByTo
@@ -564,29 +654,19 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/settings'
     | '/admin/system-audit'
-    | '/admin/users'
     | '/auth/callback'
     | '/auth/login'
     | '/auth/register'
     | '/buyer/cart'
-    | '/buyer/catalog'
     | '/buyer/checkout'
     | '/buyer/claims'
     | '/buyer/contracts'
-    | '/buyer/invoices'
-    | '/buyer/orders'
-    | '/buyer/requests'
     | '/buyer/settings'
     | '/logistics/drivers'
     | '/logistics/ecmr'
-    | '/logistics/fleet'
     | '/logistics/map'
-    | '/logistics/routes'
     | '/logistics/settings'
     | '/supplier/dashboard'
-    | '/supplier/orders'
-    | '/supplier/pricing'
-    | '/supplier/products'
     | '/supplier/scorecard'
     | '/supplier/settings'
     | '/admin/users/$tenantId'
@@ -607,6 +687,16 @@ export interface FileRouteTypes {
     | '/supplier/pricing/$contractId'
     | '/supplier/products/$sku'
     | '/supplier/products/new'
+    | '/admin/users'
+    | '/buyer/catalog'
+    | '/buyer/invoices'
+    | '/buyer/orders'
+    | '/buyer/requests'
+    | '/logistics/fleet'
+    | '/logistics/routes'
+    | '/supplier/orders'
+    | '/supplier/pricing'
+    | '/supplier/products'
     | '/supplier/bids/$rfqId/submit'
     | '/supplier/orders/$orderId/fulfillment'
   id:
@@ -662,6 +752,16 @@ export interface FileRouteTypes {
     | '/supplier/pricing/$contractId'
     | '/supplier/products/$sku'
     | '/supplier/products/new'
+    | '/admin/users/'
+    | '/buyer/catalog/'
+    | '/buyer/invoices/'
+    | '/buyer/orders/'
+    | '/buyer/requests/'
+    | '/logistics/fleet/'
+    | '/logistics/routes/'
+    | '/supplier/orders/'
+    | '/supplier/pricing/'
+    | '/supplier/products/'
     | '/supplier/bids/$rfqId/submit'
     | '/supplier/orders/$orderId/fulfillment'
   fileRoutesById: FileRoutesById
@@ -910,6 +1010,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/supplier/products/': {
+      id: '/supplier/products/'
+      path: '/'
+      fullPath: '/supplier/products/'
+      preLoaderRoute: typeof SupplierProductsIndexRouteImport
+      parentRoute: typeof SupplierProductsRoute
+    }
+    '/supplier/pricing/': {
+      id: '/supplier/pricing/'
+      path: '/'
+      fullPath: '/supplier/pricing/'
+      preLoaderRoute: typeof SupplierPricingIndexRouteImport
+      parentRoute: typeof SupplierPricingRoute
+    }
+    '/supplier/orders/': {
+      id: '/supplier/orders/'
+      path: '/'
+      fullPath: '/supplier/orders/'
+      preLoaderRoute: typeof SupplierOrdersIndexRouteImport
+      parentRoute: typeof SupplierOrdersRoute
+    }
+    '/logistics/routes/': {
+      id: '/logistics/routes/'
+      path: '/'
+      fullPath: '/logistics/routes/'
+      preLoaderRoute: typeof LogisticsRoutesIndexRouteImport
+      parentRoute: typeof LogisticsRoutesRoute
+    }
+    '/logistics/fleet/': {
+      id: '/logistics/fleet/'
+      path: '/'
+      fullPath: '/logistics/fleet/'
+      preLoaderRoute: typeof LogisticsFleetIndexRouteImport
+      parentRoute: typeof LogisticsFleetRoute
+    }
+    '/buyer/requests/': {
+      id: '/buyer/requests/'
+      path: '/'
+      fullPath: '/buyer/requests/'
+      preLoaderRoute: typeof BuyerRequestsIndexRouteImport
+      parentRoute: typeof BuyerRequestsRoute
+    }
+    '/buyer/orders/': {
+      id: '/buyer/orders/'
+      path: '/'
+      fullPath: '/buyer/orders/'
+      preLoaderRoute: typeof BuyerOrdersIndexRouteImport
+      parentRoute: typeof BuyerOrdersRoute
+    }
+    '/buyer/invoices/': {
+      id: '/buyer/invoices/'
+      path: '/'
+      fullPath: '/buyer/invoices/'
+      preLoaderRoute: typeof BuyerInvoicesIndexRouteImport
+      parentRoute: typeof BuyerInvoicesRoute
+    }
+    '/buyer/catalog/': {
+      id: '/buyer/catalog/'
+      path: '/'
+      fullPath: '/buyer/catalog/'
+      preLoaderRoute: typeof BuyerCatalogIndexRouteImport
+      parentRoute: typeof BuyerCatalogRoute
+    }
+    '/admin/users/': {
+      id: '/admin/users/'
+      path: '/'
+      fullPath: '/admin/users/'
+      preLoaderRoute: typeof AdminUsersIndexRouteImport
+      parentRoute: typeof AdminUsersRoute
+    }
     '/supplier/products/new': {
       id: '/supplier/products/new'
       path: '/new'
@@ -1056,11 +1226,13 @@ declare module '@tanstack/react-router' {
 interface AdminUsersRouteChildren {
   AdminUsersTenantIdRoute: typeof AdminUsersTenantIdRoute
   AdminUsersVerificationRoute: typeof AdminUsersVerificationRoute
+  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
 }
 
 const AdminUsersRouteChildren: AdminUsersRouteChildren = {
   AdminUsersTenantIdRoute: AdminUsersTenantIdRoute,
   AdminUsersVerificationRoute: AdminUsersVerificationRoute,
+  AdminUsersIndexRoute: AdminUsersIndexRoute,
 }
 
 const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
@@ -1087,10 +1259,12 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 
 interface BuyerCatalogRouteChildren {
   BuyerCatalogSkuRoute: typeof BuyerCatalogSkuRoute
+  BuyerCatalogIndexRoute: typeof BuyerCatalogIndexRoute
 }
 
 const BuyerCatalogRouteChildren: BuyerCatalogRouteChildren = {
   BuyerCatalogSkuRoute: BuyerCatalogSkuRoute,
+  BuyerCatalogIndexRoute: BuyerCatalogIndexRoute,
 }
 
 const BuyerCatalogRouteWithChildren = BuyerCatalogRoute._addFileChildren(
@@ -1099,10 +1273,12 @@ const BuyerCatalogRouteWithChildren = BuyerCatalogRoute._addFileChildren(
 
 interface BuyerInvoicesRouteChildren {
   BuyerInvoicesInvoiceIdRoute: typeof BuyerInvoicesInvoiceIdRoute
+  BuyerInvoicesIndexRoute: typeof BuyerInvoicesIndexRoute
 }
 
 const BuyerInvoicesRouteChildren: BuyerInvoicesRouteChildren = {
   BuyerInvoicesInvoiceIdRoute: BuyerInvoicesInvoiceIdRoute,
+  BuyerInvoicesIndexRoute: BuyerInvoicesIndexRoute,
 }
 
 const BuyerInvoicesRouteWithChildren = BuyerInvoicesRoute._addFileChildren(
@@ -1111,10 +1287,12 @@ const BuyerInvoicesRouteWithChildren = BuyerInvoicesRoute._addFileChildren(
 
 interface BuyerOrdersRouteChildren {
   BuyerOrdersOrderIdRoute: typeof BuyerOrdersOrderIdRoute
+  BuyerOrdersIndexRoute: typeof BuyerOrdersIndexRoute
 }
 
 const BuyerOrdersRouteChildren: BuyerOrdersRouteChildren = {
   BuyerOrdersOrderIdRoute: BuyerOrdersOrderIdRoute,
+  BuyerOrdersIndexRoute: BuyerOrdersIndexRoute,
 }
 
 const BuyerOrdersRouteWithChildren = BuyerOrdersRoute._addFileChildren(
@@ -1124,11 +1302,13 @@ const BuyerOrdersRouteWithChildren = BuyerOrdersRoute._addFileChildren(
 interface BuyerRequestsRouteChildren {
   BuyerRequestsRequestIdRoute: typeof BuyerRequestsRequestIdRoute
   BuyerRequestsNewRoute: typeof BuyerRequestsNewRoute
+  BuyerRequestsIndexRoute: typeof BuyerRequestsIndexRoute
 }
 
 const BuyerRequestsRouteChildren: BuyerRequestsRouteChildren = {
   BuyerRequestsRequestIdRoute: BuyerRequestsRequestIdRoute,
   BuyerRequestsNewRoute: BuyerRequestsNewRoute,
+  BuyerRequestsIndexRoute: BuyerRequestsIndexRoute,
 }
 
 const BuyerRequestsRouteWithChildren = BuyerRequestsRoute._addFileChildren(
@@ -1166,11 +1346,13 @@ const BuyerRouteRouteWithChildren = BuyerRouteRoute._addFileChildren(
 interface LogisticsFleetRouteChildren {
   LogisticsFleetVehicleIdRoute: typeof LogisticsFleetVehicleIdRoute
   LogisticsFleetNewRoute: typeof LogisticsFleetNewRoute
+  LogisticsFleetIndexRoute: typeof LogisticsFleetIndexRoute
 }
 
 const LogisticsFleetRouteChildren: LogisticsFleetRouteChildren = {
   LogisticsFleetVehicleIdRoute: LogisticsFleetVehicleIdRoute,
   LogisticsFleetNewRoute: LogisticsFleetNewRoute,
+  LogisticsFleetIndexRoute: LogisticsFleetIndexRoute,
 }
 
 const LogisticsFleetRouteWithChildren = LogisticsFleetRoute._addFileChildren(
@@ -1180,11 +1362,13 @@ const LogisticsFleetRouteWithChildren = LogisticsFleetRoute._addFileChildren(
 interface LogisticsRoutesRouteChildren {
   LogisticsRoutesRouteIdRoute: typeof LogisticsRoutesRouteIdRoute
   LogisticsRoutesPlannerRoute: typeof LogisticsRoutesPlannerRoute
+  LogisticsRoutesIndexRoute: typeof LogisticsRoutesIndexRoute
 }
 
 const LogisticsRoutesRouteChildren: LogisticsRoutesRouteChildren = {
   LogisticsRoutesRouteIdRoute: LogisticsRoutesRouteIdRoute,
   LogisticsRoutesPlannerRoute: LogisticsRoutesPlannerRoute,
+  LogisticsRoutesIndexRoute: LogisticsRoutesIndexRoute,
 }
 
 const LogisticsRoutesRouteWithChildren = LogisticsRoutesRoute._addFileChildren(
@@ -1214,10 +1398,12 @@ const LogisticsRouteRouteWithChildren = LogisticsRouteRoute._addFileChildren(
 )
 
 interface SupplierOrdersRouteChildren {
+  SupplierOrdersIndexRoute: typeof SupplierOrdersIndexRoute
   SupplierOrdersOrderIdFulfillmentRoute: typeof SupplierOrdersOrderIdFulfillmentRoute
 }
 
 const SupplierOrdersRouteChildren: SupplierOrdersRouteChildren = {
+  SupplierOrdersIndexRoute: SupplierOrdersIndexRoute,
   SupplierOrdersOrderIdFulfillmentRoute: SupplierOrdersOrderIdFulfillmentRoute,
 }
 
@@ -1227,10 +1413,12 @@ const SupplierOrdersRouteWithChildren = SupplierOrdersRoute._addFileChildren(
 
 interface SupplierPricingRouteChildren {
   SupplierPricingContractIdRoute: typeof SupplierPricingContractIdRoute
+  SupplierPricingIndexRoute: typeof SupplierPricingIndexRoute
 }
 
 const SupplierPricingRouteChildren: SupplierPricingRouteChildren = {
   SupplierPricingContractIdRoute: SupplierPricingContractIdRoute,
+  SupplierPricingIndexRoute: SupplierPricingIndexRoute,
 }
 
 const SupplierPricingRouteWithChildren = SupplierPricingRoute._addFileChildren(
@@ -1240,11 +1428,13 @@ const SupplierPricingRouteWithChildren = SupplierPricingRoute._addFileChildren(
 interface SupplierProductsRouteChildren {
   SupplierProductsSkuRoute: typeof SupplierProductsSkuRoute
   SupplierProductsNewRoute: typeof SupplierProductsNewRoute
+  SupplierProductsIndexRoute: typeof SupplierProductsIndexRoute
 }
 
 const SupplierProductsRouteChildren: SupplierProductsRouteChildren = {
   SupplierProductsSkuRoute: SupplierProductsSkuRoute,
   SupplierProductsNewRoute: SupplierProductsNewRoute,
+  SupplierProductsIndexRoute: SupplierProductsIndexRoute,
 }
 
 const SupplierProductsRouteWithChildren =
