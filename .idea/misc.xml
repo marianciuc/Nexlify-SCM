@@ -5,9 +5,11 @@
     <file type="web" url="file://$PROJECT_DIR$/backend/analytics" />
     <file type="web" url="file://$PROJECT_DIR$/backend/billing" />
     <file type="web" url="file://$PROJECT_DIR$/backend/gateway" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/Gateway" />
     <file type="web" url="file://$PROJECT_DIR$/backend/integration" />
     <file type="web" url="file://$PROJECT_DIR$/backend/inventory" />
     <file type="web" url="file://$PROJECT_DIR$/backend/logistic" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/notification" />
     <file type="web" url="file://$PROJECT_DIR$/backend/orders" />
     <file type="web" url="file://$PROJECT_DIR$/backend/rfq" />
     <file type="web" url="file://$PROJECT_DIR$/backend/users" />

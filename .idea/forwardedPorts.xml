@@ -2,15 +2,57 @@
 <project version="4">
   <component name="PortForwardingSettings">
     <ports>
-      <entry key="8080">
+      <entry key="3000">
         <ForwardedPortInfo>
-          <option name="hostPort" value="8080" />
+          <option name="hostPort" value="3000" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="5432">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="5432" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="6379">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="6379" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="8090">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="8090" />
           <option name="readOnly" value="false" />
         </ForwardedPortInfo>
       </entry>
       <entry key="8081">
         <ForwardedPortInfo>
           <option name="hostPort" value="8081" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="8082">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="8082" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="8083">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="8083" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="8084">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="8084" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="8085">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="8085" />
           <option name="readOnly" value="false" />
         </ForwardedPortInfo>
       </entry>
@@ -29,6 +71,30 @@
       <entry key="8088">
         <ForwardedPortInfo>
           <option name="hostPort" value="8088" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="8089">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="8089" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="8500">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="8500" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="9090">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="9090" />
+          <option name="readOnly" value="false" />
+        </ForwardedPortInfo>
+      </entry>
+      <entry key="9092">
+        <ForwardedPortInfo>
+          <option name="hostPort" value="9092" />
           <option name="readOnly" value="false" />
         </ForwardedPortInfo>
       </entry>

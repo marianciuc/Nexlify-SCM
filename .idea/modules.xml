@@ -4,12 +4,24 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/analytics.main.iml" filepath="$PROJECT_DIR$/.idea/modules/analytics.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/billing.main.iml" filepath="$PROJECT_DIR$/.idea/modules/billing.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.analytics.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.analytics.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.billing.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.billing.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.gateway.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.gateway.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.integration.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.integration.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.inventory.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.inventory.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.logistic.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.logistic.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.orders.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.orders.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.rfq.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.rfq.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.users.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.marianciuc.nexifly.users.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway.test.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/integration.iml" filepath="$PROJECT_DIR$/.idea/modules/integration.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/integration.main.iml" filepath="$PROJECT_DIR$/.idea/modules/integration.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/inventory.main.iml" filepath="$PROJECT_DIR$/.idea/modules/inventory.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/logistic.main.iml" filepath="$PROJECT_DIR$/.idea/modules/logistic.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/notification.main.iml" filepath="$PROJECT_DIR$/.idea/modules/notification.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/orders.main.iml" filepath="$PROJECT_DIR$/.idea/modules/orders.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/orders.test.iml" filepath="$PROJECT_DIR$/.idea/modules/orders.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/rfq.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rfq.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/users.main.iml" filepath="$PROJECT_DIR$/.idea/modules/users.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/users.test.iml" filepath="$PROJECT_DIR$/.idea/modules/users.test.iml" />

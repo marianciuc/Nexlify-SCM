@@ -1,13 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight, Eye, EyeOff, Loader2, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, KeyRound, Loader2, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -17,8 +23,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
-import useAuthStore from '../../service/auth/auth-store';
+import { useLocale } from '@/hooks/useLocale';
+import useAuthStore from '@/service/auth/auth-store';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -26,18 +32,18 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
-  const { t } = useTranslation();
+  const { t } = useLocale();
   const { login, getKeycloakLoginUrl, isLoading } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
 
   const loginSchema = z.object({
     email: z
       .string()
-      .min(1, t('auth.validation.emailRequired'))
-      .email(t('auth.validation.emailInvalid')),
+      .min(1, t('auth.errors.emailRequired'))
+      .email(t('auth.errors.emailInvalid')),
     password: z
       .string()
-      .min(1, t('auth.validation.passwordRequired')),
+      .min(1, t('auth.errors.passwordRequired')),
     resource: z.literal('CUSTOMER_PANEL'),
     rememberMe: z.boolean(),
   });
@@ -58,60 +64,74 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
     window.location.href = getKeycloakLoginUrl();
   };
 
+  const handleFillDemo = (email: string, pass: string) => {
+    form.setValue('email', email, { shouldValidate: true });
+    form.setValue('password', pass, { shouldValidate: true });
+  };
+
   const onSubmit = async (values: LoginFormData) => {
     try {
       await login({ email: values.email, password: values.password });
       toast.success(t('auth.success.loginSuccessful'));
       onSuccess?.();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      toast.error(errorMessage || t('auth.errors.invalidCredentials'));
+      const errorMessage = err instanceof Error ? err.message : t('auth.errors.invalidCredentials');
+      toast.error(errorMessage);
     }
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full border-border bg-card shadow-sm">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">{t('auth.signInTitle')}</CardTitle>
-        <CardDescription className="text-center">{t('auth.enterCredentials')}</CardDescription>
+        <CardTitle className="text-xl font-semibold tracking-tight">
+          {t('auth.signInTitle')}
+        </CardTitle>
+        <CardDescription className="text-sm text-muted-foreground">
+          {t('auth.enterCredentials')}
+        </CardDescription>
       </CardHeader>
+
       <CardContent className="space-y-4">
-        {/* Enterprise Hosted SSO Button */}
+        {/* Keycloak SSO Button */}
         <Button
           type="button"
+          variant="outline"
           onClick={handleKeycloakLogin}
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-700 hover:from-blue-800 hover:to-violet-800 text-white font-semibold py-5 shadow-md shadow-indigo-600/20 cursor-pointer flex items-center justify-center gap-2.5 transition-all"
+          className="w-full flex items-center justify-center gap-2 font-medium"
         >
-          <ShieldCheck className="w-5 h-5 text-indigo-200" />
-          Sign In with Enterprise SSO
-          <ArrowRight className="w-4 h-4 ml-auto opacity-70" />
+          <ShieldCheck className="size-4 text-muted-foreground" />
+          <span>Sign in with Keycloak SSO</span>
         </Button>
 
-        <div className="relative flex items-center justify-center my-2">
-          <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-          <span className="bg-background px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider relative">
-            Or Direct Login
+        <div className="relative my-2 flex items-center justify-center">
+          <div className="border-t border-border w-full" />
+          <span className="bg-card px-2 text-xs text-muted-foreground uppercase tracking-wider">
+            Or
           </span>
         </div>
 
+        {/* Credentials Form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel>{t('auth.email')}</FormLabel>
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-medium">
+                    {t('auth.email')}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       type="email"
                       placeholder={t('auth.emailPlaceholder')}
                       disabled={isLoading}
+                      autoComplete="username"
                     />
                   </FormControl>
-                  <FormMessage className="text-sm text-red-500" />
+                  <FormMessage className="text-xs text-destructive" />
                 </FormItem>
               )}
             />
@@ -120,43 +140,113 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel>{t('auth.password')}</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder={t('auth.passwordPlaceholder')}
-                        disabled={isLoading}
-                      />
-                    </FormControl>
-                    <Button
+                <FormItem className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-sm font-medium">
+                      {t('auth.password')}
+                    </FormLabel>
+                    <button
                       type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                       onClick={() => setShowPassword(!showPassword)}
-                      disabled={isLoading}
+                      className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 cursor-pointer"
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
+                      {showPassword ? (
+                        <>
+                          <EyeOff className="size-3.5" />
+                          <span>Hide</span>
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="size-3.5" />
+                          <span>Show</span>
+                        </>
+                      )}
+                    </button>
                   </div>
-                  <FormMessage className="text-sm text-red-500" />
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder={t('auth.passwordPlaceholder')}
+                      disabled={isLoading}
+                      autoComplete="current-password"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs text-destructive" />
                 </FormItem>
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <FormField
+              control={form.control}
+              name="rememberMe"
+              render={({ field }) => (
+                <div className="flex items-center space-x-2 pt-0.5">
+                  <Checkbox
+                    id="rememberMe"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                  <label
+                    htmlFor="rememberMe"
+                    className="text-xs text-muted-foreground font-medium leading-none cursor-pointer"
+                  >
+                    {t('auth.rememberMe')}
+                  </label>
+                </div>
+              )}
+            />
+
+            <Button
+              type="submit"
+              className="w-full font-medium"
+              disabled={isLoading}
+            >
+              {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
               {t('auth.login')}
             </Button>
 
-            <div className="text-center">
+            {/* Quick Demo Credentials for Fast Testing */}
+            <div className="pt-2 border-t border-border">
+              <p className="text-xs text-muted-foreground mb-1.5 font-medium">
+                Demo accounts:
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="h-7 text-xs font-normal"
+                  onClick={() => handleFillDemo('admin@nexlify.com', 'admin123')}
+                >
+                  Admin
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="h-7 text-xs font-normal"
+                  onClick={() => handleFillDemo('manager@nexlify.com', 'manager123')}
+                >
+                  Warehouse
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="h-7 text-xs font-normal"
+                  onClick={() => handleFillDemo('supplier@nexlify.com', 'supplier123')}
+                >
+                  Supplier
+                </Button>
+              </div>
+            </div>
+
+            <div className="text-center pt-2">
               <Button
                 type="button"
                 variant="link"
-                className="text-sm"
+                className="text-xs text-muted-foreground hover:text-foreground h-auto p-0"
                 onClick={onSwitchToRegister}
                 disabled={isLoading}
               >
@@ -169,3 +259,5 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
     </Card>
   );
 }
+
+export default LoginForm;

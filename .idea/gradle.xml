@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/backend/Gateway" />
-        <option name="gradleJvm" value="azul-25" />
+        <option name="gradleJvm" value="azul-26" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/backend/Gateway" />
+          </set>
+        </option>
+        <option name="resolveExternalAnnotations" value="true" />
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/backend/analytics" />
@@ -27,30 +34,65 @@
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/backend/integration" />
         <option name="gradleJvm" value="azul-25" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/backend/integration" />
+          </set>
+        </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/backend/inventory" />
-        <option name="gradleJvm" value="azul-25" />
+        <option name="gradleJvm" value="openjdk-27" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/backend/inventory" />
+          </set>
+        </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/backend/logistic" />
         <option name="gradleJvm" value="azul-25" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/backend/logistic" />
+          </set>
+        </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/backend/notification" />
-        <option name="gradleJvm" value="azul-25" />
+        <option name="gradleJvm" value="azul-26" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/backend/notification" />
+          </set>
+        </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/backend/orders" />
-        <option name="gradleJvm" value="azul-25" />
+        <option name="gradleJvm" value="azul-26" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/backend/orders" />
+          </set>
+        </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/backend/rfq" />
         <option name="gradleJvm" value="azul-25" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/backend/rfq" />
+          </set>
+        </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/backend/users" />
         <option name="gradleJvm" value="azul-25" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/backend/users" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>

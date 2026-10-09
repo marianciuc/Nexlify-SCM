@@ -5,10 +5,13 @@ import com.marianciuc.nexifly.rfq.domain.entity.BidEn;
 import com.marianciuc.nexifly.rfq.domain.entity.BidItemEn;
 import com.marianciuc.nexifly.rfq.domain.entity.RfqItemEn;
 import com.marianciuc.nexifly.rfq.domain.entity.RfqRequestEn;
+import com.marianciuc.nexifly.rfq.exception.BidNotFoundException;
+import com.marianciuc.nexifly.rfq.exception.RfqNotFoundException;
 import com.marianciuc.nexifly.rfq.kafka.RfqProducer;
 import com.marianciuc.nexifly.rfq.kafka.events.RfqAwardedEvent;
 import com.marianciuc.nexifly.rfq.kafka.events.RfqBidReceivedEvent;
 import com.marianciuc.nexifly.rfq.kafka.events.RfqPublishedEvent;
+import com.marianciuc.nexifly.rfq.mapper.RfqMapper;
 import com.marianciuc.nexifly.rfq.repository.BidRepository;
 import com.marianciuc.nexifly.rfq.repository.RfqRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,7 @@ public class RfqLifecycleService {
     private final BidRepository bidRepository;
     private final BidScoringService scoringService;
     private final RfqProducer rfqProducer;
+    private final RfqMapper rfqMapper;
 
     @Transactional
     public RfqResponse createRfq(UUID buyerCompanyId, UUID tenantId, CreateRfqRequest req) {
@@ -79,7 +83,7 @@ public class RfqLifecycleService {
     @Transactional
     public RfqResponse publishRfq(UUID id) {
         RfqRequestEn rfq = rfqRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("RFQ not found: " + id));
+                .orElseThrow(() -> new RfqNotFoundException(id));
 
         rfq.setStatus("PUBLISHED");
         rfq = rfqRepository.save(rfq);
@@ -102,7 +106,7 @@ public class RfqLifecycleService {
     @Transactional
     public BidResponse submitBid(UUID rfqId, SubmitBidRequest req) {
         RfqRequestEn rfq = rfqRepository.findById(rfqId)
-                .orElseThrow(() -> new IllegalArgumentException("RFQ not found: " + rfqId));
+                .orElseThrow(() -> new RfqNotFoundException(rfqId));
 
         if (!"PUBLISHED".equalsIgnoreCase(rfq.getStatus()) && !"EVALUATING".equalsIgnoreCase(rfq.getStatus())) {
             throw new IllegalStateException("Cannot submit bid to RFQ with status: " + rfq.getStatus());
@@ -154,13 +158,13 @@ public class RfqLifecycleService {
                 .timestamp(Instant.now())
                 .build());
 
-        return mapToBidResponse(savedBid);
+        return rfqMapper.toBidResponse(savedBid);
     }
 
     @Transactional
     public RfqResponse awardBid(UUID rfqId, UUID bidId) {
         RfqRequestEn rfq = rfqRepository.findById(rfqId)
-                .orElseThrow(() -> new IllegalArgumentException("RFQ not found: " + rfqId));
+                .orElseThrow(() -> new RfqNotFoundException(rfqId));
 
         BidEn winningBid = null;
         for (BidEn b : rfq.getBids()) {
@@ -173,7 +177,7 @@ public class RfqLifecycleService {
         }
 
         if (winningBid == null) {
-            throw new IllegalArgumentException("Bid not found in RFQ: " + bidId);
+            throw new BidNotFoundException(bidId);
         }
 
         rfq.setStatus("AWARDED");
@@ -200,7 +204,7 @@ public class RfqLifecycleService {
     @Transactional
     public RfqResponse cancelRfq(UUID id) {
         RfqRequestEn rfq = rfqRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("RFQ not found: " + id));
+                .orElseThrow(() -> new RfqNotFoundException(id));
 
         rfq.setStatus("CANCELLED");
         rfq = rfqRepository.save(rfq);
@@ -210,7 +214,7 @@ public class RfqLifecycleService {
     @Transactional(readOnly = true)
     public RfqResponse getRfqById(UUID id, boolean isBuyer) {
         RfqRequestEn rfq = rfqRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("RFQ not found: " + id));
+                .orElseThrow(() -> new RfqNotFoundException(id));
         return mapToResponse(rfq, isBuyer);
     }
 
@@ -231,7 +235,7 @@ public class RfqLifecycleService {
     @Transactional(readOnly = true)
     public Page<BidResponse> getSupplierBids(UUID supplierCompanyId, Pageable pageable) {
         return bidRepository.findBySupplierCompanyId(supplierCompanyId, pageable)
-                .map(this::mapToBidResponse);
+                .map(rfqMapper::toBidResponse);
     }
 
     @Transactional(readOnly = true)
@@ -257,73 +261,33 @@ public class RfqLifecycleService {
     }
 
     private RfqResponse mapToResponse(RfqRequestEn r, boolean isBuyer) {
-        List<RfqItemResponse> items = r.getItems() != null ? r.getItems().stream().map(i -> RfqItemResponse.builder()
-                .id(i.getId())
-                .sku(i.getSku())
-                .productName(i.getProductName())
-                .quantity(i.getQuantity())
-                .unitOfMeasure(i.getUnitOfMeasure())
-                .description(i.getDescription())
-                .allowAlternatives(i.getAllowAlternatives())
-                .build()).toList() : List.of();
-
-        List<BidResponse> bids = isBuyer && r.getBids() != null ? r.getBids().stream().map(this::mapToBidResponse).toList() : List.of();
-
-        return RfqResponse.builder()
-                .id(r.getId())
-                .rfqNumber(r.getRfqNumber())
-                .buyerCompanyId(r.getBuyerCompanyId())
-                .tenantId(r.getTenantId())
-                .title(r.getTitle())
-                .description(r.getDescription())
-                .category(r.getCategory())
-                .status(r.getStatus())
-                .deadline(r.getDeadline())
-                .deliveryDate(r.getDeliveryDate())
-                .deliveryAddress(r.getDeliveryAddress())
-                .deliveryCity(r.getDeliveryCity())
-                .budgetAmount(isBuyer || !Boolean.TRUE.equals(r.getBudgetHidden()) ? r.getBudgetAmount() : null)
-                .budgetHidden(r.getBudgetHidden())
-                .currency(r.getCurrency())
-                .paymentTerms(r.getPaymentTerms())
-                .awardedBidId(r.getAwardedBidId())
-                .bidsCount(r.getBids() != null ? r.getBids().size() : 0)
-                .items(items)
-                .bids(bids)
-                .createdAt(r.getCreatedAt())
-                .build();
-    }
-
-    private BidResponse mapToBidResponse(BidEn b) {
-        List<BidItemResponse> items = b.getItems() != null ? b.getItems().stream().map(bi -> BidItemResponse.builder()
-                .id(bi.getId())
-                .rfqItemId(bi.getRfqItemId())
-                .offeredSku(bi.getOfferedSku())
-                .productName(bi.getProductName())
-                .quantity(bi.getQuantity())
-                .unitPrice(bi.getUnitPrice())
-                .totalPrice(bi.getTotalPrice())
-                .isAlternative(bi.getIsAlternative())
-                .alternativeReason(bi.getAlternativeReason())
-                .leadTimeDays(bi.getLeadTimeDays())
-                .vatRate(bi.getVatRate())
-                .build()).toList() : List.of();
-
-        return BidResponse.builder()
-                .id(b.getId())
-                .rfqId(b.getRfq() != null ? b.getRfq().getId() : null)
-                .supplierCompanyId(b.getSupplierCompanyId())
-                .status(b.getStatus())
-                .totalPrice(b.getTotalPrice())
-                .currency(b.getCurrency())
-                .deliveryDate(b.getDeliveryDate())
-                .paymentTerms(b.getPaymentTerms())
-                .validityDays(b.getValidityDays())
-                .validUntil(b.getValidUntil())
-                .notes(b.getNotes())
-                .score(b.getScore())
-                .items(items)
-                .submittedAt(b.getSubmittedAt())
-                .build();
+        RfqResponse res = rfqMapper.toResponse(r);
+        if (!isBuyer) {
+            BigDecimal budget = Boolean.TRUE.equals(r.getBudgetHidden()) ? null : res.budgetAmount();
+            return RfqResponse.builder()
+                    .id(res.id())
+                    .rfqNumber(res.rfqNumber())
+                    .buyerCompanyId(res.buyerCompanyId())
+                    .tenantId(res.tenantId())
+                    .title(res.title())
+                    .description(res.description())
+                    .category(res.category())
+                    .status(res.status())
+                    .deadline(res.deadline())
+                    .deliveryDate(res.deliveryDate())
+                    .deliveryAddress(res.deliveryAddress())
+                    .deliveryCity(res.deliveryCity())
+                    .budgetAmount(budget)
+                    .budgetHidden(res.budgetHidden())
+                    .currency(res.currency())
+                    .paymentTerms(res.paymentTerms())
+                    .awardedBidId(res.awardedBidId())
+                    .bidsCount(res.bidsCount())
+                    .items(res.items())
+                    .bids(List.of())
+                    .createdAt(res.createdAt())
+                    .build();
+        }
+        return res;
     }
 }

@@ -172,7 +172,6 @@ public class AuthService {
                 .organizationType(OrganizationType.BUYER)
                 .verificationStatus(VerificationStatus.VERIFIED)
                 .isDeleted(false)
-                .createdAt(Instant.now())
                 .build();
 
         try {
@@ -189,7 +188,6 @@ public class AuthService {
                 .accountStatus(AccountStatus.ACTIVE)
                 .isEmailVerified(true)
                 .dataProcessingConsent(true)
-                .createdAt(Instant.now())
                 .build();
 
         try {

@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DriverEn {
+public class DriverEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -42,12 +42,4 @@ public class DriverEn {
     @Column(name = "is_available", nullable = false)
     @Builder.Default
     private boolean isAvailable = true;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = Instant.now();
-    }
 }

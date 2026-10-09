@@ -1,45 +1,41 @@
-# Use OpenJDK 21 as the base image
-FROM eclipse-temurin:21-jdk-alpine as build
+# ==============================================================================
+# Build Stage
+# ==============================================================================
+FROM eclipse-temurin:25-jdk-noble AS builder
 
-# Set working directory
-WORKDIR /app
+WORKDIR /workspace
 
-# Copy Maven wrapper and pom.xml
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle settings.gradle ./
 
-# Make the Maven wrapper executable
-RUN chmod +x ./mvnw
+RUN chmod +x ./gradlew && ./gradlew dependencies --no-daemon || true
 
-# Download dependencies (this layer will be cached unless pom.xml changes)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy source code
 COPY src src
 
-# Build the application
-RUN ./mvnw package -DskipTests
+RUN ./gradlew bootJar --no-daemon -x test
 
-# Create a smaller runtime image
-FROM eclipse-temurin:21-jre-alpine
+# ==============================================================================
+# Runtime Stage
+# ==============================================================================
+FROM eclipse-temurin:25-jre-noble
 
-# Set working directory
 WORKDIR /app
 
-# Add a non-root user to run the application
-RUN addgroup -S spring && adduser -S spring -G spring
+RUN groupadd -r spring --gid=10001 && \
+    useradd -r -g spring --uid=10001 -d /app -s /sbin/nologin spring && \
+    chown -R spring:spring /app
+
 USER spring:spring
 
-# Copy the built JAR file from the build stage
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=builder --chown=spring:spring /workspace/build/libs/*.jar app.jar
 
-# Set environment variables
-ENV JAVA_OPTS=""
+ENV JAVA_OPTS="-XX:+UseZGC -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
 ENV SPRING_PROFILES_ACTIVE="prod"
 
-# Expose the application port
 EXPOSE 8080
 
-# Run the application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]

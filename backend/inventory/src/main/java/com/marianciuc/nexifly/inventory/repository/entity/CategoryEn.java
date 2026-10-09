@@ -3,7 +3,6 @@ package com.marianciuc.nexifly.inventory.repository.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryEn {
+public class CategoryEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,21 +48,4 @@ public class CategoryEn {
     @Column(name = "is_active", nullable = false)
     @Builder.Default
     private boolean isActive = true;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now();
-    }
 }

@@ -1,5 +1,6 @@
 package com.marianciuc.nexifly.inventory.controller;
 
+import com.marianciuc.nexifly.inventory.domain.enums.TransferStatus;
 import com.marianciuc.nexifly.inventory.exception.ResourceNotFoundException;
 import com.marianciuc.nexifly.inventory.repository.ProductRepository;
 import com.marianciuc.nexifly.inventory.repository.StockItemRepository;
@@ -53,7 +54,7 @@ public class TransferController {
         private UUID productId;
         private String productSku;
         private Integer quantity;
-        private String status;
+        private TransferStatus status;
         private LocalDate requestedDate;
         private Instant dispatchedAt;
         private Instant receivedAt;
@@ -75,7 +76,7 @@ public class TransferController {
                 .toWarehouse(toWh)
                 .product(product)
                 .quantity(request.getQuantity())
-                .status("PENDING")
+                .status(TransferStatus.PENDING)
                 .requestedDate(request.getRequestedDate() != null ? request.getRequestedDate() : LocalDate.now())
                 .build();
 
@@ -91,7 +92,7 @@ public class TransferController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TransferResponse>> listTransfers(@RequestParam(required = false) String status) {
+    public ResponseEntity<List<TransferResponse>> listTransfers(@RequestParam(required = false) TransferStatus status) {
         List<StockTransferEn> list = status != null
                 ? transferRepository.findByStatus(status)
                 : transferRepository.findAll();
@@ -104,7 +105,7 @@ public class TransferController {
         StockTransferEn transfer = transferRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transfer not found: " + id));
 
-        transfer.setStatus("IN_TRANSIT");
+        transfer.setStatus(TransferStatus.IN_TRANSIT);
         transfer.setDispatchedAt(Instant.now());
         StockTransferEn saved = transferRepository.save(transfer);
         return ResponseEntity.ok(toResponse(saved));
@@ -148,7 +149,7 @@ public class TransferController {
             stockItemRepository.save(newItem);
         }
 
-        transfer.setStatus("COMPLETED");
+        transfer.setStatus(TransferStatus.COMPLETED);
         transfer.setReceivedAt(Instant.now());
         StockTransferEn saved = transferRepository.save(transfer);
         return ResponseEntity.ok(toResponse(saved));

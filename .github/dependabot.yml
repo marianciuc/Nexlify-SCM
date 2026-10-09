@@ -1,0 +1,86 @@
+# Dependabot Configuration
+#
+# All ecosystems target 'dev' (the active integration branch); changes flow
+# to main through normal dev -> main PRs.
+#
+# Minor + patch updates are grouped per ecosystem to keep PR noise low;
+# major updates stay as individual PRs for review.
+
+version: 2
+
+updates:
+  # Frontend dependencies (pnpm lockfile)
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Europe/Bucharest"
+    target-branch: "dev"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "marianciuc"
+    labels:
+      - "dependencies"
+      - "npm"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+
+  # Backend services — 10 independent Gradle projects
+  - package-ecosystem: "gradle"
+    directories:
+      - "/backend/Gateway"
+      - "/backend/analytics"
+      - "/backend/billing"
+      - "/backend/integration"
+      - "/backend/inventory"
+      - "/backend/logistic"
+      - "/backend/notification"
+      - "/backend/orders"
+      - "/backend/rfq"
+      - "/backend/users"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Europe/Bucharest"
+    target-branch: "dev"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "marianciuc"
+    labels:
+      - "dependencies"
+      - "gradle"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # Workflow actions — Dependabot understands SHA-pinned actions and updates
+  # both the SHA and the version comment.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Europe/Bucharest"
+    target-branch: "dev"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "marianciuc"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"

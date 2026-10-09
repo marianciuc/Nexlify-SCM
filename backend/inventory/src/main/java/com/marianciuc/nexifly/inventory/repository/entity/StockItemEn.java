@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockItemEn {
+public class StockItemEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -58,22 +58,13 @@ public class StockItemEn {
     @Column(name = "last_counted_at")
     private Instant lastCountedAt;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
     @PrePersist
-    public void prePersist() {
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
+    public void onPrePersist() {
         recalculateStatus();
     }
 
     @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now();
+    public void onPreUpdate() {
         recalculateStatus();
     }
 

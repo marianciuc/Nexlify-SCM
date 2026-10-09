@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryStopEn {
+public class DeliveryStopEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

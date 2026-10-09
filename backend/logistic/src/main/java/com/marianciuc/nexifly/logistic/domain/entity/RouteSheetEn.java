@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RouteSheetEn {
+public class RouteSheetEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -71,12 +71,8 @@ public class RouteSheetEn {
     @Builder.Default
     private List<DeliveryStopEn> stops = new ArrayList<>();
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
         if (this.status == null) this.status = "PLANNED";
     }
 

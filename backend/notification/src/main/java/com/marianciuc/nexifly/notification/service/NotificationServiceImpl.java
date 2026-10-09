@@ -5,6 +5,8 @@ import com.marianciuc.nexifly.notification.domain.dto.NotificationResponse;
 import com.marianciuc.nexifly.notification.domain.dto.UserNotificationSettingsDto;
 import com.marianciuc.nexifly.notification.domain.entity.NotificationEn;
 import com.marianciuc.nexifly.notification.domain.entity.UserNotificationSettingsEn;
+import com.marianciuc.nexifly.notification.exception.NotificationNotFoundException;
+import com.marianciuc.nexifly.notification.mapper.NotificationMapper;
 import com.marianciuc.nexifly.notification.repository.NotificationRepository;
 import com.marianciuc.nexifly.notification.repository.UserNotificationSettingsRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserNotificationSettingsRepository settingsRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final NotificationMapper notificationMapper;
 
     @Override
     @Transactional
@@ -58,7 +61,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         // Push real-time over WebSocket if web channel enabled
         if (settings.isWebEnabled()) {
-            NotificationResponse response = mapToResponse(notification);
+            NotificationResponse response = notificationMapper.toResponse(notification);
             try {
                 messagingTemplate.convertAndSendToUser(
                         request.recipientUserId().toString(),
@@ -73,14 +76,14 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
 
-        return mapToResponse(notification);
+        return notificationMapper.toResponse(notification);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<NotificationResponse> getUserNotifications(UUID userId, Pageable pageable) {
         return notificationRepository.findByRecipientUserIdOrderByCreatedAtDesc(userId, pageable)
-                .map(this::mapToResponse);
+                .map(notificationMapper::toResponse);
     }
 
     @Override
@@ -94,7 +97,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public NotificationResponse markAsRead(UUID notificationId, UUID userId) {
         NotificationEn notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new IllegalArgumentException("Notification not found: " + notificationId));
+                .orElseThrow(() -> new NotificationNotFoundException(notificationId));
 
         if (!notification.getRecipientUserId().equals(userId)) {
             throw new IllegalStateException("Unauthorized access to notification: " + notificationId);
@@ -102,7 +105,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         notification.markAsRead();
         notification = notificationRepository.save(notification);
-        return mapToResponse(notification);
+        return notificationMapper.toResponse(notification);
     }
 
     @Override
@@ -123,7 +126,7 @@ public class NotificationServiceImpl implements NotificationService {
     public UserNotificationSettingsDto getSettings(UUID userId) {
         UserNotificationSettingsEn settings = settingsRepository.findByUserId(userId)
                 .orElseGet(() -> createDefaultSettings(userId));
-        return mapToSettingsDto(settings);
+        return notificationMapper.toSettingsDto(settings);
     }
 
     @Override
@@ -132,16 +135,10 @@ public class NotificationServiceImpl implements NotificationService {
         UserNotificationSettingsEn settings = settingsRepository.findByUserId(userId)
                 .orElseGet(() -> createDefaultSettings(userId));
 
-        settings.setEmailEnabled(dto.emailEnabled());
-        settings.setPushEnabled(dto.pushEnabled());
-        settings.setWebEnabled(dto.webEnabled());
-        settings.setOrderNotifications(dto.orderNotifications());
-        settings.setStockNotifications(dto.stockNotifications());
-        settings.setInvoiceNotifications(dto.invoiceNotifications());
-        settings.setLogisticsNotifications(dto.logisticsNotifications());
+        notificationMapper.updateEntityFromDto(dto, settings);
 
         settings = settingsRepository.save(settings);
-        return mapToSettingsDto(settings);
+        return notificationMapper.toSettingsDto(settings);
     }
 
     @Override
@@ -171,34 +168,5 @@ public class NotificationServiceImpl implements NotificationService {
                 .logisticsNotifications(true)
                 .build();
         return settingsRepository.save(entity);
-    }
-
-    private NotificationResponse mapToResponse(NotificationEn entity) {
-        return NotificationResponse.builder()
-                .id(entity.getId())
-                .recipientUserId(entity.getRecipientUserId())
-                .recipientCompanyId(entity.getRecipientCompanyId())
-                .notificationType(entity.getNotificationType())
-                .title(entity.getTitle())
-                .body(entity.getBody())
-                .data(entity.getData())
-                .channel(entity.getChannel())
-                .status(entity.getStatus())
-                .readAt(entity.getReadAt())
-                .createdAt(entity.getCreatedAt())
-                .build();
-    }
-
-    private UserNotificationSettingsDto mapToSettingsDto(UserNotificationSettingsEn entity) {
-        return UserNotificationSettingsDto.builder()
-                .userId(entity.getUserId())
-                .emailEnabled(entity.isEmailEnabled())
-                .pushEnabled(entity.isPushEnabled())
-                .webEnabled(entity.isWebEnabled())
-                .orderNotifications(entity.isOrderNotifications())
-                .stockNotifications(entity.isStockNotifications())
-                .invoiceNotifications(entity.isInvoiceNotifications())
-                .logisticsNotifications(entity.isLogisticsNotifications())
-                .build();
     }
 }

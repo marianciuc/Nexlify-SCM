@@ -4,6 +4,7 @@ import com.marianciuc.nexifly.billing.domain.dto.*;
 import com.marianciuc.nexifly.billing.domain.entity.CreditNoteEn;
 import com.marianciuc.nexifly.billing.domain.entity.InvoiceEn;
 import com.marianciuc.nexifly.billing.domain.entity.InvoiceLineEn;
+import com.marianciuc.nexifly.billing.exception.InvoiceNotFoundException;
 import com.marianciuc.nexifly.billing.kafka.BillingProducer;
 import com.marianciuc.nexifly.billing.kafka.events.InvoiceIssuedEvent;
 import com.marianciuc.nexifly.billing.kafka.events.PaymentSucceededEvent;
@@ -33,6 +34,7 @@ public class BillingServiceImpl implements BillingService {
     private final CreditNoteRepository creditNoteRepository;
     private final InvoiceGeneratorService invoiceGeneratorService;
     private final BillingProducer billingProducer;
+    private final com.marianciuc.nexifly.billing.mapper.BillingMapper billingMapper;
 
     @Override
     @Transactional
@@ -133,7 +135,7 @@ public class BillingServiceImpl implements BillingService {
     @Transactional(readOnly = true)
     public InvoiceDetailResponse getInvoiceById(UUID id) {
         InvoiceEn invoice = invoiceRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invoice not found: " + id));
+                .orElseThrow(() -> new InvoiceNotFoundException(id));
         return mapToDetailResponse(invoice);
     }
 
@@ -141,7 +143,7 @@ public class BillingServiceImpl implements BillingService {
     @Transactional(readOnly = true)
     public InvoiceDetailResponse getInvoiceByOrderId(UUID orderId) {
         InvoiceEn invoice = invoiceRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Invoice not found for order: " + orderId));
+                .orElseThrow(() -> new InvoiceNotFoundException("Invoice not found for order: " + orderId));
         return mapToDetailResponse(invoice);
     }
 
@@ -161,7 +163,7 @@ public class BillingServiceImpl implements BillingService {
     @Transactional
     public InvoiceDetailResponse markInvoiceAsPaid(UUID id, String transactionId, String paymentMethod) {
         InvoiceEn invoice = invoiceRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invoice not found: " + id));
+                .orElseThrow(() -> new InvoiceNotFoundException(id));
 
         invoice.setStatus("PAID");
         if (paymentMethod != null) {
@@ -188,7 +190,7 @@ public class BillingServiceImpl implements BillingService {
     @Transactional
     public String createPaymentIntent(UUID invoiceId) {
         InvoiceEn invoice = invoiceRepository.findById(invoiceId)
-                .orElseThrow(() -> new IllegalArgumentException("Invoice not found: " + invoiceId));
+                .orElseThrow(() -> new InvoiceNotFoundException(invoiceId));
 
         String intentId = "pi_" + UUID.randomUUID().toString().replace("-", "");
         String clientSecret = intentId + "_secret_" + UUID.randomUUID().toString().substring(0, 8);
@@ -204,7 +206,7 @@ public class BillingServiceImpl implements BillingService {
     @Transactional
     public CreditNoteResponse createCreditNote(CreditNoteRequest req) {
         InvoiceEn invoice = invoiceRepository.findById(req.originalInvoiceId())
-                .orElseThrow(() -> new IllegalArgumentException("Original invoice not found: " + req.originalInvoiceId()));
+                .orElseThrow(() -> new InvoiceNotFoundException("Original invoice not found: " + req.originalInvoiceId()));
 
         String creditNumber = invoiceGeneratorService.generateCreditNoteNumber();
         BigDecimal netAdj = req.netAdjustment() != null ? req.netAdjustment() : BigDecimal.ZERO;
@@ -278,68 +280,10 @@ public class BillingServiceImpl implements BillingService {
     }
 
     private InvoiceDetailResponse mapToDetailResponse(InvoiceEn entity) {
-        List<InvoiceLineResponse> lines = entity.getLines() != null
-                ? entity.getLines().stream().map(l -> InvoiceLineResponse.builder()
-                .id(l.getId())
-                .lineNumber(l.getLineNumber())
-                .sku(l.getSku())
-                .description(l.getDescription())
-                .quantity(l.getQuantity())
-                .unitOfMeasure(l.getUnitOfMeasure())
-                .unitPriceNet(l.getUnitPriceNet())
-                .discountPercent(l.getDiscountPercent())
-                .vatRate(l.getVatRate())
-                .netAmount(l.getNetAmount())
-                .vatAmount(l.getVatAmount())
-                .grossAmount(l.getGrossAmount())
-                .build()).toList()
-                : List.of();
-
-        return InvoiceDetailResponse.builder()
-                .id(entity.getId())
-                .invoiceNumber(entity.getInvoiceNumber())
-                .invoiceType(entity.getInvoiceType())
-                .orderId(entity.getOrderId())
-                .sellerCompanyId(entity.getSellerCompanyId())
-                .buyerCompanyId(entity.getBuyerCompanyId())
-                .sellerNip(entity.getSellerNip())
-                .buyerNip(entity.getBuyerNip())
-                .sellerName(entity.getSellerName())
-                .buyerName(entity.getBuyerName())
-                .sellerAddress(entity.getSellerAddress())
-                .buyerAddress(entity.getBuyerAddress())
-                .issueDate(entity.getIssueDate())
-                .saleDate(entity.getSaleDate())
-                .dueDate(entity.getDueDate())
-                .paymentTerms(entity.getPaymentTerms())
-                .currency(entity.getCurrency())
-                .netAmount(entity.getNetAmount())
-                .vatAmount(entity.getVatAmount())
-                .grossAmount(entity.getGrossAmount())
-                .status(entity.getStatus())
-                .paymentMethod(entity.getPaymentMethod())
-                .stripePaymentIntentId(entity.getStripePaymentIntentId())
-                .stripePaymentStatus(entity.getStripePaymentStatus())
-                .pdfUrl(entity.getPdfUrl())
-                .lines(lines)
-                .createdAt(entity.getCreatedAt())
-                .build();
+        return billingMapper.toDetailResponse(entity);
     }
 
     private CreditNoteResponse mapToCreditResponse(CreditNoteEn cn) {
-        return CreditNoteResponse.builder()
-                .id(cn.getId())
-                .creditNoteNumber(cn.getCreditNoteNumber())
-                .originalInvoiceId(cn.getOriginalInvoice().getId())
-                .orderId(cn.getOrderId())
-                .reason(cn.getReason())
-                .netAdjustment(cn.getNetAdjustment())
-                .vatAdjustment(cn.getVatAdjustment())
-                .grossAdjustment(cn.getGrossAdjustment())
-                .issueDate(cn.getIssueDate())
-                .status(cn.getStatus())
-                .pdfUrl(cn.getPdfUrl())
-                .createdAt(cn.getCreatedAt())
-                .build();
+        return billingMapper.toCreditResponse(cn);
     }
 }

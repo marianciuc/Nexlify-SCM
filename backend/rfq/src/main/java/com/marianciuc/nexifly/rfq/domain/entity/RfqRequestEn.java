@@ -17,7 +17,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RfqRequestEn {
+public class RfqRequestEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -83,24 +83,11 @@ public class RfqRequestEn {
     @Builder.Default
     private List<BidEn> bids = new ArrayList<>();
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
-
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
         if (this.status == null) this.status = "DRAFT";
         if (this.currency == null) this.currency = "PLN";
         if (this.paymentTerms == null) this.paymentTerms = "NET_30";
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now();
     }
 
     public void addItem(RfqItemEn item) {

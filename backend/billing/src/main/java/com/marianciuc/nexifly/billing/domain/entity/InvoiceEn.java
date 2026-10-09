@@ -17,7 +17,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvoiceEn {
+public class InvoiceEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -104,26 +104,13 @@ public class InvoiceEn {
     @Builder.Default
     private List<InvoiceLineEn> lines = new ArrayList<>();
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
-
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
         if (this.invoiceType == null) this.invoiceType = "SALES";
         if (this.paymentTerms == null) this.paymentTerms = "NET_30";
         if (this.currency == null) this.currency = "PLN";
         if (this.status == null) this.status = "DRAFT";
         if (this.paymentMethod == null) this.paymentMethod = "BANK_TRANSFER";
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now();
     }
 
     public void addLine(InvoiceLineEn line) {

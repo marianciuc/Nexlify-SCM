@@ -1,5 +1,7 @@
 package com.marianciuc.nexifly.inventory.repository.entity;
 
+import com.marianciuc.nexifly.inventory.domain.enums.ReservationStatus;
+import com.marianciuc.nexifly.inventory.domain.enums.ReservationType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockReservationEn {
+public class StockReservationEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -33,27 +35,19 @@ public class StockReservationEn {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "reservation_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reservation_type", nullable = false, length = 20)
     @Builder.Default
-    private String reservationType = "SOFT"; // SOFT, HARD
+    private ReservationType reservationType = ReservationType.SOFT;
 
-    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 30)
     @Builder.Default
-    private String status = "ACTIVE"; // ACTIVE, RELEASED, CONVERTED_TO_HARD, EXPIRED
+    private ReservationStatus status = ReservationStatus.ACTIVE;
 
     @Column(name = "expires_at")
     private Instant expiresAt;
 
     @Column(name = "released_at")
     private Instant releasedAt;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = Instant.now();
-        if (this.reservationType == null) this.reservationType = "SOFT";
-        if (this.status == null) this.status = "ACTIVE";
-    }
 }

@@ -28,10 +28,12 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductResponse>> searchProducts(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) UUID categoryId
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) UUID brandId,
+            @RequestParam(required = false) UUID manufacturerId
     ) {
-        log.info("Searching products: search={}, categoryId={}", search, categoryId);
-        return ResponseEntity.ok(productService.searchProducts(search, categoryId));
+        log.info("Searching products: search={}, categoryId={}, brandId={}, manufacturerId={}", search, categoryId, brandId, manufacturerId);
+        return ResponseEntity.ok(productService.searchProducts(search, categoryId, brandId, manufacturerId));
     }
 
     @GetMapping("/{id}")

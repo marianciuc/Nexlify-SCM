@@ -2,6 +2,8 @@ package com.marianciuc.nexifly.orders.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -10,6 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "price_agreements", schema = "orders")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @Builder
@@ -51,12 +54,12 @@ public class PriceAgreementEn {
     @Builder.Default
     private Integer minOrderQuantity = 1;
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
         if (this.minOrderQuantity == null) this.minOrderQuantity = 1;
         if (this.discountPercent == null) this.discountPercent = BigDecimal.ZERO;
         if (this.paymentTerms == null) this.paymentTerms = "NET_30";

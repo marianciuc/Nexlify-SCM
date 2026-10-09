@@ -2,12 +2,15 @@ package com.marianciuc.nexifly.orders.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "outbox_events", schema = "orders")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @Builder
@@ -35,6 +38,7 @@ public class OutboxEventEn {
     @Builder.Default
     private String status = "PENDING"; // PENDING, SENT, FAILED
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -43,7 +47,6 @@ public class OutboxEventEn {
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
         if (this.status == null) this.status = "PENDING";
     }
 }

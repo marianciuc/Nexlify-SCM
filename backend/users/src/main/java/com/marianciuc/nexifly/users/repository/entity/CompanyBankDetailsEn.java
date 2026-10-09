@@ -3,12 +3,15 @@ package com.marianciuc.nexifly.users.repository.entity;
 import com.marianciuc.nexifly.users.domain.enums.Currency;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "company_bank_details")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @Builder
@@ -42,12 +45,12 @@ public class CompanyBankDetailsEn {
     @Builder.Default
     private boolean isPrimary = true;
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
         if (this.currency == null) this.currency = Currency.PLN;
     }
 }

@@ -2,9 +2,7 @@ package com.marianciuc.nexifly.inventory.controller;
 
 import com.marianciuc.nexifly.inventory.domain.dto.request.ReserveStockRequest;
 import com.marianciuc.nexifly.inventory.domain.dto.response.StockItemResponse;
-import com.marianciuc.nexifly.inventory.domain.dto.response.WarehouseResponse;
 import com.marianciuc.nexifly.inventory.service.StockService;
-import com.marianciuc.nexifly.inventory.service.WarehouseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +28,6 @@ import java.util.UUID;
 public class InventoryController {
 
     private final StockService stockService;
-    private final WarehouseService warehouseService;
 
     @GetMapping("/items")
     public ResponseEntity<List<StockItemResponse>> getStockItems(
@@ -44,16 +41,6 @@ public class InventoryController {
     @GetMapping("/items/{id}")
     public ResponseEntity<StockItemResponse> getStockItemById(@PathVariable UUID id) {
         return ResponseEntity.ok(stockService.getStockItemById(id));
-    }
-
-    @GetMapping("/warehouses")
-    public ResponseEntity<List<WarehouseResponse>> getWarehouses() {
-        return ResponseEntity.ok(warehouseService.getAllWarehouses());
-    }
-
-    @GetMapping("/warehouses/{id}")
-    public ResponseEntity<WarehouseResponse> getWarehouseById(@PathVariable UUID id) {
-        return ResponseEntity.ok(warehouseService.getWarehouseById(id));
     }
 
     @PostMapping("/reserve")

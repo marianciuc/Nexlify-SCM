@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowRight, Building2, Package, ShieldCheck, ShoppingCart, Truck } from 'lucide-react';
 
+import { NexlifyIcon } from '@/components/brand/NexlifyLogo';
+
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useLocale } from '@/hooks/useLocale';
@@ -38,9 +40,7 @@ function WorkspaceHome() {
                     to="/"
                     className="flex items-center gap-2.5 rounded-sm font-semibold tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                    <span className="flex size-8 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
-                        N
-                    </span>
+                    <NexlifyIcon size={32} />
                     Nexlify SCM
                 </Link>
                 <div className="flex items-center gap-1">

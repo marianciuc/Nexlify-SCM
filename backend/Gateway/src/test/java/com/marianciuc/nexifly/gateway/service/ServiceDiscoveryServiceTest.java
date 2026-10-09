@@ -92,7 +92,7 @@ class ServiceDiscoveryServiceTest {
     // Arrange
     String serviceName = "user-service";
     when(discoveryClient.getInstances(serviceName)).thenReturn(List.of(serviceInstance));
-    when(serviceInstance.getUri()).thenReturn(URI.create("http://localhost:8080"));
+    when(serviceInstance.getUri()).thenReturn(URI.create("http://localhost:8090"));
 
     // Act
     ServiceInstance result = serviceDiscoveryService.getServiceInstance(serviceName);

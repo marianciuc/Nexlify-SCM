@@ -4,10 +4,13 @@ import com.marianciuc.nexifly.orders.domain.dto.OrderCreateRequest;
 import com.marianciuc.nexifly.orders.domain.dto.OrderResponse;
 import com.marianciuc.nexifly.orders.domain.entity.OrderEn;
 import com.marianciuc.nexifly.orders.domain.entity.OrderItemEn;
+import com.marianciuc.nexifly.orders.domain.enums.Currency;
 import com.marianciuc.nexifly.orders.domain.enums.OrderStatus;
 import com.marianciuc.nexifly.orders.domain.fsm.OrderFsm;
+import com.marianciuc.nexifly.orders.exception.OrderNotFoundException;
 import com.marianciuc.nexifly.orders.kafka.OutboxEventPublisher;
 import com.marianciuc.nexifly.orders.kafka.events.OrderCancelledEvent;
+import com.marianciuc.nexifly.orders.mapper.OrderMapper;
 import com.marianciuc.nexifly.orders.repository.OrderRepository;
 import com.marianciuc.nexifly.orders.saga.OrderSagaOrchestrator;
 import com.marianciuc.nexifly.orders.service.OrderService;
@@ -36,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
     private final PriceAgreementService priceAgreementService;
     private final SlaCalculationService slaCalculationService;
     private final OutboxEventPublisher outboxPublisher;
+    private final OrderMapper orderMapper;
 
     @Override
     @Transactional
@@ -51,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
                 .customerId(request.customerId())
                 .supplierId(request.supplierId())
                 .status(OrderStatus.DRAFT)
-                .currency(request.currency() != null ? request.currency() : "PLN")
+                .currency(request.currency() != null ? Currency.fromString(request.currency()) : Currency.PLN)
                 .deliveryAddress(request.deliveryAddress())
                 .deliveryCity(request.deliveryCity())
                 .deliveryPostalCode(request.deliveryPostalCode())
@@ -86,15 +90,15 @@ public class OrderServiceImpl implements OrderService {
 
         OrderEn saved = orderRepository.save(order);
         log.info("Order created successfully: {} with total {}", saved.getOrderNumber(), saved.getTotalAmount());
-        return toResponse(saved);
+        return orderMapper.toResponse(saved);
     }
 
     @Override
     @Transactional(readOnly = true)
     public OrderResponse getOrderById(UUID id) {
         OrderEn order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found with ID: " + id));
-        return toResponse(order);
+                .orElseThrow(() -> new OrderNotFoundException(id));
+        return orderMapper.toResponse(order);
     }
 
     @Override
@@ -110,28 +114,28 @@ public class OrderServiceImpl implements OrderService {
         } else {
             page = orderRepository.findAll(pageable);
         }
-        return page.map(this::toResponse);
+        return page.map(orderMapper::toResponse);
     }
 
     @Override
     @Transactional
     public OrderResponse submitOrder(UUID id, UUID userId) {
         OrderEn order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found: " + id));
+                .orElseThrow(() -> new OrderNotFoundException(id));
 
         if (order.getStatus() != OrderStatus.DRAFT) {
             throw new IllegalStateException("Only DRAFT orders can be submitted. Current status: " + order.getStatus());
         }
 
         sagaOrchestrator.startOrderSaga(order);
-        return toResponse(order);
+        return orderMapper.toResponse(order);
     }
 
     @Override
     @Transactional
     public OrderResponse cancelOrder(UUID id, UUID userId, String reason) {
         OrderEn order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found: " + id));
+                .orElseThrow(() -> new OrderNotFoundException(id));
 
         OrderFsm.validate(order.getStatus(), OrderStatus.CANCELLED);
         order.transitionTo(OrderStatus.CANCELLED, userId, reason != null ? reason : "Cancelled by user");
@@ -146,7 +150,7 @@ public class OrderServiceImpl implements OrderService {
         );
         outboxPublisher.enqueue("Order", saved.getId(), "OrderCancelledEvent", event);
 
-        return toResponse(saved);
+        return orderMapper.toResponse(saved);
     }
 
     @Override
@@ -158,57 +162,5 @@ public class OrderServiceImpl implements OrderService {
         }
         stats.put("totalOrders", orderRepository.count());
         return stats;
-    }
-
-    private OrderResponse toResponse(OrderEn order) {
-        List<OrderResponse.OrderItemResponse> itemResponses = order.getItems().stream()
-                .map(i -> OrderResponse.OrderItemResponse.builder()
-                        .id(i.getId())
-                        .productId(i.getProductId())
-                        .sku(i.getSku())
-                        .productName(i.getProductName())
-                        .quantity(i.getQuantity())
-                        .unitPrice(i.getUnitPrice())
-                        .discountPercent(i.getDiscountPercent())
-                        .vatRate(i.getVatRate())
-                        .lineTotal(i.getLineTotal())
-                        .warehouseId(i.getWarehouseId())
-                        .batchNumber(i.getBatchNumber())
-                        .build())
-                .toList();
-
-        List<OrderResponse.StatusHistoryResponse> historyResponses = order.getStatusHistory().stream()
-                .map(h -> OrderResponse.StatusHistoryResponse.builder()
-                        .id(h.getId())
-                        .oldStatus(h.getOldStatus())
-                        .newStatus(h.getNewStatus())
-                        .changedBy(h.getChangedBy())
-                        .reason(h.getReason())
-                        .createdAt(h.getCreatedAt())
-                        .build())
-                .toList();
-
-        return OrderResponse.builder()
-                .id(order.getId())
-                .orderNumber(order.getOrderNumber())
-                .tenantId(order.getTenantId())
-                .customerId(order.getCustomerId())
-                .supplierId(order.getSupplierId())
-                .status(order.getStatus())
-                .currency(order.getCurrency())
-                .subtotal(order.getSubtotal())
-                .vatAmount(order.getVatAmount())
-                .totalAmount(order.getTotalAmount())
-                .deliveryAddress(order.getDeliveryAddress())
-                .deliveryCity(order.getDeliveryCity())
-                .deliveryPostalCode(order.getDeliveryPostalCode())
-                .requestedDeliveryDate(order.getRequestedDeliveryDate())
-                .slaDeadline(order.getSlaDeadline())
-                .notes(order.getNotes())
-                .items(itemResponses)
-                .statusHistory(historyResponses)
-                .createdAt(order.getCreatedAt())
-                .updatedAt(order.getUpdatedAt())
-                .build();
     }
 }

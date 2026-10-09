@@ -3,6 +3,7 @@
   "realm": "nexlify",
   "displayName": "Nexlify SCM Platform",
   "displayNameHtml": "<div class=\"kc-logo-text\"><span>Nexlify</span> SCM</div>",
+  "loginTheme": "nexlify",
   "enabled": true,
   "sslRequired": "none",
   "registrationAllowed": true,
@@ -90,6 +91,7 @@
       "redirectUris": [
         "http://localhost:3000/*",
         "http://localhost:8080/*",
+        "http://localhost:8090/*",
         "http://localhost:5173/*",
         "*"
       ],

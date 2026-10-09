@@ -1,5 +1,6 @@
 package com.marianciuc.nexifly.orders.domain.entity;
 
+import com.marianciuc.nexifly.orders.domain.enums.Currency;
 import com.marianciuc.nexifly.orders.domain.enums.OrderStatus;
 import com.marianciuc.nexifly.orders.domain.fsm.OrderFsm;
 import jakarta.persistence.*;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderEn {
+public class OrderEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -42,9 +43,10 @@ public class OrderEn {
     @Builder.Default
     private OrderStatus status = OrderStatus.DRAFT;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency", nullable = false)
     @Builder.Default
-    private String currency = "PLN";
+    private Currency currency = Currency.PLN;
 
     @Column(name = "subtotal", nullable = false, precision = 15, scale = 2)
     @Builder.Default
@@ -88,26 +90,13 @@ public class OrderEn {
     @Builder.Default
     private List<OrderStatusHistoryEn> statusHistory = new ArrayList<>();
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
         if (this.status == null) this.status = OrderStatus.DRAFT;
-        if (this.currency == null) this.currency = "PLN";
+        if (this.currency == null) this.currency = Currency.PLN;
         if (this.subtotal == null) this.subtotal = BigDecimal.ZERO;
         if (this.vatAmount == null) this.vatAmount = BigDecimal.ZERO;
         if (this.totalAmount == null) this.totalAmount = BigDecimal.ZERO;
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now();
     }
 
     public void transitionTo(OrderStatus newStatus, UUID changedBy, String reason) {

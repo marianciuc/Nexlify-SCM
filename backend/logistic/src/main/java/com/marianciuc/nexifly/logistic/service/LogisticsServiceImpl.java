@@ -5,6 +5,7 @@ import com.marianciuc.nexifly.logistic.domain.entity.DeliveryStopEn;
 import com.marianciuc.nexifly.logistic.domain.entity.DriverEn;
 import com.marianciuc.nexifly.logistic.domain.entity.RouteSheetEn;
 import com.marianciuc.nexifly.logistic.domain.entity.VehicleEn;
+import com.marianciuc.nexifly.logistic.exception.ResourceNotFoundException;
 import com.marianciuc.nexifly.logistic.kafka.LogisticsProducer;
 import com.marianciuc.nexifly.logistic.kafka.events.RouteOptimizedEvent;
 import com.marianciuc.nexifly.logistic.kafka.events.ShipmentDeliveredEvent;
@@ -39,14 +40,15 @@ public class LogisticsServiceImpl implements LogisticsService {
     private final DriverRepository driverRepository;
     private final GraphHopperRoutingService routingService;
     private final LogisticsProducer logisticsProducer;
+    private final com.marianciuc.nexifly.logistic.mapper.LogisticsMapper logisticsMapper;
 
     @Override
     @Transactional
     public RouteSheetResponse createRoute(CreateRouteRequest req) {
         VehicleEn vehicle = vehicleRepository.findById(req.vehicleId())
-                .orElseThrow(() -> new IllegalArgumentException("Vehicle not found: " + req.vehicleId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + req.vehicleId()));
         DriverEn driver = driverRepository.findById(req.driverId())
-                .orElseThrow(() -> new IllegalArgumentException("Driver not found: " + req.driverId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Driver not found: " + req.driverId()));
 
         String routeNumber = "ROUTE-2026-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
@@ -120,7 +122,7 @@ public class LogisticsServiceImpl implements LogisticsService {
     @Transactional
     public RouteSheetResponse dispatchRoute(UUID routeSheetId) {
         RouteSheetEn route = routeSheetRepository.findById(routeSheetId)
-                .orElseThrow(() -> new IllegalArgumentException("Route not found: " + routeSheetId));
+                .orElseThrow(() -> new ResourceNotFoundException("Route not found: " + routeSheetId));
 
         route.setStatus("DISPATCHED");
         route.setActualDeparture(Instant.now());
@@ -152,7 +154,7 @@ public class LogisticsServiceImpl implements LogisticsService {
     @Transactional
     public RouteSheetResponse confirmDelivery(UUID routeSheetId, UUID stopId, String signatureName, String proofUrl) {
         RouteSheetEn route = routeSheetRepository.findById(routeSheetId)
-                .orElseThrow(() -> new IllegalArgumentException("Route not found: " + routeSheetId));
+                .orElseThrow(() -> new ResourceNotFoundException("Route not found: " + routeSheetId));
 
         DeliveryStopEn targetStop = null;
         for (DeliveryStopEn stop : route.getStops()) {
@@ -198,7 +200,7 @@ public class LogisticsServiceImpl implements LogisticsService {
     @Transactional(readOnly = true)
     public RouteSheetResponse getRouteById(UUID id) {
         RouteSheetEn route = routeSheetRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Route not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Route not found: " + id));
         return mapToResponse(route);
     }
 
@@ -216,7 +218,7 @@ public class LogisticsServiceImpl implements LogisticsService {
     public RouteSheetResponse getTrackingByOrderId(UUID orderId) {
         List<DeliveryStopEn> stops = deliveryStopRepository.findByOrderId(orderId);
         if (stops.isEmpty()) {
-            throw new IllegalArgumentException("No shipment found for order: " + orderId);
+            throw new ResourceNotFoundException("No shipment found for order: " + orderId);
         }
         return mapToResponse(stops.getFirst().getRouteSheet());
     }
@@ -225,7 +227,7 @@ public class LogisticsServiceImpl implements LogisticsService {
     @Transactional
     public void updateVehicleLocation(UUID vehicleId, UpdateLocationRequest req) {
         VehicleEn vehicle = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new IllegalArgumentException("Vehicle not found: " + vehicleId));
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + vehicleId));
 
         vehicle.setCurrentLocationLat(req.latitude());
         vehicle.setCurrentLocationLon(req.longitude());
@@ -243,36 +245,13 @@ public class LogisticsServiceImpl implements LogisticsService {
     @Override
     @Transactional(readOnly = true)
     public List<VehicleResponse> getFleet() {
-        return vehicleRepository.findAll().stream().map(v -> VehicleResponse.builder()
-                .id(v.getId())
-                .carrierId(v.getCarrier() != null ? v.getCarrier().getId() : null)
-                .plateNumber(v.getPlateNumber())
-                .vehicleType(v.getVehicleType())
-                .maxWeightKg(v.getMaxWeightKg())
-                .maxVolumeM3(v.getMaxVolumeM3())
-                .hasRefrigeration(v.getHasRefrigeration())
-                .hasAdrCert(v.getHasAdrCert())
-                .fuelType(v.getFuelType())
-                .fuelConsumptionLPer100km(v.getFuelConsumptionLPer100km())
-                .currentLocationLat(v.getCurrentLocationLat())
-                .currentLocationLon(v.getCurrentLocationLon())
-                .status(v.getStatus())
-                .build()).toList();
+        return logisticsMapper.toVehicleResponseList(vehicleRepository.findAll());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<DriverResponse> getDrivers() {
-        return driverRepository.findAll().stream().map(d -> DriverResponse.builder()
-                .id(d.getId())
-                .userId(d.getUserId())
-                .carrierId(d.getCarrier() != null ? d.getCarrier().getId() : null)
-                .licenseNumber(d.getLicenseNumber())
-                .licenseCategory(d.getLicenseCategory())
-                .adrCertNumber(d.getAdrCertNumber())
-                .adrCertExpires(d.getAdrCertExpires())
-                .isAvailable(d.isAvailable())
-                .build()).toList();
+        return logisticsMapper.toDriverResponseList(driverRepository.findAll());
     }
 
     @Override
@@ -305,44 +284,6 @@ public class LogisticsServiceImpl implements LogisticsService {
     }
 
     private RouteSheetResponse mapToResponse(RouteSheetEn entity) {
-        List<DeliveryStopResponse> stops = entity.getStops() != null
-                ? entity.getStops().stream().map(s -> DeliveryStopResponse.builder()
-                .id(s.getId())
-                .orderId(s.getOrderId())
-                .stopSequence(s.getStopSequence())
-                .address(s.getAddress())
-                .city(s.getCity())
-                .latitude(s.getLatitude())
-                .longitude(s.getLongitude())
-                .plannedArrival(s.getPlannedArrival())
-                .actualArrival(s.getActualArrival())
-                .plannedDeparture(s.getPlannedDeparture())
-                .actualDeparture(s.getActualDeparture())
-                .status(s.getStatus())
-                .signatureName(s.getSignatureName())
-                .proofOfDeliveryUrl(s.getProofOfDeliveryUrl())
-                .build()).toList()
-                : List.of();
-
-        return RouteSheetResponse.builder()
-                .id(entity.getId())
-                .routeNumber(entity.getRouteNumber())
-                .vehicleId(entity.getVehicle() != null ? entity.getVehicle().getId() : null)
-                .vehiclePlate(entity.getVehicle() != null ? entity.getVehicle().getPlateNumber() : null)
-                .driverId(entity.getDriver() != null ? entity.getDriver().getId() : null)
-                .driverLicense(entity.getDriver() != null ? entity.getDriver().getLicenseNumber() : null)
-                .status(entity.getStatus())
-                .plannedDeparture(entity.getPlannedDeparture())
-                .actualDeparture(entity.getActualDeparture())
-                .plannedArrival(entity.getPlannedArrival())
-                .actualArrival(entity.getActualArrival())
-                .totalDistanceKm(entity.getTotalDistanceKm())
-                .totalWeightKg(entity.getTotalWeightKg())
-                .fuelConsumedL(entity.getFuelConsumedL())
-                .ecmrNumber(entity.getEcmrNumber())
-                .notes(entity.getNotes())
-                .stops(stops)
-                .createdAt(entity.getCreatedAt())
-                .build();
+        return logisticsMapper.toRouteSheetResponse(entity);
     }
 }

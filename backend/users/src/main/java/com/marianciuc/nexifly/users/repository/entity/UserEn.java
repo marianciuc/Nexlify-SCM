@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEn {
+public class UserEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -56,12 +56,6 @@ public class UserEn {
     @Builder.Default
     private String timezone = "Europe/Warsaw";
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
@@ -77,15 +71,8 @@ public class UserEn {
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
         if (this.accountStatus == null) this.accountStatus = AccountStatus.PENDING;
         if (this.timezone == null) this.timezone = "Europe/Warsaw";
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now();
     }
 
     public void activate() {

@@ -26,12 +26,16 @@ public interface ProductRepository extends JpaRepository<ProductEn, UUID> {
             WHERE p.isActive = true
             AND (:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
                  OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%')))
-            AND (:categoryId IS NULL OR p.category.id = :categoryId)
+            AND (:categoryId IS NULL OR p.category.id = :categoryId OR p.category.parent.id = :categoryId)
+            AND (:brandId IS NULL OR p.brand.id = :brandId)
+            AND (:manufacturerId IS NULL OR p.manufacturer.id = :manufacturerId)
             ORDER BY p.name
             """)
     Page<ProductEn> searchProducts(
             @Param("search") String search,
             @Param("categoryId") UUID categoryId,
+            @Param("brandId") UUID brandId,
+            @Param("manufacturerId") UUID manufacturerId,
             Pageable pageable
     );
 
@@ -40,12 +44,16 @@ public interface ProductRepository extends JpaRepository<ProductEn, UUID> {
             WHERE p.isActive = true
             AND (:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
                  OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :search, '%')))
-            AND (:categoryId IS NULL OR p.category.id = :categoryId)
+            AND (:categoryId IS NULL OR p.category.id = :categoryId OR p.category.parent.id = :categoryId)
+            AND (:brandId IS NULL OR p.brand.id = :brandId)
+            AND (:manufacturerId IS NULL OR p.manufacturer.id = :manufacturerId)
             ORDER BY p.name
             """)
     List<ProductEn> searchProductsList(
             @Param("search") String search,
-            @Param("categoryId") UUID categoryId
+            @Param("categoryId") UUID categoryId,
+            @Param("brandId") UUID brandId,
+            @Param("manufacturerId") UUID manufacturerId
     );
 
     long countByIsActiveTrue();

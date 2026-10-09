@@ -2,6 +2,8 @@ package com.marianciuc.nexifly.billing.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -38,7 +40,8 @@ public class PaymentEventEn {
     @Column(name = "processed_at", nullable = false)
     private Instant processedAt;
 
-    @Column(name = "raw_payload", columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "raw_payload", columnDefinition = "jsonb")
     private String rawPayload;
 
     @PrePersist

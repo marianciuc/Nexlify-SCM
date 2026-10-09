@@ -2,13 +2,18 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { FormFieldInput } from '@/components/forms/common';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -18,6 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useLocale } from '@/hooks/useLocale';
 import useAuthStore from '@/service/auth/auth-store';
 
 interface RegisterFormProps {
@@ -25,21 +31,37 @@ interface RegisterFormProps {
   onSwitchToLogin?: () => void;
 }
 
-const registerFormSchema = z.object({
-  companyName: z.string().min(1, 'Company Name is required'),
-  taxId: z.string().min(1, 'Tax ID / NIP is required'),
-  firstName: z.string().min(1, 'First Name is required'),
-  lastName: z.string().min(1, 'Last Name is required'),
-  email: z.string().min(1, 'Email is required').email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-type RegisterFormData = z.infer<typeof registerFormSchema>;
-
 export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) {
-  const { t } = useTranslation();
+  const { t } = useLocale();
   const { login, isLoading } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
+
+  const registerFormSchema = z.object({
+    companyName: z
+      .string()
+      .min(1, t('auth.errors.registrationFailed')),
+    taxId: z
+      .string()
+      .min(1, t('auth.errors.registrationFailed')),
+    firstName: z
+      .string()
+      .min(1, t('auth.errors.registrationFailed')),
+    lastName: z
+      .string()
+      .min(1, t('auth.errors.registrationFailed')),
+    email: z
+      .string()
+      .min(1, t('auth.errors.emailRequired'))
+      .email(t('auth.errors.emailInvalid')),
+    password: z
+      .string()
+      .min(6, t('auth.errors.passwordTooShort')),
+    termsConsent: z
+      .boolean()
+      .refine((val) => val === true, t('auth.errors.registrationFailed')),
+  });
+
+  type RegisterFormData = z.infer<typeof registerFormSchema>;
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerFormSchema),
@@ -50,115 +72,223 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
       lastName: '',
       email: '',
       password: '',
+      termsConsent: false,
     },
   });
 
   const onSubmit = async (values: RegisterFormData) => {
     try {
       await login({ email: values.email, password: values.password });
-      toast.success('Registration successful! Welcome to Nexlify-SCM.');
+      toast.success(t('auth.success.registrationSuccessful'));
       onSuccess?.();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed';
+      const errorMessage =
+        err instanceof Error ? err.message : t('auth.errors.registrationFailed');
       toast.error(errorMessage);
     }
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto shadow-xl border-slate-200">
-      <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold tracking-tight text-slate-900">
-          Create B2B Account
+    <Card className="w-full border-border bg-card shadow-sm">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-xl font-semibold tracking-tight">
+          {t('auth.signUpTitle')}
         </CardTitle>
-        <CardDescription>
-          Register your company on the Nexlify Supply Chain Platform
+        <CardDescription className="text-sm text-muted-foreground">
+          {t('auth.createAccount')}
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <FormFieldInput
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <FormField
                 control={form.control}
                 name="companyName"
-                label="Company Name"
-                placeholder="Acme Logistics Sp. z o.o."
+                render={({ field }) => (
+                  <FormItem className="space-y-1.5">
+                    <FormLabel className="text-sm font-medium">
+                      {t('auth.companyName')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t('auth.companyNamePlaceholder')}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs text-destructive" />
+                  </FormItem>
+                )}
               />
-              <FormFieldInput
+
+              <FormField
                 control={form.control}
                 name="taxId"
-                label="Tax ID / NIP"
-                placeholder="PL1234567890"
+                render={({ field }) => (
+                  <FormItem className="space-y-1.5">
+                    <FormLabel className="text-sm font-medium">
+                      {t('auth.companyTaxId')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t('auth.companyTaxIdPlaceholder')}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs text-destructive" />
+                  </FormItem>
+                )}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <FormFieldInput
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <FormField
                 control={form.control}
                 name="firstName"
-                label="First Name"
-                placeholder="Jan"
+                render={({ field }) => (
+                  <FormItem className="space-y-1.5">
+                    <FormLabel className="text-sm font-medium">
+                      {t('auth.firstName')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t('auth.firstNamePlaceholder')}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs text-destructive" />
+                  </FormItem>
+                )}
               />
-              <FormFieldInput
+
+              <FormField
                 control={form.control}
                 name="lastName"
-                label="Last Name"
-                placeholder="Kowalski"
+                render={({ field }) => (
+                  <FormItem className="space-y-1.5">
+                    <FormLabel className="text-sm font-medium">
+                      {t('auth.lastName')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t('auth.lastNamePlaceholder')}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs text-destructive" />
+                  </FormItem>
+                )}
               />
             </div>
 
-            <FormFieldInput
+            <FormField
               control={form.control}
               name="email"
-              type="email"
-              label={t('auth.email') || 'Business Email'}
-              placeholder="jan.kowalski@acme.pl"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-medium">
+                    {t('auth.email')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="email"
+                      placeholder={t('auth.emailPlaceholder')}
+                      disabled={isLoading}
+                      autoComplete="username"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs text-destructive" />
+                </FormItem>
+              )}
             />
 
             <FormField
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem className="space-y-1">
-                  <FormLabel className="text-xs font-medium">
-                    {t('auth.password') || 'Password'}
-                  </FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="••••••••"
-                        className="text-xs"
-                      />
-                    </FormControl>
+                <FormItem className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-sm font-medium">
+                      {t('auth.password')}
+                    </FormLabel>
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 cursor-pointer"
                     >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showPassword ? (
+                        <>
+                          <EyeOff className="size-3.5" />
+                          <span>Hide</span>
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="size-3.5" />
+                          <span>Show</span>
+                        </>
+                      )}
                     </button>
                   </div>
-                  <FormMessage className="text-2xs" />
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder={t('auth.passwordPlaceholder')}
+                      disabled={isLoading}
+                      autoComplete="new-password"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs text-destructive" />
                 </FormItem>
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Complete B2B Registration
+            <FormField
+              control={form.control}
+              name="termsConsent"
+              render={({ field }) => (
+                <div className="flex items-start space-x-2 pt-1">
+                  <Checkbox
+                    id="termsConsent"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    className="mt-0.5"
+                  />
+                  <label
+                    htmlFor="termsConsent"
+                    className="text-xs text-muted-foreground leading-normal cursor-pointer"
+                  >
+                    {t('auth.dataProcessingConsent')}
+                  </label>
+                </div>
+              )}
+            />
+
+            <Button
+              type="submit"
+              className="w-full font-medium"
+              disabled={isLoading}
+            >
+              {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {t('auth.register')}
             </Button>
 
-            <div className="text-center text-sm pt-2 text-slate-600">
-              Already registered?{' '}
-              <button
+            <div className="text-center pt-2">
+              <Button
                 type="button"
+                variant="link"
+                className="text-xs text-muted-foreground hover:text-foreground h-auto p-0"
                 onClick={onSwitchToLogin}
-                className="font-semibold text-primary hover:underline cursor-pointer"
+                disabled={isLoading}
               >
-                Sign In
-              </button>
+                {t('auth.alreadyHaveAccount')}
+              </Button>
             </div>
           </form>
         </Form>
@@ -166,3 +296,5 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
     </Card>
   );
 }
+
+export default RegisterForm;

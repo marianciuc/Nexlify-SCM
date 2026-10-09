@@ -1,0 +1,61 @@
+# CodeQL Security Scanning Workflow
+#
+# Triggers: pushes/PRs to main + dev, plus a weekly scheduled scan so new
+# query packs and CVE rules reach code that has not changed.
+#
+# java-kotlin runs with build-mode 'none': this repo has 10 independent
+# Gradle projects under backend/ with no root build, so there is no single
+# compile step to hook. Source-level extraction works without a build at
+# the cost of dropping some dataflow precision.
+
+name: CodeQL Security Scan
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+  schedule:
+    # Weekly, Sundays at 03:00 UTC (off the top of the hour)
+    - cron: '0 3 * * 0'
+
+# Least privilege: read access for source checkout plus write access only
+# for uploading SARIF results to the security tab.
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language:
+          - java-kotlin
+          - javascript-typescript
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d  # v4.38.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d  # v4.38.3
+        with:
+          category: "/language:${{ matrix.language }}"

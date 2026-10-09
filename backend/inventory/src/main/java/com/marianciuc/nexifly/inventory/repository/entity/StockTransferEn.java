@@ -1,5 +1,6 @@
 package com.marianciuc.nexifly.inventory.repository.entity;
 
+import com.marianciuc.nexifly.inventory.domain.enums.TransferStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockTransferEn {
+public class StockTransferEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,9 +36,10 @@ public class StockTransferEn {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 30)
     @Builder.Default
-    private String status = "PENDING"; // PENDING, IN_TRANSIT, COMPLETED, CANCELLED
+    private TransferStatus status = TransferStatus.PENDING;
 
     @Column(name = "requested_date")
     private LocalDate requestedDate;
@@ -47,13 +49,4 @@ public class StockTransferEn {
 
     @Column(name = "received_at")
     private Instant receivedAt;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = Instant.now();
-        if (this.status == null) this.status = "PENDING";
-    }
 }

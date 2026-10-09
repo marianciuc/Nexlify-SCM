@@ -18,7 +18,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanyEn {
+public class CompanyEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -54,12 +54,6 @@ public class CompanyEn {
 
     @Column(name = "website")
     private String website;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at")
-    private Instant updatedAt;
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
@@ -106,16 +100,9 @@ public class CompanyEn {
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
         if (this.creditLimit == null) this.creditLimit = BigDecimal.ZERO;
         if (this.creditUsed == null) this.creditUsed = BigDecimal.ZERO;
         if (this.rating == null) this.rating = BigDecimal.ZERO;
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now();
     }
 
     public void verify(BigDecimal approvedCreditLimit, int termsDays) {

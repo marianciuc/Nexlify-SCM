@@ -62,12 +62,8 @@ public class CategoryServiceImpl implements CategoryService {
             throw new DuplicateResourceException("Category with slug '%s' already exists".formatted(slug));
         }
 
-        CategoryEn category = CategoryEn.builder()
-                .name(request.name())
-                .slug(slug)
-                .description(request.description())
-                .sortOrder(request.sortOrder() != null ? request.sortOrder() : 0)
-                .build();
+        CategoryEn category = mapper.toCategoryEntity(request);
+        category.setSlug(slug);
 
         if (request.parentId() != null) {
             CategoryEn parent = findCategoryOrThrow(request.parentId());

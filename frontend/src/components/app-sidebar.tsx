@@ -2,6 +2,7 @@ import { Link, useRouterState } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
 
+import { NexlifyIcon } from '@/components/brand/NexlifyLogo';
 import { WorkspaceViewSwitcher } from '@/components/navigation/WorkspaceViewSwitcher';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
@@ -33,10 +34,8 @@ export function AppSidebar({
     <Sidebar {...props} className="border-r border-sidebar-border">
       {/* Sidebar Branding Header */}
       <SidebarHeader className="border-b border-sidebar-border p-3.5 space-y-3">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary text-primary-foreground rounded-lg flex items-center justify-center font-extrabold text-sm shadow-2xs">
-            N
-          </div>
+        <Link to="/" className="flex items-center gap-2.5">
+          <NexlifyIcon size={32} />
           <div className="flex flex-col">
             <span className="font-bold text-sm tracking-tight text-sidebar-foreground">
               Nexlify-SCM

@@ -45,7 +45,7 @@ public class OrderSagaOrchestrator {
                 order.getSupplierId(),
                 items,
                 order.getTotalAmount(),
-                order.getCurrency(),
+                order.getCurrency() != null ? order.getCurrency().getCode() : "PLN",
                 Instant.now()
         );
 

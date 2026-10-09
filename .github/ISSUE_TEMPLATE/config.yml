@@ -1,0 +1,9 @@
+# Issue Template Configuration
+# Controls the issue template chooser interface
+
+blank_issues_enabled: false  # Route everything through a structured form
+
+contact_links:
+  - name: 🔒 Security Issues
+    url: https://github.com/marianciuc/Nexlify-SCM/security/advisories/new
+    about: Report security vulnerabilities privately — do not open a public issue

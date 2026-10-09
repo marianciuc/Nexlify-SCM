@@ -1,5 +1,6 @@
 package com.marianciuc.nexifly.inventory.domain.dto.response;
 
+import com.marianciuc.nexifly.inventory.domain.enums.Units;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -14,13 +15,15 @@ public record ProductResponse(
         String description,
         UUID categoryId,
         String categoryName,
-        String unit,
+        Units unit,
         BigDecimal unitPrice,
         String currency,
         BigDecimal weightKg,
         String dimensions,
         String manufacturer,
         String brand,
+        UUID brandId,
+        UUID manufacturerId,
         Integer minOrderQuantity,
         Integer reorderPoint,
         boolean isActive,

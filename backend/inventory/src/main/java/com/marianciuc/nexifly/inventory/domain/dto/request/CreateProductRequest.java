@@ -1,5 +1,6 @@
 package com.marianciuc.nexifly.inventory.domain.dto.request;
 
+import com.marianciuc.nexifly.inventory.domain.enums.Units;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 
@@ -21,8 +22,7 @@ public record CreateProductRequest(
 
         UUID categoryId,
 
-        @Size(max = 30, message = "Unit must not exceed 30 characters")
-        String unit,
+        Units unit,
 
         @NotNull(message = "Unit price is required")
         @DecimalMin(value = "0.00", message = "Unit price must be non-negative")
@@ -42,6 +42,10 @@ public record CreateProductRequest(
 
         @Size(max = 200, message = "Brand must not exceed 200 characters")
         String brand,
+
+        UUID brandId,
+
+        UUID manufacturerId,
 
         @Min(value = 1, message = "Minimum order quantity must be at least 1")
         Integer minOrderQuantity,

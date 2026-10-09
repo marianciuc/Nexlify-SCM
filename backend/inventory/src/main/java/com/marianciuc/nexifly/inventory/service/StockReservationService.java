@@ -1,12 +1,12 @@
 package com.marianciuc.nexifly.inventory.service;
 
-import com.marianciuc.nexifly.inventory.domain.dto.response.StockItemResponse;
+import com.marianciuc.nexifly.inventory.domain.enums.ReservationStatus;
+import com.marianciuc.nexifly.inventory.domain.enums.ReservationType;
 import com.marianciuc.nexifly.inventory.exception.InsufficientStockException;
 import com.marianciuc.nexifly.inventory.exception.ResourceNotFoundException;
 import com.marianciuc.nexifly.inventory.repository.ProductRepository;
 import com.marianciuc.nexifly.inventory.repository.StockItemRepository;
 import com.marianciuc.nexifly.inventory.repository.StockReservationRepository;
-import com.marianciuc.nexifly.inventory.repository.entity.ProductEn;
 import com.marianciuc.nexifly.inventory.repository.entity.StockItemEn;
 import com.marianciuc.nexifly.inventory.repository.entity.StockReservationEn;
 import lombok.Builder;
@@ -96,8 +96,8 @@ public class StockReservationService {
                     .product(item.getProduct())
                     .warehouse(item.getWarehouse())
                     .quantity(quantity)
-                    .reservationType("SOFT")
-                    .status("ACTIVE")
+                    .reservationType(ReservationType.SOFT)
+                    .status(ReservationStatus.ACTIVE)
                     .expiresAt(Instant.now().plus(30, ChronoUnit.MINUTES))
                     .build();
 
@@ -129,10 +129,10 @@ public class StockReservationService {
 
     @Transactional
     public void hardReserve(UUID orderId) {
-        List<StockReservationEn> reservations = reservationRepository.findByOrderIdAndStatus(orderId, "ACTIVE");
+        List<StockReservationEn> reservations = reservationRepository.findByOrderIdAndStatus(orderId, ReservationStatus.ACTIVE);
         for (StockReservationEn res : reservations) {
-            res.setReservationType("HARD");
-            res.setStatus("CONVERTED_TO_HARD");
+            res.setReservationType(ReservationType.HARD);
+            res.setStatus(ReservationStatus.CONVERTED_TO_HARD);
             res.setExpiresAt(null);
             reservationRepository.save(res);
             log.info("Converted soft reservation {} to HARD for order {}", res.getId(), orderId);
@@ -143,7 +143,7 @@ public class StockReservationService {
     public void releaseReservation(UUID orderId) {
         List<StockReservationEn> reservations = reservationRepository.findByOrderId(orderId);
         for (StockReservationEn res : reservations) {
-            if ("ACTIVE".equalsIgnoreCase(res.getStatus()) || "CONVERTED_TO_HARD".equalsIgnoreCase(res.getStatus())) {
+            if (res.getStatus() == ReservationStatus.ACTIVE || res.getStatus() == ReservationStatus.CONVERTED_TO_HARD) {
                 String lockKey = "lock:inventory:product:" + res.getProduct().getId();
                 RLock lock = redissonClient.getLock(lockKey);
                 try {
@@ -154,7 +154,7 @@ public class StockReservationService {
                         item.release(res.getQuantity());
                         stockItemRepository.save(item);
                     }
-                    res.setStatus("RELEASED");
+                    res.setStatus(ReservationStatus.RELEASED);
                     res.setReleasedAt(Instant.now());
                     reservationRepository.save(res);
                     log.info("Released reservation {} ({} units) for order {}", res.getId(), res.getQuantity(), orderId);

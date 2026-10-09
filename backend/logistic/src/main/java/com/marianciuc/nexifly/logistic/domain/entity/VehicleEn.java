@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VehicleEn {
+public class VehicleEn extends BaseAuditableEntityEn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -61,12 +61,8 @@ public class VehicleEn {
     @Builder.Default
     private String status = "AVAILABLE";
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
         if (this.status == null) this.status = "AVAILABLE";
         if (this.fuelType == null) this.fuelType = "DIESEL";
     }

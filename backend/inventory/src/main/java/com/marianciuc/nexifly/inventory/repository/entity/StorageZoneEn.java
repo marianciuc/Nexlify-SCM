@@ -1,5 +1,6 @@
 package com.marianciuc.nexifly.inventory.repository.entity;
 
+import com.marianciuc.nexifly.inventory.domain.enums.ZoneType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,8 +27,10 @@ public class StorageZoneEn {
     @Column(name = "code", nullable = false)
     private String code;
 
-    @Column(name = "zone_type", nullable = false)
-    private String zoneType; // DRY, COLD, HAZMAT, BULK
+    @Enumerated(EnumType.STRING)
+    @Column(name = "zone_type", nullable = false, length = 50)
+    @Builder.Default
+    private ZoneType zoneType = ZoneType.DRY;
 
     @Column(name = "temperature_min")
     private BigDecimal temperatureMin;

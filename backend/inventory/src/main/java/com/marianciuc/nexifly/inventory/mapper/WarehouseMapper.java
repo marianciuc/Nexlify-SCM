@@ -1,42 +1,35 @@
 package com.marianciuc.nexifly.inventory.mapper;
 
-import com.marianciuc.nexifly.inventory.domain.dto.response.CategoryResponse;
-import com.marianciuc.nexifly.inventory.domain.dto.response.ProductResponse;
-import com.marianciuc.nexifly.inventory.domain.dto.response.StockItemResponse;
+import com.marianciuc.nexifly.inventory.domain.dto.request.CreateWarehouseRequest;
 import com.marianciuc.nexifly.inventory.domain.dto.response.WarehouseResponse;
-import com.marianciuc.nexifly.inventory.repository.entity.CategoryEn;
-import com.marianciuc.nexifly.inventory.repository.entity.ProductEn;
-import com.marianciuc.nexifly.inventory.repository.entity.StockItemEn;
 import com.marianciuc.nexifly.inventory.repository.entity.WarehouseEn;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
+import org.mapstruct.*;
 
 @Mapper(
-        componentModel = MappingConstants.ComponentModel.SPRING
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        builder = @Builder(disableBuilder = true)
 )
 public interface WarehouseMapper {
-
-    @Mapping(target = "productCount", source = "products")
-    @Mapping(target = "parentName", source = "parent.name")
-    @Mapping(target = "parentId", source = "parent.id")
-    @Mapping(target = "isActive", source = "active")
-    CategoryResponse toCategoryResponse(CategoryEn entity);
-
-    @Mapping(target = "categoryName", source = "name")
-    @Mapping(target = "categoryId", source = "category.id")
-    @Mapping(target = "isActive", source = "active")
-    ProductResponse toProductResponse(ProductEn entity);
 
     @Mapping(target = "isActive", source = "active")
     WarehouseResponse toWarehouseResponse(WarehouseEn entity);
 
-    @Mapping(target = "warehouseName", source = "warehouse.name")
-    @Mapping(target = "warehouseId", source = "warehouse.id")
-    @Mapping(target = "unitPrice", source = "product.unitPrice")
-    @Mapping(target = "unit", source = "product.unit")
-    @Mapping(target = "sku", source = "product.sku")
-    @Mapping(target = "name", source = "product.name")
-    @Mapping(target = "category", source = "product.category")
-    StockItemResponse toStockItemResponse(StockItemEn entity);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "utilizedCapacityPallets", constant = "0")
+    @Mapping(target = "active", constant = "true")
+    @Mapping(target = "stockItems", ignore = true)
+    @Mapping(target = "storageZones", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    WarehouseEn toEntity(CreateWarehouseRequest request);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "utilizedCapacityPallets", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "stockItems", ignore = true)
+    @Mapping(target = "storageZones", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    void updateEntityFromRequest(CreateWarehouseRequest request, @MappingTarget WarehouseEn entity);
 }

@@ -19,7 +19,7 @@ spring:
         register: true
         deregister: true
         fail-fast: false
-        health-check-url: http://localhost:${server.port:8080}/actuator/health
+        health-check-url: http://localhost:${server.port:8090}/actuator/health
       config:
         enabled: true
         format: yaml

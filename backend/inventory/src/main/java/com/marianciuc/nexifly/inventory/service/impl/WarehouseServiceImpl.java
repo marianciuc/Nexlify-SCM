@@ -45,18 +45,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             throw new DuplicateResourceException("Warehouse with code '%s' already exists".formatted(request.code()));
         }
 
-        WarehouseEn warehouse = WarehouseEn.builder()
-                .code(request.code())
-                .name(request.name())
-                .city(request.city())
-                .address(request.address())
-                .latitude(request.latitude())
-                .longitude(request.longitude())
-                .totalCapacityPallets(request.totalCapacityPallets() != null ? request.totalCapacityPallets() : 0)
-                .temperatureZoneMin(request.temperatureZoneMin())
-                .temperatureZoneMax(request.temperatureZoneMax())
-                .build();
-
+        WarehouseEn warehouse = mapper.toWarehouseEntity(request);
         warehouse = warehouseRepository.save(warehouse);
         log.info("Created warehouse: {} (code: {})", warehouse.getName(), warehouse.getCode());
         return mapper.toWarehouseResponse(warehouse);
@@ -71,16 +60,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             throw new DuplicateResourceException("Warehouse with code '%s' already exists".formatted(request.code()));
         }
 
-        warehouse.setCode(request.code());
-        warehouse.setName(request.name());
-        warehouse.setCity(request.city());
-        if (request.address() != null) warehouse.setAddress(request.address());
-        if (request.latitude() != null) warehouse.setLatitude(request.latitude());
-        if (request.longitude() != null) warehouse.setLongitude(request.longitude());
-        if (request.totalCapacityPallets() != null) warehouse.setTotalCapacityPallets(request.totalCapacityPallets());
-        if (request.temperatureZoneMin() != null) warehouse.setTemperatureZoneMin(request.temperatureZoneMin());
-        if (request.temperatureZoneMax() != null) warehouse.setTemperatureZoneMax(request.temperatureZoneMax());
-
+        mapper.updateWarehouseEntityFromRequest(request, warehouse);
         warehouse = warehouseRepository.save(warehouse);
         log.info("Updated warehouse: {} (code: {})", warehouse.getName(), warehouse.getCode());
         return mapper.toWarehouseResponse(warehouse);

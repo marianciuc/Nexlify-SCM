@@ -2,6 +2,8 @@ package com.marianciuc.nexifly.billing.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -10,6 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "credit_notes", schema = "billing")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @Builder
@@ -53,12 +56,12 @@ public class CreditNoteEn {
     @Column(name = "pdf_url", columnDefinition = "TEXT")
     private String pdfUrl;
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = Instant.now();
         if (this.status == null) this.status = "ISSUED";
     }
 }

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nexlify-config
+  namespace: nexlify
+  labels:
+    app.kubernetes.io/name: nexlify-config
+    app.kubernetes.io/part-of: nexlify-scm
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  SPRING_CLOUD_CONSUL_HOST: "consul-server.nexlify.svc.cluster.local"
+  SPRING_CLOUD_CONSUL_PORT: "8500"
+  SPRING_CLOUD_CONSUL_DISCOVERY_PREFER_IP_ADDRESS: "true"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka.nexlify.svc.cluster.local:9092"
+  REDIS_HOST: "redis.nexlify.svc.cluster.local"
+  REDIS_PORT: "6379"
+  POSTGRES_HOST: "postgres.nexlify.svc.cluster.local"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "nexlify-db"
+  KEYCLOAK_AUTH_SERVER_URL: "http://keycloak.nexlify.svc.cluster.local:8080"
+  KEYCLOAK_REALM: "nexlify"
