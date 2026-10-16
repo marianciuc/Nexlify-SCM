@@ -12,7 +12,7 @@ Backend microservices for logistic-commerce identity and company management.
 ## Requirements
 
 - Java 21 (`backend/*/pom.xml`)
-- Maven 3.9+ (or `backend/Gateway/mvnw` for Gateway)
+- Maven 3.9+
 - Docker + Docker Compose
 
 ## Local infrastructure
@@ -45,7 +45,7 @@ mvn spring-boot:run
 
 ```bash
 cd /home/runner/work/Nexlify-SCM/Nexlify-SCM/backend/Gateway
-./mvnw spring-boot:run
+mvn spring-boot:run
 ```
 
 ## Developer checks
@@ -57,7 +57,7 @@ cd /home/runner/work/Nexlify-SCM/Nexlify-SCM/backend/UserService
 mvn test
 
 cd /home/runner/work/Nexlify-SCM/Nexlify-SCM/backend/Gateway
-./mvnw test
+mvn test
 ```
 
 ## Authentication quick check
