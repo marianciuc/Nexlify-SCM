@@ -63,3 +63,12 @@ mvn test
 ## Authentication quick check
 
 Use `http/get-token.http` to request a token from realm `LogisticCommerce` at Keycloak (`localhost:9090`).
+
+## Collaboration and delivery
+
+- CI workflow: `.github/workflows/ci.yml`
+- Release workflow: `.github/workflows/release.yml` (runs on `v*` tags)
+- PR template: `.github/pull_request_template.md`
+- Issue templates: `.github/ISSUE_TEMPLATE/`
+- Governance/runbook: `docs/PROJECT_GOVERNANCE.md`
+- Wiki starter: `docs/wiki/Home.md`
