@@ -9,7 +9,7 @@ This repository now contains baseline automation/templates under `.github`:
 
 ## Branch rules (GitHub settings)
 
-Apply these branch protection settings to `main` in repository settings:
+Apply these branch protection settings to `dev` in repository settings:
 
 1. Require pull request before merging.
 2. Require status checks to pass before merging (select `test-userservice` and `test-gateway` from CI workflow).
@@ -18,7 +18,7 @@ Apply these branch protection settings to `main` in repository settings:
 
 ## Release flow
 
-1. Merge changes to `main`.
+1. Merge changes to `dev`.
 2. Create and push a version tag `vX.Y.Z`.
 3. The `Release` workflow builds both backend modules and publishes jar artifacts into a GitHub Release.
 

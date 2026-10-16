@@ -66,6 +66,7 @@ Use `http/get-token.http` to request a token from realm `LogisticCommerce` at Ke
 
 ## Collaboration and delivery
 
+- Primary integration branch: `dev`
 - CI workflow: `.github/workflows/ci.yml`
 - Release workflow: `.github/workflows/release.yml` (runs on `v*` tags)
 - PR template: `.github/pull_request_template.md`
